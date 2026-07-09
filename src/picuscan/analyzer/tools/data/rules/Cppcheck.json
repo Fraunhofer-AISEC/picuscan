@@ -1,0 +1,101 @@
+[
+    {
+        "match": "returnDanglingLifetime",
+        "changes": {
+            "rank": 50
+        }
+    },
+    {
+        "match": "integerOverflowCond",
+        "changes": {
+            "rank": 20
+        }
+    },
+
+    {
+        "match": "funcArgOrderDifferent",
+        "changes": {
+            "rank": 50
+        }
+    },
+    {
+        "match": "identicalInnerCondition",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "variableScope",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "constVariablePointer",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "unreadVariable",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "redundantInitialization",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "pointerOutOfBounds",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "knownEmptyContainer",
+        "changes": {
+            "level": "error",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "subtractPointers",
+        "changes": {
+            "level": "error",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "unreachableCode",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "*missingInclude*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    }
+]

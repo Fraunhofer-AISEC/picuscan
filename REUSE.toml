@@ -1,0 +1,20 @@
+version = 1
+
+[[annotations]]
+path = [
+    "uv.lock",
+    ".python-version",
+    "src/picuscan/analyzer/tools/data/rules/*.json",
+    "tests/e2e/*/ref.sarif",
+    "gradle.properties",
+]
+SPDX-FileCopyrightText = "AISEC Code Audit Team"
+SPDX-License-Identifier = "CC0-1.0"
+
+[[annotations]]
+path = [
+    "patches/ikos/no-quoteattr.patch",
+    "patches/rats/fix-types.patch",
+]
+SPDX-FileCopyrightText = "AISEC Code Audit Team"
+SPDX-License-Identifier = "Apache-2.0"

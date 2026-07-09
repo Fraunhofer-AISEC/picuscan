@@ -1,0 +1,114 @@
+[
+    {
+        "match": "PULSE_READONLY_SHARED_PTR_PARAM",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "DEAD_STORE",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "PULSE_CONST_REFABLE",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "*UNNECESSARY_COPY*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "*_LATENT",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "*_L1",
+        "changes": {
+            "level": "error",
+            "kind": "open",
+            "rank": 90.0
+        }
+    },
+    {
+        "match": "*_L2",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 70.0
+        }
+    },
+    {
+        "match": "*_L3",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "*_L4",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 30.0
+        }
+    },
+    {
+        "match": "*_L5",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 10.0
+        }
+    },
+    {
+        "match": "*_S2",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 70.0
+        }
+    },
+    {
+        "match": "*_U5",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 10.0
+        }
+    },
+    {
+        "match": "*RESOURCE_LEAK",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 70.0
+        }
+    },
+    {
+        "match": "*",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    }
+]

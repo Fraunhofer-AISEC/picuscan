@@ -1,0 +1,10 @@
+[
+    {
+        "match": "*",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    }
+]

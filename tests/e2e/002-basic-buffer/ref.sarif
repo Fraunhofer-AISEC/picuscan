@@ -1,0 +1,890 @@
+{
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "RATS",
+          "fullName": "RATS v2.4 - Rough Auditing Tool for Security",
+          "version": "2.4"
+        }
+      },
+      "externalPropertyFileReferences": {
+        "taxonomies": [
+          {
+            "location": {
+              "uri": "https://raw.githubusercontent.com/sarif-standard/taxonomies/main/CWE_v4.4.sarif"
+            }
+          }
+        ]
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "arguments": [
+            "rats",
+            "--xml",
+            "--resultsonly",
+            "--warning",
+            "3",
+            "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+          ],
+          "exitCode": 0,
+          "startTimeUtc": "2026-01-05T13:01:48.200139+00:00",
+          "endTimeUtc": "2026-01-05T13:01:48.206184+00:00"
+        }
+      ],
+      "results": [
+        {
+          "message": {
+            "text": "Extra care should be taken to ensure that character arrays that are allocated on the stack are used safely.  They are prime targets for buffer overflow attacks."
+          },
+          "ruleId": "fixed size local buffer",
+          "taxa": [
+            {
+              "id": "CWE-119"
+            }
+          ],
+          "kind": "open",
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                },
+                "region": {
+                  "startLine": 2
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "wpResultHash/v1": "287a5c3220919a1c4a437dd1f04e1d98230bc942"
+          },
+          "rank": 20.0
+        }
+      ],
+      "columnKind": "unicodeCodePoints"
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "GCC",
+          "fullName": "GNU C17 (Debian 14.2.0-19) version 14.2.0 (x86_64-linux-gnu)",
+          "version": "14.2.0",
+          "rules": [
+            {
+              "id": "-Wanalyzer-out-of-bounds"
+            }
+          ]
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "arguments": [
+            "gcc",
+            "-fanalyzer",
+            "-fdiagnostics-format=sarif-stderr",
+            "-c",
+            "main.c"
+          ],
+          "exitCode": 0,
+          "startTimeUtc": "2026-01-05T13:01:48.203172+00:00",
+          "endTimeUtc": "2026-01-05T13:01:48.224578+00:00"
+        }
+      ],
+      "originalUriBaseIds": {
+        "PWD": {
+          "uri": "file:///home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/"
+        }
+      },
+      "results": [
+        {
+          "message": {
+            "text": "stack-based buffer over-read"
+          },
+          "ruleId": "-Wanalyzer-out-of-bounds",
+          "taxa": [
+            {
+              "id": "CWE-126"
+            }
+          ],
+          "kind": "open",
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                },
+                "region": {
+                  "startLine": 3,
+                  "startColumn": 12,
+                  "endColumn": 19
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "wpResultHash/v1": "5e8a02d3c911f354f854cb3a4d847bda9a0626c9"
+          },
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                          },
+                          "region": {
+                            "startLine": 2,
+                            "startColumn": 10,
+                            "endColumn": 13
+                          }
+                        },
+                        "message": {
+                          "text": "capacity: 10 bytes"
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                          },
+                          "region": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endColumn": 19
+                          }
+                        },
+                        "message": {
+                          "text": "out-of-bounds read at byte 10 but \u2018buf\u2019 ends at byte 10"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Flawfinder",
+          "version": "2.0.19",
+          "rules": [
+            {
+              "id": "FF1013",
+              "name": "buffer/char",
+              "shortDescription": {
+                "text": "Statically-sized arrays can be improperly restricted, leading to potential overflows or other issues (CWE-119!/CWE-120)."
+              },
+              "relationships": [
+                {
+                  "target": {
+                    "id": "CWE-119",
+                    "toolComponent": {
+                      "name": "CWE",
+                      "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+                    }
+                  },
+                  "kinds": [
+                    "incomparable"
+                  ]
+                },
+                {
+                  "target": {
+                    "id": "CWE-120",
+                    "toolComponent": {
+                      "name": "CWE",
+                      "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "externalPropertyFileReferences": {
+        "taxonomies": [
+          {
+            "location": {
+              "uri": "https://raw.githubusercontent.com/sarif-standard/taxonomies/main/CWE_v4.4.sarif"
+            },
+            "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+          }
+        ]
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "arguments": [
+            "flawfinder",
+            "--neverignore",
+            "--sarif",
+            "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+          ],
+          "exitCode": 0,
+          "startTimeUtc": "2026-01-05T13:01:48.205106+00:00",
+          "endTimeUtc": "2026-01-05T13:01:48.246968+00:00"
+        }
+      ],
+      "results": [
+        {
+          "message": {
+            "text": "buffer/char:Statically-sized arrays can be improperly restricted, leading to potential overflows or other issues (CWE-119!/CWE-120)."
+          },
+          "ruleId": "FF1013",
+          "kind": "open",
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 2,
+                  "startColumn": 5,
+                  "endColumn": 24
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "8526f76b2345cc3ee6db6fb270e968b486340b10c3c10b1b59f5417ff607965f",
+            "wpResultHash/v1": "f135d0b8cf755d0bb3fb136a5d23985f5f0ab254"
+          },
+          "rank": 20.0
+        }
+      ],
+      "columnKind": "utf16CodeUnits"
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "IKOS",
+          "version": "3.5",
+          "rules": [
+            {
+              "id": "buffer_overflow_analysis",
+              "shortDescription": {
+                "text": "checks for buffer overflows and out-of-bound array accesses."
+              }
+            },
+            {
+              "id": "division_by_zero_analysis",
+              "shortDescription": {
+                "text": "checks for integer divisions by zero."
+              }
+            },
+            {
+              "id": "null_pointer_analysis",
+              "shortDescription": {
+                "text": "checks for null pointer dereferences."
+              }
+            },
+            {
+              "id": "assertion_prover",
+              "shortDescription": {
+                "text": "prove user-defined properties, using __ikos_assert(condition)."
+              }
+            },
+            {
+              "id": "unaligned_pointer_analysis",
+              "shortDescription": {
+                "text": "checks for unaligned pointer dereferences."
+              }
+            },
+            {
+              "id": "uninitialized_variable_analysis",
+              "shortDescription": {
+                "text": "checks for read of uninitialized variables."
+              }
+            },
+            {
+              "id": "signed_integer_overflow_analysis",
+              "shortDescription": {
+                "text": "checks for signed integer overflows."
+              }
+            },
+            {
+              "id": "unsigned_integer_overflow_analysis",
+              "shortDescription": {
+                "text": "checks for unsigned integer overflows."
+              }
+            },
+            {
+              "id": "shift_count_analysis",
+              "shortDescription": {
+                "text": "checks for invalid shifts, where the amount shifted is greater or equal to the bit-width of the left operand, or less than zero."
+              }
+            },
+            {
+              "id": "pointer_overflow_analysis",
+              "shortDescription": {
+                "text": "checks for pointer arithmetic overflows."
+              }
+            },
+            {
+              "id": "pointer_comparison_analysis",
+              "shortDescription": {
+                "text": "checks for pointer comparisons between pointers referring to different objects."
+              }
+            },
+            {
+              "id": "soundness_analysis",
+              "shortDescription": {
+                "text": "checks for instructions that could make the analysis unsound, i.e miss bugs."
+              }
+            },
+            {
+              "id": "function_call_analysis",
+              "shortDescription": {
+                "text": "checks for function calls through function pointers of the wrong type."
+              }
+            },
+            {
+              "id": "dead_code_analysis",
+              "shortDescription": {
+                "text": "checks for unreachable statements."
+              }
+            },
+            {
+              "id": "double_free_analysis",
+              "shortDescription": {
+                "text": "checks for double free, invalid free, use after free and use after return."
+              }
+            },
+            {
+              "id": "debugger",
+              "shortDescription": {
+                "text": "prints debug information, using __ikos_print_values(\"desc\", x) and __ikos_print_invariant()."
+              }
+            },
+            {
+              "id": "memory_watcher",
+              "shortDescription": {
+                "text": "prints memory writes at a given memory location, using __ikos_watch_mem(ptr, size)"
+              }
+            }
+          ]
+        }
+      },
+      "externalPropertyFileReferences": {
+        "taxonomies": [
+          {
+            "location": {
+              "uri": "https://raw.githubusercontent.com/sarif-standard/taxonomies/main/CWE_v4.4.sarif"
+            }
+          }
+        ]
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "arguments": [
+            "ikos",
+            "--format=sarif",
+            "-q",
+            "-o",
+            ".picuscan/runs/2026_01_05-13_01_48/IKOS/output.db",
+            "/tmp/picuscan.xffvu2c1.bc"
+          ],
+          "exitCode": 0,
+          "startTimeUtc": "2026-01-05T13:01:48.326954+00:00",
+          "endTimeUtc": "2026-01-05T13:01:48.443936+00:00"
+        }
+      ],
+      "results": [
+        {
+          "message": {
+            "text": "expression 'buf[10]' might be uninitialized"
+          },
+          "ruleId": "uninitialized-variable",
+          "taxa": [
+            {
+              "id": "CWE-457"
+            }
+          ],
+          "kind": "open",
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                },
+                "region": {
+                  "startLine": 3,
+                  "startColumn": 12
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "wpResultHash/v1": "836692d9d38efee4d0f96c9e42c63039f8d43dbc"
+          },
+          "rank": 40
+        },
+        {
+          "message": {
+            "text": "buffer overflow, accessing index 10 of local variable 'buf' of 10 elements"
+          },
+          "ruleId": "buffer-overflow",
+          "taxa": [
+            {
+              "id": "CWE-119"
+            }
+          ],
+          "kind": "open",
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                },
+                "region": {
+                  "startLine": 3,
+                  "startColumn": 12
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "wpResultHash/v1": "86c69fec375867049b693f52afca8df66fdf1ece"
+          },
+          "rank": 100
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Cppcheck",
+          "version": "2.18.0"
+        }
+      },
+      "externalPropertyFileReferences": {
+        "taxonomies": [
+          {
+            "location": {
+              "uri": "https://raw.githubusercontent.com/sarif-standard/taxonomies/main/CWE_v4.4.sarif"
+            }
+          }
+        ]
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "arguments": [
+            "cppcheck",
+            "--xml",
+            "--xml-version=2",
+            "--project=compile_commands.json",
+            "--force",
+            "--inconclusive",
+            "--library=boost,openssl,posix",
+            "--enable=all"
+          ],
+          "exitCode": 0,
+          "startTimeUtc": "2026-01-05T13:01:48.221545+00:00",
+          "endTimeUtc": "2026-01-05T13:01:48.240695+00:00"
+        }
+      ],
+      "results": [
+        {
+          "message": {
+            "text": "Array 'buf[10]' accessed at index 10, which is out of bounds."
+          },
+          "ruleId": "arrayIndexOutOfBounds",
+          "taxa": [
+            {
+              "id": "CWE-788"
+            }
+          ],
+          "kind": "open",
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                },
+                "region": {
+                  "startLine": 3,
+                  "startColumn": 15
+                }
+              },
+              "message": {
+                "text": "Array index out of bounds"
+              }
+            }
+          ],
+          "fingerprints": {
+            "wpResultHash/v1": "c98308fa6330f9e64d06b9c0755d761a8cd73f38"
+          },
+          "rank": 100
+        }
+      ],
+      "columnKind": "unicodeCodePoints"
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "Infer",
+          "version": "1.2.0",
+          "rules": [
+            {
+              "id": "BUFFER_OVERRUN_L1",
+              "shortDescription": {
+                "text": "Buffer Overrun L1"
+              }
+            }
+          ]
+        }
+      },
+      "externalPropertyFileReferences": {
+        "taxonomies": [
+          {
+            "location": {
+              "uri": "https://raw.githubusercontent.com/sarif-standard/taxonomies/main/CWE_v4.4.sarif"
+            }
+          }
+        ]
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "arguments": [
+            "infer",
+            "--compilation-database",
+            "compile_commands.json",
+            "-o",
+            ".picuscan/runs/2026_01_05-13_01_48/Infer/output",
+            "--progress-bar-style=plain",
+            "--keep-going",
+            "--sarif",
+            "--no-filtering",
+            "--default-checkers",
+            "--bufferoverrun",
+            "--pulse"
+          ],
+          "exitCode": 0,
+          "startTimeUtc": "2026-01-05T13:01:48.201557+00:00",
+          "endTimeUtc": "2026-01-05T13:01:48.608666+00:00"
+        }
+      ],
+      "results": [
+        {
+          "message": {
+            "text": "Offset: 10 Size: 10."
+          },
+          "ruleId": "BUFFER_OVERRUN_L1",
+          "taxa": [
+            {
+              "id": "CWE-119"
+            }
+          ],
+          "kind": "open",
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                },
+                "region": {
+                  "startLine": 3,
+                  "startColumn": 12
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "hash/v1": "7074dc651a149fc08eeae8309c60480d",
+            "key": "main.c|main|BUFFER_OVERRUN_L1",
+            "wpResultHash/v1": "86c69fec375867049b693f52afca8df66fdf1ece"
+          },
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                          },
+                          "region": {
+                            "startLine": 1,
+                            "startColumn": 1
+                          }
+                        },
+                        "message": {
+                          "text": "<Length trace>"
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                          },
+                          "region": {
+                            "startLine": 1,
+                            "startColumn": 1
+                          }
+                        },
+                        "message": {
+                          "text": "Array declaration"
+                        }
+                      }
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                          },
+                          "region": {
+                            "startLine": 3,
+                            "startColumn": 12
+                          }
+                        },
+                        "message": {
+                          "text": "Array access: Offset: 10 Size: 10"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "rank": 90.0
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "clang-tidy",
+          "fullName": "clang-tidy, 19.1.7",
+          "version": "19.1.7"
+        }
+      },
+      "externalPropertyFileReferences": {
+        "taxonomies": [
+          {
+            "location": {
+              "uri": "https://raw.githubusercontent.com/sarif-standard/taxonomies/main/CWE_v4.4.sarif"
+            }
+          }
+        ]
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "arguments": [
+            "CodeChecker",
+            "analyze",
+            "-o",
+            ".picuscan/runs/2026_01_05-13_01_48/CodeChecker/output",
+            "--analyzers",
+            "clangsa",
+            "clang-tidy",
+            "--ctu",
+            "--enable-all",
+            "--enable=alpha",
+            "compile_commands.json"
+          ],
+          "exitCode": 0,
+          "startTimeUtc": "2026-01-05T13:01:48.327945+00:00",
+          "endTimeUtc": "2026-01-05T13:01:50.695278+00:00"
+        }
+      ],
+      "results": [
+        {
+          "message": {
+            "text": "unsafe buffer access"
+          },
+          "properties": {
+            "severity": "MEDIUM"
+          },
+          "ruleId": "clang-diagnostic-unsafe-buffer-usage",
+          "taxa": [
+            {
+              "id": "CWE-119"
+            }
+          ],
+          "kind": "open",
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                },
+                "region": {
+                  "startLine": 3,
+                  "startColumn": 12
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "wpResultHash/v1": "86c69fec375867049b693f52afca8df66fdf1ece"
+          },
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                          },
+                          "region": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endLine": 3,
+                            "endColumn": 12
+                          }
+                        },
+                        "message": {
+                          "text": "unsafe buffer access"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "rank": 20.0
+        }
+      ]
+    },
+    {
+      "tool": {
+        "driver": {
+          "name": "clangsa",
+          "fullName": "clangsa, 19.1.7",
+          "version": "19.1.7"
+        }
+      },
+      "externalPropertyFileReferences": {
+        "taxonomies": [
+          {
+            "location": {
+              "uri": "https://raw.githubusercontent.com/sarif-standard/taxonomies/main/CWE_v4.4.sarif"
+            }
+          }
+        ]
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "arguments": [
+            "CodeChecker",
+            "analyze",
+            "-o",
+            ".picuscan/runs/2026_01_05-13_01_48/CodeChecker/output",
+            "--analyzers",
+            "clangsa",
+            "clang-tidy",
+            "--ctu",
+            "--enable-all",
+            "--enable=alpha",
+            "compile_commands.json"
+          ],
+          "exitCode": 0,
+          "startTimeUtc": "2026-01-05T13:01:48.327945+00:00",
+          "endTimeUtc": "2026-01-05T13:01:50.695278+00:00"
+        }
+      ],
+      "results": [
+        {
+          "message": {
+            "text": "Out of bound access to memory after the end of 'buf'"
+          },
+          "properties": {
+            "severity": "HIGH"
+          },
+          "ruleId": "alpha.security.ArrayBoundV2",
+          "taxa": [
+            {
+              "id": "CWE-119"
+            }
+          ],
+          "kind": "open",
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                },
+                "region": {
+                  "startLine": 3,
+                  "startColumn": 12
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "wpResultHash/v1": "86c69fec375867049b693f52afca8df66fdf1ece"
+          },
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "/home/tobias/Downloads/picuscan/tests/e2e/002-basic-buffer/main.c"
+                          },
+                          "region": {
+                            "startLine": 3,
+                            "startColumn": 12,
+                            "endLine": 3,
+                            "endColumn": 18
+                          }
+                        },
+                        "message": {
+                          "text": "Access of 'buf' at index 10, while it holds only 10 'char' elements"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "rank": 20.0
+        }
+      ]
+    }
+  ],
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json"
+}

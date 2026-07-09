@@ -1,0 +1,16 @@
+[
+    {
+        "match": "-Wimplicit-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational"
+        }
+    },
+    {
+        "match": "-Wunused-parameter",
+        "changes": {
+            "level": "none",
+            "kind": "informational"
+        }
+    }
+]

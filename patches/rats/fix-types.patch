@@ -1,0 +1,23 @@
+diff --git a/report.c b/report.c
+index 614158a..6ad11dc 100644
+--- a/report.c
++++ b/report.c
+@@ -579,7 +579,8 @@ static void build_xml_vulnerability(vulnerability_t *ptr) {
+       break;
+ 
+     case RaceConditionUse:
+-      printf("  <type>fixed size local buffer</type>\n");
++      printf("  <type>%s</type>\n",
++	     ptr->data->Name);
+       printf("  <message>\n");
+       printf("    A potential race condition vulnerability exists here.  Normally a call\n");
+       printf("    to this function is vulnerable only when a match check precedes it.  No\n");
+@@ -589,7 +590,7 @@ static void build_xml_vulnerability(vulnerability_t *ptr) {
+       break;
+ 
+     case StaticLocalBuffer:
+-      printf("  <type>fixed size global buffer</type>\n");
++      printf("  <type>fixed size local buffer</type>\n");
+       printf("  <message>\n");
+       printf("    Extra care should be taken to ensure that character arrays that are\n");
+       printf("    allocated on the stack are used safely.  They are prime targets for\n");

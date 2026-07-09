@@ -1,0 +1,13 @@
+diff --git a/analyzer/python/ikos/report.py b/analyzer/python/ikos/report.py
+index e1f1545..b6fca7a 100644
+--- a/analyzer/python/ikos/report.py
++++ b/analyzer/python/ikos/report.py
+@@ -988,7 +988,7 @@ class SARIFFormatter(Formatter):
+                     'ruleId': CheckKind.short_name(statement_report.kind),
+                     'level': self.format_level(Result.str(statement_report.status)),
+                     'message': {
+-                        'text': quoteattr(self.single_line(generate_message(statement_report, self.verbosity))),
++                        'text': generate_message(statement_report, self.verbosity),
+                     },
+                     'locations': [self.format_location(statement)],
+                 }

@@ -1,0 +1,3341 @@
+[
+    {
+        "match": "core.CallAndMessage",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.DivideZero",
+        "changes": {
+            "level": "error",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.NonNullParam*",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.NullDereference",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.StackAddressEscape",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.UndefinedBinaryOperatorResult",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.VLASize",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.uninitialized.ArraySubscript",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.uninitialized.Assign",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.uninitialized.Branch",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.uninitialized.CapturedBlockVariable",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.uninitialized.UndefReturn",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "core.uninitialized.NewArraySize",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "cplusplus.InnerPointer",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "cplusplus.NewDelete",
+        "changes": {
+            "level": "error",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "cplusplus.NewDeleteLeaks",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+
+    {
+        "match": "cplusplus.PureVirtualCall",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cplusplus.PlacementNew*",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "cplusplus.SelfAssignment",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "cplusplus.String*",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "deadcode.DeadStores",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "nullability.NullPassedToNonnull",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "nullability.NullReturnedFromNonnull",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "nullability.NullableDereferenced",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "nullability.NullablePassedToNonnull",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "nullability.NullableReturnedFromNonnull",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "optin.cplusplus.UninitializedObject",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "optin.cplusplus.VirtualCall",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "optin.mpi.MPI*",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "optin.osx.cocoa.localizability.EmptyLocalizationContext*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "optin.osx.cocoa.localizability.NonLocalizedString*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "optin.performance.GCDAntipattern",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "optin.performance.Padding",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "optin.portability.UnixAPI",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.FloatLoopCounter",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.UncheckedReturn",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.bcmp",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.bcopy",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.bzero",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.getpw",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.gets",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.mkstemp",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.mktemp",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.rand",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.strcpy",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.vfork",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "security.insecureAPI.DeprecatedOrUnsafeBufferHandling",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "unix.API",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "unix.Malloc",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "unix.MallocSizeof",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "unix.MismatchedDeallocator",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "unix.Vfork",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "unix.cstring.BadSizeArg",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "unix.cstring.NullArg",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "osx.API",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.NumberObjectConversion",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.ObjCProperty",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.SecKeychainAPI",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.AtSync",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.AutoreleaseWrite",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.ClassRelease",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.Dealloc",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.IncompatibleMethodTypes",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.Loops",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.MissingSuperCall",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.NSAutoreleasePool",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.NSError",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.NilArg",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.NonNilReturnValue",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.ObjCGenerics",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.RetainCount",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.RunLoopAutoreleaseLeak",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.SelfInit",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.SuperDealloc",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.UnusedIvars",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.cocoa.VariadicMethodTypes",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.coreFoundation.CFError",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.coreFoundation.CFNumber",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.coreFoundation.CFRetainRelease",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.coreFoundation.containers.OutOfBounds",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "osx.coreFoundation.containers.PointerSizedValues",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "fuchsia.Handle*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "webkit.RefCntblBaseVirtualDtor",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "webkit.NoUncountedMember*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "webkit.UncountedLambdaCaptures*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "alpha.clone.Clone*",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.BoolAssignment",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.C11Lock",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.CallAndMessageUnInitRefArg",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.CastSize",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.CastToStruct",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.Conversion",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.DynamicType*",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.FixedAddr",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.IdenticalExpr",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.PointerArithm",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.PointerSub",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.SizeofPtr",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.StackAddressAsyncEscape",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.core.TestAfterDivZero",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.cplusplus.DeleteWithNonVirtualDtor",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "optin.core.EnumCastOutOfRange",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.cplusplus.EnumCastOutOfRange",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.cplusplus.InvalidatedIterator",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.cplusplus.IteratorRange",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.cplusplus.MismatchedIterator",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.cplusplus.MisusedMovedObject",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.cplusplus.SmartPtr",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.deadcode.UnreachableCode",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.fuchsia.Lock",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.llvm.Conventions",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.osx.cocoa.DirectIvarAssignment",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.osx.cocoa.DirectIvarAssignmentForAnnotatedFunctions",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.osx.cocoa.InstanceVariableInvalidation",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.osx.cocoa.MissingInvalidationMethod",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.osx.cocoa.localizability.PluralMisuse*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.security.ArrayBound",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.security.ArrayBoundV2",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.security.MallocOverflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.security.MmapWriteExec",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.security.ReturnPtrRange",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.security.cert.pos.34c",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.security.cert.env.InvalidPtr",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.security.taint.TaintPropagation",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.unix.StdCLibraryFunctionArgs",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "unix.BlockInCriticalSection",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 30.0
+        }
+    },
+    {
+        "match": "alpha.unix.Chroot",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.unix.Errno",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.unix.PthreadLock",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.unix.SimpleStream",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "unix.Stream",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "unix.StdCLibraryFunctions",
+        "changes": {
+            "kind": "open",
+            "rank": 70.0
+        }
+    },
+    {
+        "match": "valist.Unterminated",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "alpha.unix.cstring.BufferOverlap",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.unix.cstring.NotNullTerminated",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.unix.cstring.OutOfBounds",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "alpha.unix.cstring.UninitializedRead",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.nondeterminism.PointerIteration",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.nondeterminism.PointerSorting",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.webkit.UncountedCallArgs*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "alpha.webkit.UncountedLocalVars*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "abseil-cleanup-ctad",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-duration-addition",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-duration-comparison",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-duration-conversion-cast",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-duration-division",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-duration-factory-float",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-duration-factory-scale",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-duration-subtraction",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-duration-unnecessary-conversion",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-faster-strsplit-delimiter",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-no-internal-dependencies",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-no-namespace",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-redundant-strcat-calls",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-str-cat-append",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-string-find-startswith",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-string-find-str-contains",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-time-comparison",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-time-subtraction",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "abseil-upgrade-duration-conversions",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "altera-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-accept",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-accept4",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-creat",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-dup",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-epoll-create",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-epoll-create1",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-fopen",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-inotify-init",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-inotify-init1",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-memfd-create",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-open",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-pipe",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-pipe2",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-cloexec-socket",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "android-comparison-in-temp-failure-retry",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "boost-use-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "bugprone-argument-comment",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-assert-side-effect",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-assignment-in-if-condition",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-bad-signal-to-kill-thread",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-bool-pointer-implicit-conversion",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-branch-clone",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-copy-constructor-init",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-dangling-handle",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-dynamic-static-initializers",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-easily-swappable-parameters",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-exception-escape",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-fold-init-type",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-forward-declaration-namespace",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-forwarding-reference-overload",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-implicit-widening-of-multiplication-result",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-inaccurate-erase",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-incorrect-roundings",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-infinite-loop",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-integer-division",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-lambda-function-name",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-macro-parentheses",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-macro-repeated-side-effects",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-misplaced-operator-in-strlen-in-alloc",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-misplaced-pointer-arithmetic-in-alloc",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-misplaced-widening-cast",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-move-forwarding-reference",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-multiple-statement-macro",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-no-escape",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-not-null-terminated-result",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-parent-virtual-call",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-posix-return",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-redundant-branch-condition",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-reserved-identifier",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-shared-ptr-array-mismatch",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-signal-handler",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-signed-char-misuse",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-sizeof-container",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-sizeof-expression",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-spuriously-wake-up-functions",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-standalone-empty",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-string-constructor",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-string-integer-assignment",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-string-literal-with-embedded-nul",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-stringview-nullptr",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-suspicious-enum-usage",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-suspicious-include",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-suspicious-memory-comparison",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-suspicious-memset-usage",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-suspicious-missing-comma",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-suspicious-realloc-usage",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-suspicious-semicolon",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-suspicious-string-compare",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-swapped-arguments",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-terminating-continue",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-throw-keyword-missing",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-too-small-loop-variable",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-unchecked-optional-access",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-undefined-memory-manipulation",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-undelegated-constructor",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-unhandled-exception-at-new",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-unhandled-self-assignment",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-unused-raii",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-unused-return-value",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-use-after-move",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-virtual-near-miss",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-narrowing-conversions",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-empty-catch",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "bugprone-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-dcl21-cpp",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-dcl50-cpp",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-dcl58-cpp",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-dcl59-cpp",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-env33-c",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-err33-c",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cert-err34-c",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cert-err52-cpp",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-err58-cpp",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-err60-cpp",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-flp30-c",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-mem57-cpp",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-msc50-cpp",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-msc51-cpp",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-oop57-cpp",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-oop58-cpp",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-int09-c",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-oop54-cpp",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cert-ctr56-cpp",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cert-msc30-c",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "clang-analyzer-core.DynamicTypePropagation",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 10.0
+        }
+    },
+    {
+        "match": "clang-analyzer-core.uninitialized.CapturedBlockVariable",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-cplusplus.InnerPointer",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-nullability.NullableReturnedFromNonnull",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-optin.osx.OSObjectCStyleCast",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-optin.performance.GCDAntipattern",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-optin.performance.Padding",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-optin.portability.UnixAPI",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-osx.MIG",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-osx.NumberObjectConversion",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-osx.OSObjectRetainCount",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-osx.ObjCProperty",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-osx.cocoa.AutoreleaseWrite",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-osx.cocoa.Loops",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-osx.cocoa.MissingSuperCall",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-osx.cocoa.NonNilReturnValue",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-osx.cocoa.RunLoopAutoreleaseLeak",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-valist.CopyToSelf",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-analyzer-valist.Uninitialized",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "concurrency-mt-unsafe",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "concurrency-thread-canceltype-asynchronous",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-avoid-const-or-ref-data-members",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-avoid-do-while",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-avoid-goto",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-avoid-non-const-global-variables",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-avoid-reference-coroutine-parameters",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-init-variables",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-interfaces-global-init",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-macro-usage",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-narrowing-conversions",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-no-malloc",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-owning-memory",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-prefer-member-initializer",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-pro-bounds-array-to-pointer-decay",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-pro-bounds-constant-array-index",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-pro-bounds-pointer-arithmetic",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-pro-type-const-cast",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-pro-type-cstyle-cast",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-pro-type-member-init",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-pro-type-reinterpret-cast",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-pro-type-static-cast-downcast",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-pro-type-union-access",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-pro-type-vararg",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-slicing",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-special-member-functions",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcoreguidelines-virtual-class-destructor",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "darwin-avoid-spinlock",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "darwin-dispatch-once-nonstatic",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "fuchsia-default-arguments-calls",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "fuchsia-default-arguments-declarations",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "fuchsia-multiple-inheritance",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "fuchsia-overloaded-operator",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "fuchsia-statically-constructed-objects",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "fuchsia-trailing-return",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "fuchsia-virtual-inheritance",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-build-explicit-make-pair",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-build-namespaces",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-build-using-namespace",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-default-arguments",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-explicit-constructor",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-global-names-in-headers",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-objc-avoid-nsobject-new",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-objc-avoid-throwing-exception",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-objc-function-naming",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-objc-global-variable-declaration",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-runtime-int",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-runtime-operator",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-upgrade-googletest-case",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "hicpp-avoid-goto",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "hicpp-exception-baseclass",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "hicpp-multiway-paths-covered",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "hicpp-no-assembler",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "hicpp-signed-bitwise",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "linuxkernel-must-use-errs",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "llvm-header-guard",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "llvm-include-order",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "llvm-namespace-comment",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "llvm-prefer-isa-or-dyn-cast-in-conditionals",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "llvm-prefer-register-over-unsigned",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "llvm-twine-local",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "llvmlibc-callee-namespace",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "llvmlibc-implementation-in-namespace",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "llvmlibc-restrict-system-libc-headers",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "misc-confusable-identifiers",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-const-correctness",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "misc-definitions-in-headers",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "misc-misleading-bidirectional",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-misleading-identifier",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-misplaced-const",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-new-delete-overloads",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-no-recursion",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-non-copyable-objects",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-non-private-member-variables-in-classes",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-redundant-expression",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-static-assert",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-throw-by-value-catch-by-reference",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-unconventional-assign-operator",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-uniqueptr-reset-release",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-unused-alias-decls",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-unused-parameters",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-unused-using-decls",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-use-anonymous-namespace",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-include-cleaner",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "misc-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "modernize-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "mpi-buffer-deref",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "mpi-type-mismatch",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "objc-assert-equals",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "objc-avoid-nserror-init",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "objc-dealloc-in-category",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "objc-forbidden-subclassing",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "objc-missing-hash",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "objc-nsdate-formatter",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "objc-nsinvocation-argument-lifetime",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "objc-property-declaration",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "objc-super-self",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "openmp-exception-escape",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "openmp-use-default-none",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "performance-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "portability-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "readability-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "google-readability-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "zircon-temporary-objects",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-uninitialized",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-sometimes-uninitialized",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-unsafe-buffer-usage",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-missing-field-initializers",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-unused-result",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-format",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 40.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-format-nonliteral",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-switch-enum",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-implicit-function-declaration",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 80.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-fortify-source",
+        "changes": {
+            "level": "error",
+            "kind": "open",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-implicit*",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 40.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-return-type",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-return-stack-address",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 100.0
+        }
+    },
+
+    {
+        "match": "clang-diagnostic-dangling-gsl",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-division-by-zero",
+        "changes": {
+            "level": "error",
+            "kind": "open",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-misleading-indentation",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-dangling-else",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-unused-value",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-conditional-uninitialized",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-incompatible-pointer-types",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "clang-diagnostic-*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "cert-dcl51-cpp",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "cert-dcl37-c",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "*missingInclude*",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "cppcheck-duplInheritedMember",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "cppcheck-passedByValue",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "cppcheck-returnByReference",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "cppcheck-uninitDerivedMemberVar",
+        "changes": {
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcheck-uninitMemberVarPrivate",
+        "changes": {
+            "rank": 50.0
+        }
+    },
+    {
+        "match": "cppcheck-*",
+        "changes": {
+            "rank": 80.0
+        }
+    }
+]

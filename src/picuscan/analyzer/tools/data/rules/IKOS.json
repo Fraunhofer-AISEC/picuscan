@@ -1,0 +1,290 @@
+[
+    {
+        "match": "unreachable",
+        "changes": {
+            "level": "none",
+            "kind": "informational"
+        }
+    },
+    {
+        "match": "unexpected-operand",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "uninitialized-variable",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "assert",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "division-by-zero",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "shift-count",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "begin-int-overflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "signed-int-underflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "signed-int-overflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "unsigned-int-underflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "unsigned-int-overflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "end-int-overflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "null-pointer-deref",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "null-pointer-comparison",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "invalid-pointer-comparison",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "pointer-comparison",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "pointer-overflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "invalid-pointer-deref",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "unknown-memory-access",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 20
+        }
+    },
+    {
+        "match": "unaligned-pointer",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "begin-buffer-overflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "buffer-overflow-gets",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "buffer-overflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "end-buffer-overflow",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "begin-soundness",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "ignored-store",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 10.0
+        }
+    },
+    {
+        "match": "ignored-memory-copy",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 10.0
+        }
+    },
+    {
+        "match": "ignored-memory-move",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 10.0
+        }
+    },
+    {
+        "match": "ignored-memory-set",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 10.0
+        }
+    },
+    {
+        "match": "ignored-free",
+        "changes": {
+            "level": "warning",
+            "kind": "open",
+            "rank": 10.0
+        }
+    },
+    {
+        "match": "ignored-call-side-effect-pointer-param",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "ignored-call-side-effect",
+        "changes": {
+            "level": "none",
+            "kind": "informational",
+            "rank": 100.0
+        }
+    },
+    {
+        "match": "recursive-function-call",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "end-soundness",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "begin-function-call",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "function-call-inline-asm",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "unknown-function-call-pointer",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "function-call",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "end-function-call",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    },
+    {
+        "match": "free",
+        "changes": {
+            "level": "warning",
+            "kind": "open"
+        }
+    }
+]
