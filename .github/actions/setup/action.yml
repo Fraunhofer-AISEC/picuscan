@@ -11,6 +11,8 @@ inputs:
 
 runs:
   using: composite
+  env:
+    LLVM_CONFIG: /usr/bin/llvm-config-14
   steps:
     - name: Install llvm 14
       shell: bash
