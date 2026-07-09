@@ -5,16 +5,10 @@
 name: tests
 
 on:
-  push:
-    branches:
-    - main
-  pull_request:
-    paths:
-    - 'pyproject.toml'
-    - 'uv.lock'
-    - '.github/**'
-    - 'src/**'
-    - 'tests/**'
+  workflow_run:
+    workflows: ["linters"]
+    types:
+      - completed
 
 jobs:
   pytest:
