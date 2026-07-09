@@ -19,7 +19,7 @@ on:
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}-base:latest
+  IMAGE_NAME: ${{ github.repository }}-base
 
 jobs:
   build-base:

@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-ARG BASE_IMAGE_VERSION=latest
+ARG BASE_IMAGE_VERSION=main
 
 #
 # Build picuscan container image
