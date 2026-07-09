@@ -1,0 +1,63 @@
+# SPDX-FileCopyrightText: AISEC Code Audit Team
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: linters
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    paths:
+    - 'pyproject.toml'
+    - 'uv.lock'
+    - '.github/**'
+    - 'src/**'
+    - 'tests/**'
+    - 'types/**'
+
+jobs:
+  linters:
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14']
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - uses: ./.github/actions/setup
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Run reuse lint
+      run: |
+        uv run reuse lint
+
+    - name: Run ruff check
+      run: |
+        uv run ruff check
+
+    - name: Run ruff format
+      run: |
+        uv run ruff format --check
+
+  type-checks:
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14']
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - uses: ./.github/actions/setup
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Run mypy
+      run: |
+        uv run mypy src
