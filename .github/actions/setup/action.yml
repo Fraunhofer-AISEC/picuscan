@@ -9,10 +9,11 @@ inputs:
     description: Python version that should be installed.
     required: false
 
+env:
+  LLVM_CONFIG: /usr/bin/llvm-config-14
+
 runs:
   using: composite
-  env:
-    LLVM_CONFIG: /usr/bin/llvm-config-14
   steps:
     - name: Install llvm 14
       shell: bash
