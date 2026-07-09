@@ -12,6 +12,11 @@ inputs:
 runs:
   using: composite
   steps:
+    - name: Install llvm
+      shell: bash
+      run: |
+        apt update
+        apt install llvm-14
     - name: Install uv and Python ${{ inputs.python-version }}
       if: ${{ inputs.python-version != '' }}
       uses: astral-sh/setup-uv@v7
