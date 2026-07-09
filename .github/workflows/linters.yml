@@ -59,7 +59,7 @@ jobs:
         uv run mypy src
 
   pytest:
-    needs: type-checks
+    needs: linters
 
     strategy:
       matrix:
