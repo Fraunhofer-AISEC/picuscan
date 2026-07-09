@@ -12,11 +12,13 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Install llvm
+    - name: Install llvm 14
       shell: bash
       run: |
-        apt update
-        apt install llvm-14
+        sudo apt update
+        sudo apt install --no-install-recommends -y software-properties-common
+        sudo add-apt-repository -y "deb http://cz.archive.ubuntu.com/ubuntu questing main universe"
+        sudo apt install --no-install-recommends -y  llvm-14
     - name: Install uv and Python ${{ inputs.python-version }}
       if: ${{ inputs.python-version != '' }}
       uses: astral-sh/setup-uv@v7
