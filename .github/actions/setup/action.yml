@@ -9,9 +9,6 @@ inputs:
     description: Python version that should be installed.
     required: false
 
-env:
-  LLVM_CONFIG: /usr/bin/llvm-config-14
-
 runs:
   using: composite
   steps:
@@ -22,6 +19,9 @@ runs:
         sudo apt install --no-install-recommends -y software-properties-common
         sudo add-apt-repository -y "deb http://cz.archive.ubuntu.com/ubuntu questing main universe"
         sudo apt install --no-install-recommends -y  llvm-14
+        sudo update-alternatives --install /usr/bin/llvm-config llvm-config /usr/bin/llvm-config-14 1 && \
+        sudo update-alternatives --set llvm-config /usr/bin/llvm-config-14
+
     - name: Install uv and Python ${{ inputs.python-version }}
       if: ${{ inputs.python-version != '' }}
       uses: astral-sh/setup-uv@v7
