@@ -30,7 +30,7 @@ For the complete list of options, see the [clangsa documentation](https://clang-
 
 ## Infer
 
-For the complete list of options, see the [Infer documentation](https://fbinfer.com/docs/all-options/).
+For the complete list of options, see the [Infer documentation](https://fbinfer.com/docs/man-infer-analyze).
 
 | Option                               | Type  | Default | Description |
 |--------------------------------------|-------|---------|-------------|
@@ -50,7 +50,7 @@ For the complete list of options, see the [Cppcheck documentation](https://cppch
 
 ## IKOS
 
-For the complete list of options, see the [IKOS documentation](https://ikos.readthedocs.io/).
+For the complete list of options, see the [IKOS documentation](https://github.com/NASA-SW-VnV/ikos/blob/master/analyzer/README.md#analysis-options).
 
 | Option             | Type | Default  | Description |
 |--------------------|------|----------|-------------|
