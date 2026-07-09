@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: AISEC Pentesting Team
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: tests
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+    paths:
+    - 'pyproject.toml'
+    - 'uv.lock'
+    - '.github/**'
+    - 'src/**'
+    - 'tests/**'
+
+jobs:
+  pytest:
+    strategy:
+      matrix:
+        python-version: ['3.11', '3.12', '3.13', '3.14']
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - uses: ./.github/actions/setup
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Run pytest
+      run: |
+        git config --global user.name "Max Mustermann"
+        git config --global user.email "max.mustermann@example.com"
+        uv run pytest

@@ -15,7 +15,7 @@ on:
     - '.github/**'
     - 'src/**'
     - 'tests/**'
-    - 'types/**'
+    - 'typings/**'
 
 jobs:
   linters:
