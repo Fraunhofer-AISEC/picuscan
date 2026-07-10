@@ -12,9 +12,6 @@ on:
     - main
     - dev
   pull_request:
-    branches:
-    - main
-    - dev
     paths:
       - 'Containerfile.base'
       - 'Containerfile'
@@ -33,7 +30,8 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build-base:
+  build-app:
+    if: github.head_ref == 'main' || github.head_ref == 'dev'
     runs-on: ubuntu-latest
     # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
