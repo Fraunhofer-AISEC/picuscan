@@ -80,7 +80,7 @@ jobs:
 
       - name: Build and push Docker image
         id: push
-        if: (github.head_ref == 'main' || github.head_ref == 'dev') && github.event_name == 'push'
+        if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push'
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -91,7 +91,7 @@ jobs:
 
       # This step generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built. It increases supply chain security for people who consume the image. For more information, see "[AUTOTITLE](/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds)." 
       - name: Generate artifact attestation
-        if: (github.head_ref == 'main' || github.head_ref == 'dev') && github.event_name == 'push'
+        if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push'
         uses: actions/attest-build-provenance@v4
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
