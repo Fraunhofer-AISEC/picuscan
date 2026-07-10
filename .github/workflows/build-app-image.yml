@@ -4,24 +4,33 @@
 
 # https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
 
-name: Build base image
+name: Build app image
 
 on:
   push:
-    branches: 
-      - main
-      - dev
+    branches:
+    - main
+    - dev
+  pull_request:
+    branches:
+    - main
+    - dev
     paths:
       - 'Containerfile.base'
+      - 'Containerfile'
       - .github/workflows/build-base-image.yml
-  workflow_dispatch: {}        # manual trigger from the Actions tab
-  schedule:
-    - cron: '0 3 1 * *'        # optional: monthly rebuild for OS security updates
+      - .github/workflows/build-app-image.yml
+      - 'pyproject.toml'
+      - 'uv.lock'
+      - '.github/**'
+      - 'src/**'
+      - 'tests/**'
+      - 'typings/**'
 
 # Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}-base
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-base:
@@ -60,7 +69,21 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
-          file: Containerfile.base
+          file: Containerfile
+          push: false
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      
+      # Run e2e Tests
+      - name: Run e2e tests
+        run: docker run --rm -w /opt/picuscan --entrypoint uv ${{ steps.meta.outputs.tags }} run pytest --e2e
+
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: Containerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
