@@ -9,9 +9,12 @@ name: Build app image
 on:
   push:
     branches:
-    - main
-    - dev
+      - main
+      - dev
   pull_request:
+    branches:
+      - main
+      - dev
     paths:
       - 'Containerfile.base'
       - 'Containerfile'
@@ -73,7 +76,7 @@ jobs:
       
       # Run e2e Tests
       - name: Run e2e tests
-        run: docker run --rm -w /opt/picuscan --entrypoint uv ${{ steps.meta.outputs.tags }} run pytest --e2e
+        run: docker run --rm -w /opt/picuscan --env GIT_AUTHOR_NAME="Max Mustermann" --env GIT_AUTHOR_EMAIL="max.mustermann@example.com" --entrypoint uv ${{ steps.meta.outputs.tags }} run pytest --e2e
 
       - name: Build and push Docker image
         id: push
