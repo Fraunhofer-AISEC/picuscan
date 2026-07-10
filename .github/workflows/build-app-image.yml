@@ -76,10 +76,11 @@ jobs:
       
       # Run e2e Tests
       - name: Run e2e tests
-        run: docker run --rm -w /opt/picuscan --env GIT_AUTHOR_NAME="Max Mustermann" --env GIT_AUTHOR_EMAIL="max.mustermann@example.com" --entrypoint uv ${{ steps.meta.outputs.tags }} run pytest --e2e
+        run: docker run --rm -w /opt/picuscan --env GIT_AUTHOR_NAME="Max Mustermann" --env GIT_AUTHOR_EMAIL="max.mustermann@example.com" --env GIT_COMMITTER_NAME="Max Mustermann" --env GIT_COMMITTER_EMAIL="max.mustermann@example.com" --entrypoint uv ${{ steps.meta.outputs.tags }} run pytest --e2e
 
       - name: Build and push Docker image
         id: push
+        if: github.head_ref == 'main' || github.head_ref == 'dev'
         uses: docker/build-push-action@v7
         with:
           context: .
@@ -90,6 +91,7 @@ jobs:
 
       # This step generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built. It increases supply chain security for people who consume the image. For more information, see "[AUTOTITLE](/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds)." 
       - name: Generate artifact attestation
+        if: github.head_ref == 'main' || github.head_ref == 'dev'
         uses: actions/attest-build-provenance@v4
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
