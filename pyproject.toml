@@ -31,7 +31,6 @@ dependencies = [
   "attrs>=25.2.0",
   "cattrs>=25.1.0",
   "click>=8.0.3",
-  "llvmlite>=0.41,<0.44",
   "neo4j>=6.0.1",
   "networkx>=3.0",
   "tqdm>=4.62.3",
@@ -83,6 +82,4 @@ strict = true
 native_parser = true
 num_workers = 4
 
-[[tool.mypy.overrides]]
-module = "llvmlite.*"
-ignore_missing_imports = true
+

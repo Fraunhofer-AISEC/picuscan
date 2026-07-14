@@ -60,9 +60,11 @@ async def build(opts: _Options) -> None:
         sys.exit(1)
 
     if opts.rename_symbols:
-        in_memory = unity.InMemoryBuilder(
-            opts.compile_db, llvm_config, fail_on_error=opts.fail_on_error, rename_symbols=True
-        )
+        try:
+            in_memory = unity.InMemoryBuilder(opts.compile_db, fail_on_error=opts.fail_on_error, rename_symbols=True)
+        except Exception:
+            logger.error("Failed to initialize InMemoryBuilder.", exc_info=True)
+            sys.exit(1)
         in_memory.register_renamed_symbol_callback(
             lambda name, renamed: logger.info("Renamed %r from %s to %r", renamed.name, renamed.file, name)
         )
