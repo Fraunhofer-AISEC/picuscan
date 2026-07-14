@@ -6,7 +6,7 @@ SPDX-License-Identifier: CC0-1.0
 
 # Picuscan
 
-Picuscan is an orchestration and utility tool for C/C++ security code audits. It provides a unified interface for running multiple external static analysis (SAST) tools, aggregates and normalizes their findings, and enriches the results with security metadata such as CWE categories.
+Picuscan (Picus: Latin for woodpecker; a scanner hunting for bugs in source code) is an orchestration and utility tool for C/C++ security code audits. It provides a unified interface for running multiple external static analysis (SAST) tools, aggregates and normalizes their findings, and enriches the results with security metadata such as CWE categories.
 
 Picuscan does not perform static analysis itself; instead, it collects tool outputs and turns them into a single, audit-focused view. It also ranks findings using a heuristic that combines tool feedback with practical experience to help auditors prioritize likely true positives. Additional utilities support audit preparation, including generating compilation databases, preparing source code, and working with SARIF files.
 
