@@ -46,6 +46,11 @@ class LLVMConfig:
         return self.get_executable("llvm-as")
 
     @cached_property
+    def disassembler(self) -> Path:
+        """Equivalent to `get_executable("llvm-dis")`."""
+        return self.get_executable("llvm-dis")
+
+    @cached_property
     def linker(self) -> Path:
         """Equivalent to `get_executable("llvm-link")`."""
         return self.get_executable("llvm-link")

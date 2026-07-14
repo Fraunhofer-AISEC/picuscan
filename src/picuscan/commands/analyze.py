@@ -66,6 +66,8 @@ async def analyze(opts: Options) -> None:
         instance = tool(opts, picuscan_dir=picuscan_dir, tool_dir=tool_dir, sink=sink, jobs=jobs)
         if instance.should_run():
             tool_instances.append(instance)
+        else:
+            logger.warning("Tool %s is not available (program %r not found on PATH)", tool.name, instance.program)
 
     project = opts.project
     if not project:

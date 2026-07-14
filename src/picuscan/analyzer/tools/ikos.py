@@ -34,26 +34,13 @@ class IKOS(Tool):
     async def run(self) -> Log:
         logger.info("Running %s", self.name)
 
-        if self.opts.ikos_llvm is None:
-            version = await self.__version()
-            if version and version < (3, 1):
-                llvm_version = 9
-            else:
-                llvm_version = 14
-            llvm = await get_llvm_config(llvm_version)
-        else:
-            try:
-                llvm_version = int(self.opts.ikos_llvm)
-                llvm = await get_llvm_config(llvm_version)
-            except ValueError:
-                llvm = await get_llvm_config(self.opts.ikos_llvm)
-
         if self.opts.ikos_llvm_ir is None:
-            async with self.__build(llvm) as (ir_bundle, renamed):
+            async with self.__build() as (ir_bundle, renamed, llvm):
                 if self.config.keep_tmps:
                     shutil.copyfile(ir_bundle, self.tool_dir / ir_bundle.name)
                 completed = await self.__analyze(ir_bundle, renamed, llvm)
         else:
+            llvm = await self.__resolve_llvm()
             completed = await self.__analyze(self.opts.ikos_llvm_ir, [], llvm)
         doc = sarif.loads(completed.stdout)
         self.invocations = completed.get_sarif_invocation()
@@ -77,14 +64,30 @@ class IKOS(Tool):
         return await process.run(*args, *self.opts.ikos_args, llvm_ir_file, stdout=PIPE, stderr=self.sink)
 
     @asynccontextmanager
-    async def __build(self, llvm: LLVMConfig) -> AsyncIterator[tuple[Path, frozenset[str]]]:
+    async def __build(self) -> AsyncIterator[tuple[Path, frozenset[str], LLVMConfig]]:
         builder = unity.InMemoryBuilder(
-            self.opts.compile_db, llvm, fail_on_error=False, rename_symbols=self.opts.ikos_rename_symbols
+            self.opts.compile_db, fail_on_error=False, rename_symbols=self.opts.ikos_rename_symbols
         )
         with fs.temp_file(suffix=".bc") as file:
             logger.info("Preparing LLVM IR bundle for %s", self.name)
             await builder(t.cast(t.IO[bytes], file))
-            yield Path(file.name), builder.renamed_entry_points
+            yield Path(file.name), builder.renamed_entry_points, builder.config
+
+    async def __resolve_llvm(self) -> LLVMConfig:
+        """Resolve the LLVM config for direct analysis (when a pre-built IR
+        bundle is provided).  This is not needed for the :class:`InMemoryBuilder`
+        path, which resolves LLVM 14 itself."""
+        if self.opts.ikos_llvm is None:
+            llvm_version = 14
+        else:
+            try:
+                llvm_version = int(self.opts.ikos_llvm)
+            except ValueError:
+                return await get_llvm_config(self.opts.ikos_llvm)
+        try:
+            return await get_llvm_config(llvm_version)
+        except Exception as err:
+            raise RuntimeError(f"LLVM {llvm_version} is required by {self.name} but could not be located.") from err
 
     async def __version(self) -> tuple[int, ...] | None:
         result = await process.run("ikos", "--version", capture_output=True)
