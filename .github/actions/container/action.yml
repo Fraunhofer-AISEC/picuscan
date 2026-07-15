@@ -28,6 +28,10 @@ inputs:
     description: Whether to run e2e tests after building
     required: false
     default: "false"
+  base-image:
+    description: Base image version
+    required: false
+    default: "main"
   github-actor:
     description: Actor used for registry login
     required: true
@@ -67,8 +71,10 @@ runs:
         file: ${{ inputs.containerfile }}
         push: false
         load: true
-        tags: ${{ steps.meta.outputs.tags }}
+        tags: local/test:${{ github.sha }}
         labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          BASE_IMAGE_VERSION=${{inputs.base-image}}
 
     - name: Run e2e tests
       if: inputs.run-e2e == 'true'
@@ -79,7 +85,7 @@ runs:
           --env GIT_AUTHOR_EMAIL="max.mustermann@example.com" \
           --env GIT_COMMITTER_NAME="Max Mustermann" \
           --env GIT_COMMITTER_EMAIL="max.mustermann@example.com" \
-          --entrypoint uv ${{ steps.meta.outputs.tags }} run pytest --e2e
+          --entrypoint uv local/test:${{ github.sha }} run pytest --e2e
 
     - name: Build and push Docker image
       id: push
