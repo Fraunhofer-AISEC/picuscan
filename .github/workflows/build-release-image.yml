@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-name: Build app image
+name: Build release image
 
 on:
   release:
@@ -45,5 +45,6 @@ jobs:
           containerfile: Containerfile
           run-e2e: "true"
           push: "true"
+          base-image: ${{ github.ref_name }}
           github-actor: ${{ github.actor }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
