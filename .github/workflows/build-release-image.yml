@@ -2,25 +2,18 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-name: Build base image
+name: Build app image
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'Containerfile.base'
-      - .github/workflows/build-base-image.yml
-  workflow_dispatch: {}        # manual trigger from the Actions tab
-  schedule:
-    - cron: '0 3 1 * *'        # optional: monthly rebuild for OS security updates
+  release:
+    types:
+      - published
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}-base
 
 jobs:
-  build-base:
+  build-app:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -36,9 +29,20 @@ jobs:
         uses: ./.github/actions/container
         with:
           registry: ${{ env.REGISTRY }}
-          image-name: ${{ env.IMAGE_NAME }}
+          image-name: ${{ github.repository }}-base
           containerfile: Containerfile.base
           push: "true"
           run-e2e: "false"
+          github-actor: ${{ github.actor }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build app image
+        uses: ./.github/actions/container
+        with:
+          registry: ${{ env.REGISTRY }}
+          image-name: ${{ github.repository }}
+          containerfile: Containerfile
+          run-e2e: "true"
+          push: "true"
           github-actor: ${{ github.actor }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
