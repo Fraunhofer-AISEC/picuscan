@@ -2,19 +2,15 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-# https://docs.github.com/en/actions/publishing-packages/publishing-docker-images
-
 name: Build app image
 
 on:
   push:
     branches:
       - main
-      - dev
   pull_request:
     branches:
       - main
-      - dev
     paths:
       - 'Containerfile.base'
       - 'Containerfile'
@@ -27,16 +23,13 @@ on:
       - 'tests/**'
       - 'typings/**'
 
-# Defines two custom environment variables for the workflow. These are used for the Container registry domain, and a name for the Docker image that this workflow builds.
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build-app:
-    #if: github.head_ref == 'main' || github.head_ref == 'dev'
     runs-on: ubuntu-latest
-    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job.
     permissions:
       contents: read
       packages: write
@@ -47,53 +40,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v7
 
-      # Uses the `docker/login-action` action to log in to the Container registry registry using the account and password that will publish the packages. Once published, the packages are scoped to the account defined here.
-      - name: Log in to the Container registry
-        uses: docker/login-action@v4
+      - name: Build app image
+        uses: ./.github/actions/container
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # This step uses [docker/metadata-action](https://github.com/docker/metadata-action#about) to extract tags and labels that will be applied to the specified image. The `id` "meta" allows the output of this step to be referenced in a subsequent step. The `images` value provides the base name for the tags and labels.
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v6
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
-      # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
-      # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: Containerfile
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-      
-      # Run e2e Tests
-      - name: Run e2e tests
-        run: docker run --rm -w /opt/picuscan --env GIT_AUTHOR_NAME="Max Mustermann" --env GIT_AUTHOR_EMAIL="max.mustermann@example.com" --env GIT_COMMITTER_NAME="Max Mustermann" --env GIT_COMMITTER_EMAIL="max.mustermann@example.com" --entrypoint uv ${{ steps.meta.outputs.tags }} run pytest --e2e
-
-      - name: Build and push Docker image
-        id: push
-        if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push'
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          file: Containerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-      # This step generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built. It increases supply chain security for people who consume the image. For more information, see "[AUTOTITLE](/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds)." 
-      - name: Generate artifact attestation
-        if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') && github.event_name == 'push'
-        uses: actions/attest-build-provenance@v4
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
-          subject-digest: ${{ steps.push.outputs.digest }}
-          push-to-registry: true
+          image-name: ${{ env.IMAGE_NAME }}
+          containerfile: Containerfile
+          run-e2e: "true"
+          # Only push when merged to main
+          push: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
+          github-actor: ${{ github.actor }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
