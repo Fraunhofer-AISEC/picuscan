@@ -610,7 +610,7 @@ wheels = [
 
 [[package]]
 name = "picuscan"
-version = "0.9.0"
+version = "1.0.0rc1"
 source = { editable = "." }
 dependencies = [
     { name = "attrs" },
