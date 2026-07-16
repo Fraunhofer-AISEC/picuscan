@@ -18,3 +18,10 @@ path = [
 ]
 SPDX-FileCopyrightText = "AISEC Code Audit Team"
 SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = [
+    "res/cwe.json",
+]
+SPDX-FileCopyrightText = "The MITRE Corporation"
+SPDX-License-Identifier = "LicenseRef-CWE-Terms-of-Use"
