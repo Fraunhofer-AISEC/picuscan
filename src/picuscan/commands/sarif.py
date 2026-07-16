@@ -270,6 +270,7 @@ class FilterParams(CommonParams):
     scope: list[str]
     not_scope: list[str]
     not_message: list[str]
+    cwe: list[str]
     exclude_rules: Path | None
     path_in: Path
     scope_file: Path
@@ -290,6 +291,12 @@ class FilterParams(CommonParams):
 )
 @click.option(
     "--not-message", "-m", multiple=True, help="Exclude finding with specified message(s) (multiple) (case sensitive)"
+)
+@click.option(
+    "--cwe",
+    "-c",
+    multiple=True,
+    help="Include findings matching specified CWE ID(s) or name glob pattern(s) (multiple) (case insensitive)",
 )
 @click.option(
     "--exclude-rules",
@@ -400,6 +407,24 @@ async def _filter(params: FilterParams) -> None:
                 )
             )
 
+    if params.cwe:
+        print(f"Filter based on CWE: {params.cwe}")
+        cwe_names = load_cwe_names()
+        for run in sarif["runs"]:
+            run["results"] = list(
+                filter(
+                    lambda x: any(
+                        any(
+                            fnmatch.fnmatch(t.get("id", ""), p)
+                            or fnmatch.fnmatch(cwe_names.get(t.get("id", ""), "").lower(), p.lower())
+                            for p in params.cwe
+                        )
+                        for t in x.get("taxa", [])
+                    ),
+                    run["results"],
+                )
+            )
+
     if params.exclude_rules:
         print(f"Filter based on exclude rule IDs: {params.exclude_rules}")
         exclude_rules = list(map(str.strip, open(params.exclude_rules).readlines()))
@@ -468,6 +493,9 @@ async def _filter(params: FilterParams) -> None:
 
     # only include runs where we actually have results
     sarif["runs"] = list(filter(lambda x: len(x["results"]) > 0, sarif["runs"]))
+
+    selected = sum(len(run["results"]) for run in sarif["runs"])
+    print(f"Export {selected} finding(s) to file: {params.out}")
 
     with open(params.out, "wt") as f:
         json.dump(sarif, f, indent=2)
