@@ -7,6 +7,7 @@ from __future__ import annotations
 import json
 import hashlib
 import fnmatch
+from functools import lru_cache
 from itertools import groupby
 from pathlib import Path
 from typing import Callable, Sequence, TypeVar, Any
@@ -104,6 +105,22 @@ def load_sarif_as_df(path: Path, ignore_stacks: bool = False) -> pd.DataFrame:
     df = df.reset_index(drop=True)
     df.attrs["name"] = path.name
     return df
+
+
+@lru_cache(maxsize=1)
+def load_cwe_names() -> dict[str, str]:
+    cwe_path = Path(__file__).resolve().parents[3] / "res" / "cwe.json"
+    names: dict[str, str] = {}
+    try:
+        data = json.loads(cwe_path.read_text("utf-8"))
+        for entry in data:
+            name = entry.get("name", "")
+            if ":" in name:
+                cwe_id, desc = name.split(":", 1)
+                names[cwe_id.strip()] = desc.strip()
+    except (FileNotFoundError, json.JSONDecodeError):
+        pass
+    return names
 
 
 @attrs.frozen
@@ -226,6 +243,22 @@ async def info(params: InfoParams) -> None:
 
     print(f"\n[+] Top {params.head} rule IDs:")
     print_group(df, "ruleId", params.head)
+
+    if "CWE" in df.columns:
+        print(f"\n[+] Top {params.head} CWE categories:")
+        cwe_names = load_cwe_names()
+        df_cwe = (
+            df.fillna({"CWE": "N/A"})
+            .groupby(["CWE"])
+            .agg({"path": "count"})
+            .reset_index()
+            .rename(columns={"path": "findings"})
+            .sort_values(["findings"], ascending=False)
+        )
+        if params.head > 0:
+            df_cwe = df_cwe.head(params.head)
+        df_cwe["name"] = df_cwe["CWE"].map(lambda x: cwe_names.get(x, ""))
+        print(df_cwe[["CWE", "name", "findings"]].to_string(index=False))
 
 
 @attrs.frozen
