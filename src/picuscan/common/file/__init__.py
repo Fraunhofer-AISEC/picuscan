@@ -203,7 +203,7 @@ def rewrite(
 
 
 def tokei(path: Path, exclude: list[str] | None = None) -> tuple[dict[str, Any], list[str]]:
-    args = ["tokei", "-o", "json", str(path)]
+    args = ["tokei", "--no-ignore", "-o", "json", str(path)]
     if exclude:
         for src in exclude:
             args.append("-e")
