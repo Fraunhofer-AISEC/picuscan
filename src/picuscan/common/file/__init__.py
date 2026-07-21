@@ -218,7 +218,7 @@ def cloc(path: Path) -> dict[str, int]:
     return {"C/C++ Header": count_h, "C++": count_cpp, "C": count_c}
 
 
-def tokei(path: Path, exclude: list[str] | None = None) -> dict[str, int]:
+def tokei(path: Path, exclude: list[str] | None = None) -> tuple[dict[str, Any], list[str]]:
     args = ["tokei", "-o", "json", str(path)]
     if exclude:
         for src in exclude:
@@ -230,12 +230,17 @@ def tokei(path: Path, exclude: list[str] | None = None) -> dict[str, int]:
     count_c = 0
     count_cpp = 0
     count_h = 0
+    files: list[str] = []
     if "C" in d:
         count_c = d["C"]["code"]
+        files.extend(f["name"] for f in d["C"].get("reports", []))
     if "C++" in d:
         count_cpp = d["C++"]["code"]
-    if "C++ Header" in d:
-        count_h += d["C++ Header"]["code"]
+        files.extend(f["name"] for f in d["C++"].get("reports", []))
+    if "C/C++ Header" in d:
+        count_h += d["C/C++ Header"]["code"]
+        files.extend(f["name"] for f in d["C/C++ Header"].get("reports", []))
     if "C Header" in d:
         count_h += d["C Header"]["code"]
-    return {"C/C++ Header": count_h, "C++": count_cpp, "C": count_c}
+        files.extend(f["name"] for f in d["C Header"].get("reports", []))
+    return ({"C/C++ Header": count_h, "C++": count_cpp, "C": count_c}, files)
