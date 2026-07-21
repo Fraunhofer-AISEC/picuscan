@@ -29,6 +29,7 @@ class _ModuleClocParams:
     sort_by_loc: bool
     exclude_module: list[str]
     exclude_src: list[str]
+    export_files: Path | None
 
 
 @cli.command(help="Show loc per module")
@@ -52,17 +53,26 @@ class _ModuleClocParams:
     multiple=True,
     help="Exclude source folder",
 )
+@click.option(
+    "--export-files",
+    type=click.Path(writable=True, path_type=Path),
+    help="Export list of source files as newline-separated text file",
+)
 @collect_params(_ModuleClocParams)
 @unasync
 async def module_cloc(params: _ModuleClocParams) -> None:
     counts = []
+    all_files: list[str] = []
     for path in params.paths:
         if path.name in params.exclude_module:
             continue
-        d: dict[str, Any] = tokei(path, params.exclude_src)
+        d: dict[str, Any]
+        files: list[str]
+        d, files = tokei(path, params.exclude_src)
         d["Module"] = path.name
         d["is_file"] = path.is_file()
         counts.append(d)
+        all_files.extend(files)
     df = pd.DataFrame(counts)
     df = df.rename(columns={"C/C++ Header": "Header"})
     df = df.sort_values(["is_file", "Module"]).reset_index(drop=True)
@@ -79,3 +89,5 @@ async def module_cloc(params: _ModuleClocParams) -> None:
     if params.sort_by_loc:
         df = df.sort_values(["Sum"])
     print(df.to_markdown())
+    if params.export_files:
+        params.export_files.write_text("\n".join(sorted(all_files)) + "\n" if all_files else "")
