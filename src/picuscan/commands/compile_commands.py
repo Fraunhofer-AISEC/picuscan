@@ -19,7 +19,7 @@ import click
 
 from picuscan import process, logging
 from picuscan.common.file import glob
-from picuscan.common.file import cloc as _cloc
+from picuscan.common.file import tokei
 from picuscan.compdb import Command, CompilationDB, dump
 from picuscan.constants import C_CXX_SOURCE_SUFFIXES, CXX_SUFFIXES
 from picuscan.misc import paramtypes
@@ -364,7 +364,7 @@ class _ClocParams:
 async def cloc(params: _ClocParams) -> None:
     counts = {"C/C++ Header": 0, "C++": 0, "C": 0}
     for cmd in params.db.commands:
-        d = _cloc(cmd.path)
+        d, _ = tokei(cmd.path)
         counts["C/C++ Header"] += d["C/C++ Header"]
         counts["C"] += d["C"]
         counts["C++"] += d["C++"]
