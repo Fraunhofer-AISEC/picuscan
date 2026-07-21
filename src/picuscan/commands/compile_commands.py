@@ -344,7 +344,11 @@ async def run(params: _RunParams) -> None:
                 missing.update(set(filter(lambda x: "non-portable path" in x, err)))
                 missing = set(map(lambda x: x.split("'")[1], missing))
                 missing_header.update(missing)
-            except Exception:
+                missing = set(filter(lambda x: "No such file or directory" in x, err))
+                missing = set(map(lambda x: x.split("fatal error: ")[1].split(":")[0], missing))
+                missing_header.update(missing)
+            except Exception as e:
+                logger.warning(f"Error during parsing compile result: {e}")
                 pass
 
             failed.append(path)
