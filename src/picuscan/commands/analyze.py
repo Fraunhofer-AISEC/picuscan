@@ -100,7 +100,6 @@ async def analyze(opts: Options) -> None:
             logger.warning(
                 f"{tool_instance.name} failed to analyze {len(failed_sources)} translation unit(s): {', '.join(sorted(failed_sources))}"
             )
-    logger.info(f"Generated {sum(_count(run) for run in logs)} finding(s)")
 
     combined = _combine(opts, logs)
 
@@ -128,6 +127,8 @@ async def analyze(opts: Options) -> None:
     if informational_log:
         with open(path.with_stem(f"{path.stem}_informational"), "w", encoding="utf-8") as f:
             sarif.dump(informational_log, f)
+
+    logger.info(f"Generated {sum(_count(run) for run in logs)} finding(s) and exported to {path}")
 
 
 async def _run(opts: Options, tool: Tool) -> Log:
