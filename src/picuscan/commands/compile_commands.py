@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import ast
+from concurrent.futures import ThreadPoolExecutor
 import re
 import gzip
 import json
@@ -241,6 +242,35 @@ class _RunParams:
     pp: bool
     path: str | None
     output: IO[str] | None
+    jobs: int
+
+
+@attrs.frozen
+class _RunResult:
+    path: Path
+    returncode: int
+    stderr: bytes
+    stdout: bytes
+
+
+def _run_one(params: _RunParams, cmd: Command) -> _RunResult | None:
+    directory = cmd.directory
+    path = cmd.path
+    if params.path and params.path not in str(path):
+        return None
+
+    compile_cmd = list(cmd.arguments)
+    if params.ir:
+        compile_cmd = _transform_cmd_ir(compile_cmd)
+    if params.pp:
+        compile_cmd = _transform_cmd_pp(compile_cmd)
+    if params.ast:
+        compile_cmd = _transform_cmd_ast(compile_cmd)
+    print(" ".join(compile_cmd))
+
+    stdout = subprocess.PIPE if (params.ast or params.pp) else None
+    p = subprocess.run(compile_cmd, cwd=directory, stdout=stdout, stderr=subprocess.PIPE)
+    return _RunResult(path=path, returncode=p.returncode, stderr=p.stderr, stdout=p.stdout)
 
 
 @cli.command(help="Run compile commands")
@@ -272,6 +302,13 @@ class _RunParams:
     default=None,
     help="Write the compilation database with compilable TRs to this file",
 )
+@click.option(
+    "--jobs",
+    "-j",
+    type=int,
+    default=1,
+    help="Number of parallel compile jobs (default: 1)",
+)
 @collect_params(_RunParams)
 @unasync
 async def run(params: _RunParams) -> None:
@@ -279,36 +316,30 @@ async def run(params: _RunParams) -> None:
     success = list()
     missing_header = set()
     ast_l = []
-    for cmd in params.db.commands:
-        directory = cmd.directory
-        path = cmd.path
-        if params.path and params.path not in str(path):
-            continue
-        compile_cmd = list(cmd.arguments)
-        if params.ir:
-            compile_cmd = _transform_cmd_ir(compile_cmd)
-        if params.pp:
-            compile_cmd = _transform_cmd_pp(compile_cmd)
-        if params.ast:
-            compile_cmd = _transform_cmd_ast(compile_cmd)
-        print(" ".join(compile_cmd))
 
-        stdout = None
-        if params.ast or params.pp:
-            stdout = subprocess.PIPE
-        p = subprocess.run(compile_cmd, cwd=directory, stdout=stdout, stderr=subprocess.PIPE)
-        sys.stderr.write(p.stderr.decode())
-        if p.returncode == 0:
+    # Compile commands in parallel; aggregate results afterwards to keep
+    # shared data structures thread-safe.
+    with ThreadPoolExecutor(max_workers=params.jobs) as executor:
+        results = executor.map(lambda cmd: _run_one(params, cmd), params.db.commands)
+
+    for result in results:
+        if result is None:
+            continue
+
+        path = result.path
+        sys.stderr.write(result.stderr.decode())
+
+        if result.returncode == 0:
             success.append(path)
             if params.ast:
-                ast = json.loads(p.stdout)
+                ast = json.loads(result.stdout)
                 ast["file"] = str(path)
                 ast_l.append(ast)
             if params.pp:
-                (Path(path.parent) / (path.stem + ".pp" + path.suffix)).write_bytes(p.stdout)
+                (Path(path.parent) / (path.stem + ".pp" + path.suffix)).write_bytes(result.stdout)
         else:
             try:
-                err = p.stderr.decode().split("\n")
+                err = result.stderr.decode().split("\n")
                 missing = set(filter(lambda x: "file not found" in x, err))
                 missing.update(set(filter(lambda x: "non-portable path" in x, err)))
                 missing = set(map(lambda x: x.split("'")[1], missing))
