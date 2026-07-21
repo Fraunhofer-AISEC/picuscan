@@ -190,11 +190,14 @@ def select(params: _SelectParams) -> None:
         cmds = _filter(cmds, params.where)
     if params.map:
         cmds = _map(cmds, params.map)
+    cmds_list = list(cmds)
+    if params.output and hasattr(params.output, "name"):
+        logger.info(f"Write {len(cmds_list)} selected translation unit(s) to output file: {params.output.name}")
     if params.reduce is None:
-        dump(CompilationDB(cmds), params.output)
+        dump(CompilationDB(cmds_list), params.output)
     else:
         expr, initial = params.reduce
-        print(_reduce(cmds, expr, initial))
+        print(_reduce(iter(cmds_list), expr, initial))
 
 
 def _filter(cmds: Iterable[Command], expr: str) -> Iterator[Command]:
