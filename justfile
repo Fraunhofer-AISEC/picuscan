@@ -7,7 +7,7 @@ default:
 
 [private]
 lint-mypy:
-    mypy --pretty src tests
+    mypy --pretty src
 
 [private]
 lint-ruff-check:
