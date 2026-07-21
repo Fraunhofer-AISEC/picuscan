@@ -202,22 +202,6 @@ def rewrite(
         raise
 
 
-def cloc(path: Path) -> dict[str, int]:
-    p = subprocess.run(["cloc", "--json", str(path)], stdout=subprocess.PIPE)
-    out = p.stdout.decode()
-    d = json.loads(out)
-    count_c = 0
-    count_cpp = 0
-    count_h = 0
-    if "C" in d:
-        count_c = d["C"]["code"]
-    if "C++" in d:
-        count_cpp = d["C++"]["code"]
-    if "C/C++ Header" in d:
-        count_h = d["C/C++ Header"]["code"]
-    return {"C/C++ Header": count_h, "C++": count_cpp, "C": count_c}
-
-
 def tokei(path: Path, exclude: list[str] | None = None) -> tuple[dict[str, Any], list[str]]:
     args = ["tokei", "-o", "json", str(path)]
     if exclude:
