@@ -681,7 +681,7 @@
         }
     },
     {
-        "match": "alpha.clone.Clone*",
+        "match": "*clone.Clone*",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -689,7 +689,7 @@
         }
     },
     {
-        "match": "alpha.core.BoolAssignment",
+        "match": "*core.BoolAssignment",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -697,7 +697,7 @@
         }
     },
     {
-        "match": "alpha.core.C11Lock",
+        "match": "*core.C11Lock",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -705,7 +705,7 @@
         }
     },
     {
-        "match": "alpha.core.CallAndMessageUnInitRefArg",
+        "match": "*core.CallAndMessageUnInitRefArg",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -713,7 +713,7 @@
         }
     },
     {
-        "match": "alpha.core.CastSize",
+        "match": "*core.CastSize",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -721,7 +721,7 @@
         }
     },
     {
-        "match": "alpha.core.CastToStruct",
+        "match": "*core.CastToStruct",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -729,7 +729,7 @@
         }
     },
     {
-        "match": "alpha.core.Conversion",
+        "match": "*core.Conversion",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -737,7 +737,7 @@
         }
     },
     {
-        "match": "alpha.core.DynamicType*",
+        "match": "*core.DynamicType*",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -745,7 +745,7 @@
         }
     },
     {
-        "match": "alpha.core.FixedAddr",
+        "match": "*core.FixedAddr",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -753,7 +753,7 @@
         }
     },
     {
-        "match": "alpha.core.IdenticalExpr",
+        "match": "*core.IdenticalExpr",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -761,7 +761,7 @@
         }
     },
     {
-        "match": "alpha.core.PointerArithm",
+        "match": "*core.PointerArithm",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -769,7 +769,7 @@
         }
     },
     {
-        "match": "alpha.core.PointerSub",
+        "match": "*core.PointerSub",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -777,7 +777,7 @@
         }
     },
     {
-        "match": "alpha.core.SizeofPtr",
+        "match": "*core.SizeofPtr",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -785,7 +785,7 @@
         }
     },
     {
-        "match": "alpha.core.StackAddressAsyncEscape",
+        "match": "*core.StackAddressAsyncEscape",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -793,7 +793,7 @@
         }
     },
     {
-        "match": "alpha.core.TestAfterDivZero",
+        "match": "*core.TestAfterDivZero",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -801,7 +801,7 @@
         }
     },
     {
-        "match": "alpha.cplusplus.DeleteWithNonVirtualDtor",
+        "match": "*cplusplus.DeleteWithNonVirtualDtor",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -817,7 +817,7 @@
         }
     },
     {
-        "match": "alpha.cplusplus.EnumCastOutOfRange",
+        "match": "*cplusplus.EnumCastOutOfRange",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -825,7 +825,7 @@
         }
     },
     {
-        "match": "alpha.cplusplus.InvalidatedIterator",
+        "match": "*cplusplus.InvalidatedIterator",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -833,7 +833,7 @@
         }
     },
     {
-        "match": "alpha.cplusplus.IteratorRange",
+        "match": "*cplusplus.IteratorRange",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -841,7 +841,7 @@
         }
     },
     {
-        "match": "alpha.cplusplus.MismatchedIterator",
+        "match": "*cplusplus.MismatchedIterator",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -849,7 +849,7 @@
         }
     },
     {
-        "match": "alpha.cplusplus.MisusedMovedObject",
+        "match": "*cplusplus.MisusedMovedObject",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -857,7 +857,7 @@
         }
     },
     {
-        "match": "alpha.cplusplus.SmartPtr",
+        "match": "*cplusplus.SmartPtr",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -865,7 +865,7 @@
         }
     },
     {
-        "match": "alpha.deadcode.UnreachableCode",
+        "match": "*deadcode.UnreachableCode",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -873,7 +873,7 @@
         }
     },
     {
-        "match": "alpha.fuchsia.Lock",
+        "match": "*fuchsia.Lock",
         "changes": {
             "level": "none",
             "kind": "informational",
@@ -881,7 +881,7 @@
         }
     },
     {
-        "match": "alpha.llvm.Conventions",
+        "match": "*llvm.Conventions",
         "changes": {
             "level": "none",
             "kind": "informational",
@@ -889,7 +889,7 @@
         }
     },
     {
-        "match": "alpha.osx.cocoa.DirectIvarAssignment",
+        "match": "*osx.cocoa.DirectIvarAssignment",
         "changes": {
             "level": "none",
             "kind": "informational",
@@ -897,7 +897,7 @@
         }
     },
     {
-        "match": "alpha.osx.cocoa.DirectIvarAssignmentForAnnotatedFunctions",
+        "match": "*osx.cocoa.DirectIvarAssignmentForAnnotatedFunctions",
         "changes": {
             "level": "none",
             "kind": "informational",
@@ -905,7 +905,7 @@
         }
     },
     {
-        "match": "alpha.osx.cocoa.InstanceVariableInvalidation",
+        "match": "*osx.cocoa.InstanceVariableInvalidation",
         "changes": {
             "level": "none",
             "kind": "informational",
@@ -913,7 +913,7 @@
         }
     },
     {
-        "match": "alpha.osx.cocoa.MissingInvalidationMethod",
+        "match": "*osx.cocoa.MissingInvalidationMethod",
         "changes": {
             "level": "none",
             "kind": "informational",
@@ -921,7 +921,7 @@
         }
     },
     {
-        "match": "alpha.osx.cocoa.localizability.PluralMisuse*",
+        "match": "*osx.cocoa.localizability.PluralMisuse*",
         "changes": {
             "level": "none",
             "kind": "informational",
@@ -929,7 +929,7 @@
         }
     },
     {
-        "match": "alpha.security.ArrayBound",
+        "match": "*security.ArrayBound",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -937,7 +937,7 @@
         }
     },
     {
-        "match": "alpha.security.ArrayBoundV2",
+        "match": "*security.ArrayBoundV2",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -945,7 +945,7 @@
         }
     },
     {
-        "match": "alpha.security.MallocOverflow",
+        "match": "*security.MallocOverflow",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -953,7 +953,7 @@
         }
     },
     {
-        "match": "alpha.security.MmapWriteExec",
+        "match": "*security.MmapWriteExec",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -961,7 +961,7 @@
         }
     },
     {
-        "match": "alpha.security.ReturnPtrRange",
+        "match": "*security.ReturnPtrRange",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -969,7 +969,7 @@
         }
     },
     {
-        "match": "alpha.security.cert.pos.34c",
+        "match": "*security.cert.pos.34c",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -977,7 +977,7 @@
         }
     },
     {
-        "match": "alpha.security.cert.env.InvalidPtr",
+        "match": "*security.cert.env.InvalidPtr",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -985,7 +985,7 @@
         }
     },
     {
-        "match": "alpha.security.taint.TaintPropagation",
+        "match": "*security.taint.TaintPropagation",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -993,7 +993,7 @@
         }
     },
     {
-        "match": "alpha.unix.StdCLibraryFunctionArgs",
+        "match": "*unix.StdCLibraryFunctionArgs",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -1009,7 +1009,7 @@
         }
     },
     {
-        "match": "alpha.unix.Chroot",
+        "match": "*unix.Chroot",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -1017,7 +1017,7 @@
         }
     },
     {
-        "match": "alpha.unix.Errno",
+        "match": "*unix.Errno",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -1025,7 +1025,7 @@
         }
     },
     {
-        "match": "alpha.unix.PthreadLock",
+        "match": "*unix.PthreadLock",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -1033,7 +1033,7 @@
         }
     },
     {
-        "match": "alpha.unix.SimpleStream",
+        "match": "*unix.SimpleStream",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -1064,7 +1064,7 @@
         }
     },
     {
-        "match": "alpha.unix.cstring.BufferOverlap",
+        "match": "*unix.cstring.BufferOverlap",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -1072,7 +1072,7 @@
         }
     },
     {
-        "match": "alpha.unix.cstring.NotNullTerminated",
+        "match": "*unix.cstring.NotNullTerminated",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -1080,7 +1080,7 @@
         }
     },
     {
-        "match": "alpha.unix.cstring.OutOfBounds",
+        "match": "*unix.cstring.OutOfBounds",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -1088,7 +1088,7 @@
         }
     },
     {
-        "match": "alpha.unix.cstring.UninitializedRead",
+        "match": "*unix.cstring.UninitializedRead",
         "changes": {
             "level": "warning",
             "kind": "open",
@@ -1096,7 +1096,7 @@
         }
     },
     {
-        "match": "alpha.nondeterminism.PointerIteration",
+        "match": "*nondeterminism.PointerIteration",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -1104,7 +1104,7 @@
         }
     },
     {
-        "match": "alpha.nondeterminism.PointerSorting",
+        "match": "*nondeterminism.PointerSorting",
         "changes": {
             "level": "note",
             "kind": "open",
@@ -1112,7 +1112,7 @@
         }
     },
     {
-        "match": "alpha.webkit.UncountedCallArgs*",
+        "match": "*webkit.UncountedCallArgs*",
         "changes": {
             "level": "none",
             "kind": "informational",
@@ -1120,7 +1120,7 @@
         }
     },
     {
-        "match": "alpha.webkit.UncountedLocalVars*",
+        "match": "*webkit.UncountedLocalVars*",
         "changes": {
             "level": "none",
             "kind": "informational",
