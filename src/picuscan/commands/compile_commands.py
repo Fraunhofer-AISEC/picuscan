@@ -326,7 +326,7 @@ async def run(params: _RunParams) -> None:
     ret = 0
     if failed:
         print(f"The following {len(failed)} files could NOT be compiled")
-        for path in failed:
+        for path in sorted(failed):
             print(f"* {path}")
         ret = 1
     else:
@@ -334,7 +334,7 @@ async def run(params: _RunParams) -> None:
 
     if success:
         print(f"The following {len(success)} files could be compiled successfully")
-        for path in success:
+        for path in sorted(success):
             print(f"* {path}")
 
     if missing_header:
