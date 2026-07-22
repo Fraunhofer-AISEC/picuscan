@@ -111,5 +111,19 @@
             "level": "none",
             "kind": "informational"
         }
+    },
+    {
+        "match": "toomanyconfigs",
+        "changes": {
+            "level": "none",
+            "kind": "informational"
+        }
+    },
+    {
+        "match": "checkLevelNormal",
+        "changes": {
+            "level": "none",
+            "kind": "informational"
+        }
     }
 ]
