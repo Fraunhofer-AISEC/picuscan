@@ -73,7 +73,9 @@ class CodeChecker(AnalysisTool):
             )
             runs.append(run)
             for analyzer_name, analyzer in tool["analyzers"].items():
-                analyzer_results = list(filter(lambda x: x.ruleId in analyzer["checkers"], results))
+                # FIXME: Dirty hack to keep ruleId in sarif and CodeChecker in sync
+                analyzer_checkers = analyzer["checkers"].map(lambda x: x.removeprefix("gcc-").removeprefix("cppcheck-"))
+                analyzer_results = list(filter(lambda x: x.ruleId in analyzer_checkers, results))
                 full_version = analyzer["analyzer_statistics"]["version"].strip().replace("\n", ",")
                 res = re.search(r"\d+\.\d+(\.\d+)?", full_version)
                 assert res
@@ -100,9 +102,8 @@ class CodeChecker(AnalysisTool):
         assert doc["version"] == 1
 
         results: list[Result] = []
-
         reports = doc["reports"]
-
+        logger.info(f"Post-processing {self.name} results...")
         for report in reports:
             path = report["file"]["path"]
             line = report["line"]
@@ -112,6 +113,7 @@ class CodeChecker(AnalysisTool):
             message = report["message"]
             checker_name = report["checker_name"]
             # remove tool prefix for consistency
+            # FIXME: This has side effect to the split_result_per_tool function, because mapping happens on ruleID!
             checker_name = checker_name.removeprefix("gcc-")
             checker_name = checker_name.removeprefix("cppcheck-")
             if checker_name in NOTES:
