@@ -9,7 +9,6 @@ from os.path import abspath
 
 import attrs
 from tqdm import tqdm
-from tqdm.contrib.logging import logging_redirect_tqdm
 
 from picuscan import logging, sarif
 from picuscan.analyzer.options import Options
@@ -50,7 +49,6 @@ class Cppcheck(AnalysisTool):
         super().__init__(opts, **kwds)
         self.inject_cwe = False
 
-    @logging_redirect_tqdm()
     async def run(self) -> Log:
         if from_ := self.opts.cppcheck_from:
             logger.info("Reading %s findings from %s", self.name, from_.name)

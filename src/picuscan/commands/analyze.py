@@ -10,6 +10,7 @@ import time
 from typing import Any, Iterable
 
 import click
+from tqdm.contrib.logging import logging_redirect_tqdm
 
 from picuscan import logging, sarif
 from picuscan.analyzer.options import OPTIONS, Options
@@ -30,6 +31,7 @@ async def cli(**kwargs: Any) -> None:
     await analyze(opts)
 
 
+@logging_redirect_tqdm()
 async def analyze(opts: Options) -> None:
     load_tools()
     logger.info(f"Loaded tools: {' '.join(sorted(cls.name for cls in REGISTRY.values()))}")
