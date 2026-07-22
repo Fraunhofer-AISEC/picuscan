@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+from importlib.resources import files
 import json
 import hashlib
 import fnmatch
@@ -109,7 +110,7 @@ def load_sarif_as_df(path: Path, ignore_stacks: bool = False) -> pd.DataFrame:
 
 @lru_cache(maxsize=1)
 def load_cwe_names() -> dict[str, str]:
-    cwe_path = Path(__file__).resolve().parents[3] / "res" / "cwe.json"
+    cwe_path = files("picuscan.res").joinpath("cwe.json")
     names: dict[str, str] = {}
     try:
         data = json.loads(cwe_path.read_text("utf-8"))

@@ -21,7 +21,7 @@ SPDX-License-Identifier = "Apache-2.0"
 
 [[annotations]]
 path = [
-    "res/cwe.json",
+    "src/picuscan/res/cwe.json",
 ]
 SPDX-FileCopyrightText = "The MITRE Corporation"
 SPDX-License-Identifier = "LicenseRef-CWE-Terms-of-Use"
