@@ -9,6 +9,7 @@ from os.path import abspath
 
 import attrs
 from tqdm import tqdm
+from tqdm.contrib.logging import logging_redirect_tqdm
 
 from picuscan import logging, sarif
 from picuscan.analyzer.options import Options
@@ -111,6 +112,7 @@ class Cppcheck(AnalysisTool):
         )
         return sarif.log([run])
 
+    @logging_redirect_tqdm()
     async def __run(self) -> tuple[Output, list[Invocation]]:
         args = self.__args()
 
@@ -119,7 +121,7 @@ class Cppcheck(AnalysisTool):
             logger.warning("Missing headers: %s", ", ".join(missing))
 
         logger.info("Running %s", self.name)
-        with tqdm(desc=self.name, total=100, bar_format=fixed_width_desc(), position=1) as progress:
+        with tqdm(desc=self.name, total=100, bar_format=fixed_width_desc(), position=1, leave=False) as progress:
             doc, invocations = await execute(*args, stdout=self.sink, on_event=update_tqdm(progress))
             return doc, invocations
 
