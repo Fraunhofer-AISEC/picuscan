@@ -18,9 +18,12 @@ import click
 import numpy as np
 import pandas as pd
 
+from picuscan import logging
 from picuscan.misc.decorators import collect_params, unasync
 from picuscan.sarif.models import Result
 from picuscan.sarif import load
+
+logger = logging.get_logger(__name__)
 
 pd.set_option("display.max_rows", 500)
 pd.set_option("display.max_columns", 500)
@@ -73,7 +76,7 @@ def load_sarif_as_df(path: Path, ignore_stacks: bool = False) -> pd.DataFrame:
     if results:
         df = pd.concat(results).reset_index(drop=True)
     if df.empty:
-        print(f"[#] Warning: SARIF file has no findings: {path}")
+        logger.warning(f"SARIF file has no findings: {path}")
         return df
     if "taxa" in df.columns:
         df = df.explode("taxa")
@@ -172,7 +175,7 @@ async def compare(params: CompareParams) -> None:
     l_df = list(map(lambda x: load_sarif_as_df(x, params.ignore_stacks), params.path))
     l_df = list(filter(lambda x: not x.empty, l_df))
     if not l_df:
-        print("[!] No data loaded")
+        logger.warning("No data loaded")
         return
 
     compare_by_group(l_df, "tool")
@@ -227,7 +230,7 @@ async def info(params: InfoParams) -> None:
 
     df = load_sarif_as_df(params.path, params.ignore_stacks)
     if df.empty:
-        print("[!] Sarif file is empty")
+        logger.warning("Sarif file is empty")
         return
 
     print("[+] Number of findings per tool:")
@@ -363,23 +366,23 @@ async def _filter(params: FilterParams) -> None:
         sarif = json.load(f)
 
     if params.tool:
-        print(f"Filter based on tool: {params.tool}")
+        logger.info(f"Filter based on tool: {params.tool}")
         sarif["runs"] = list(
             filter(lambda x: x["tool"]["driver"]["name"].lower() in list(map(str.lower, params.tool)), sarif["runs"])
         )
 
     if params.level:
-        print(f"Filter based on level: {params.level}")
+        logger.info(f"Filter based on level: {params.level}")
         for run in sarif["runs"]:
             run["results"] = list(filter(lambda x: x["level"] in params.level, run["results"]))
 
     if params.kind:
-        print(f"Filter based on kind: {params.kind}")
+        logger.info(f"Filter based on kind: {params.kind}")
         for run in sarif["runs"]:
             run["results"] = list(filter(lambda x: x["kind"] in params.kind, run["results"]))
 
     if params.rank:
-        print(f"Filter based on rank: {params.rank}")
+        logger.info(f"Filter based on rank: {params.rank}")
         for run in sarif["runs"]:
             run["results"] = list(
                 filter(
@@ -389,17 +392,17 @@ async def _filter(params: FilterParams) -> None:
             )
 
     if params.scope:
-        print(f"Filter based on scope: {params.scope}")
+        logger.info(f"Filter based on scope: {params.scope}")
         for run in sarif["runs"]:
             filter_scope(run, params.scope)
 
     if params.not_scope:
-        print(f"Filter based on not in scope: {params.not_scope}")
+        logger.info(f"Filter based on not in scope: {params.not_scope}")
         for run in sarif["runs"]:
             filter_scope(run, params.not_scope, True)
 
     if params.not_message:
-        print(f"Exclude based on message: {params.not_message}")
+        logger.info(f"Exclude based on message: {params.not_message}")
         for run in sarif["runs"]:
             run["results"] = list(
                 filter(
@@ -409,7 +412,7 @@ async def _filter(params: FilterParams) -> None:
             )
 
     if params.cwe:
-        print(f"Filter based on CWE: {params.cwe}")
+        logger.info(f"Filter based on CWE: {params.cwe}")
         cwe_names = load_cwe_names()
         for run in sarif["runs"]:
             run["results"] = list(
@@ -427,7 +430,7 @@ async def _filter(params: FilterParams) -> None:
             )
 
     if params.exclude_rules:
-        print(f"Filter based on exclude rule IDs: {params.exclude_rules}")
+        logger.info(f"Filter based on exclude rule IDs: {params.exclude_rules}")
         exclude_rules = list(map(str.strip, open(params.exclude_rules).readlines()))
         for run in sarif["runs"]:
             run["results"] = list(
@@ -439,7 +442,7 @@ async def _filter(params: FilterParams) -> None:
 
     if params.scope_file:
         files = params.scope_file.read_text().strip().split("\n")
-        print(f"Filter based on scope file: {params.scope_file}")
+        logger.info(f"Filter based on scope file: {params.scope_file}")
         for run in sarif["runs"]:
             filter_scope(run, files, False)
 
@@ -496,7 +499,7 @@ async def _filter(params: FilterParams) -> None:
     sarif["runs"] = list(filter(lambda x: len(x["results"]) > 0, sarif["runs"]))
 
     selected = sum(len(run["results"]) for run in sarif["runs"])
-    print(f"Export {selected} finding(s) to file: {params.out}")
+    logger.info(f"Export {selected} finding(s) to file: {params.out}")
 
     with open(params.out, "wt") as f:
         json.dump(sarif, f, indent=2)

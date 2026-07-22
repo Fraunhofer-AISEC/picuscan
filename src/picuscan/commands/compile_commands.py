@@ -266,7 +266,7 @@ def _run_one(params: _RunParams, cmd: Command) -> _RunResult | None:
         compile_cmd = _transform_cmd_pp(compile_cmd)
     if params.ast:
         compile_cmd = _transform_cmd_ast(compile_cmd)
-    print(" ".join(compile_cmd))
+    logger.info(" ".join(compile_cmd))
 
     stdout = subprocess.PIPE if (params.ast or params.pp) else None
     p = subprocess.run(compile_cmd, cwd=directory, stdout=stdout, stderr=subprocess.PIPE)
@@ -363,22 +363,25 @@ async def run(params: _RunParams) -> None:
 
     ret = 0
     if failed:
-        print(f"The following {len(failed)} files could NOT be compiled")
-        for path in sorted(failed):
-            print(f"* {path}")
+        logger.warning(
+            f"The following {len(failed)} files could NOT be compiled:\n"
+            + "\n".join(f"* {path}" for path in sorted(failed))
+        )
         ret = 1
     else:
-        print(f"All {len(success)} file(s) compiled successfully")
+        logger.info(f"All {len(success)} file(s) compiled successfully")
 
     if success:
-        print(f"The following {len(success)} files could be compiled successfully")
-        for path in sorted(success):
-            print(f"* {path}")
+        logger.info(
+            f"The following {len(success)} files could be compiled successfully:\n"
+            + "\n".join(f"* {path}" for path in sorted(success))
+        )
 
     if missing_header:
-        print(f"Found {len(missing_header)} missing header files (via compiler errors)")
-        for header in sorted(missing_header):
-            print(f"* {header}")
+        logger.warning(
+            f"Found {len(missing_header)} missing header files (via compiler errors):\n"
+            + "\n".join(f"* {header}" for header in sorted(missing_header))
+        )
 
     if params.output:
         cc = CompilationDB(list(filter(lambda x: x.path in success, params.db.commands)))
