@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import Mapping
 import json
 import attrs
@@ -70,6 +71,7 @@ class TransformSarifTaxa(Visitor[Options]):
 
 class GCC(Tool):
     enabled = False
+    uses_tqdm = True
 
     @logging_redirect_tqdm()
     async def run(self) -> Log:
@@ -82,10 +84,11 @@ class GCC(Tool):
             desc=self.name,
             total=len(self.opts.compile_db),
             bar_format=fixed_width_desc(),
-            position=3,
+            position=self.bar_position,
             leave=False,
         ):
             args = tr.arguments[1:]
+            await asyncio.sleep(0.01)
             if not tr.directory.exists():
                 logger.warning(f"Could not find directory given in compilation database: {tr.directory}")
                 self.failed_sources.add(str(tr.file))
@@ -111,7 +114,7 @@ class GCC(Tool):
             try:
                 res = sarif.loads(out)
             except json.decoder.JSONDecodeError:
-                logger.debug(f"Json decode error when analyzing tr: {tr.file}")
+                logger.warning(f"Json decode error when analyzing tr: {tr.file}")
                 logger.debug(out)
                 self.failed_sources.add(str(tr.file))
                 continue

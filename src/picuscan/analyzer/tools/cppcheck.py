@@ -44,11 +44,13 @@ class Cppcheck(AnalysisTool):
     rebase_locations = False  # --relative-paths already handles this.
     inject_cwe_mappings = False
     supports_threading = True
+    uses_tqdm = True
 
     def __init__(self, opts: Options, **kwds: t.Any):
         super().__init__(opts, **kwds)
         self.inject_cwe = False
 
+    @logging_redirect_tqdm()
     async def run(self) -> Log:
         if from_ := self.opts.cppcheck_from:
             logger.info("Reading %s findings from %s", self.name, from_.name)
@@ -112,7 +114,6 @@ class Cppcheck(AnalysisTool):
         )
         return sarif.log([run])
 
-    @logging_redirect_tqdm()
     async def __run(self) -> tuple[Output, list[Invocation]]:
         args = self.__args()
 
@@ -121,7 +122,9 @@ class Cppcheck(AnalysisTool):
             logger.warning("Missing headers: %s", ", ".join(missing))
 
         logger.info("Running %s", self.name)
-        with tqdm(desc=self.name, total=100, bar_format=fixed_width_desc(), position=1, leave=False) as progress:
+        with tqdm(
+            desc=self.name, total=100, bar_format=fixed_width_desc(), position=self.bar_position, leave=False
+        ) as progress:
             doc, invocations = await execute(*args, stdout=self.sink, on_event=update_tqdm(progress))
             return doc, invocations
 
