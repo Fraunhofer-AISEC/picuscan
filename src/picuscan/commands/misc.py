@@ -88,6 +88,6 @@ async def module_cloc(params: _ModuleClocParams) -> None:
     df = df[df["Sum"] > 0]
     if params.sort_by_loc:
         df = df.sort_values(["Sum"])
-    print(df.to_markdown())
+    print(df.map(lambda x: f"{x:,}").to_markdown())
     if params.export_files:
         params.export_files.write_text("\n".join(sorted(all_files)) + "\n" if all_files else "")
