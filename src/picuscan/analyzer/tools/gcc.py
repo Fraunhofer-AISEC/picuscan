@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from itertools import chain
 
 from tqdm import tqdm
+from tqdm.contrib.logging import logging_redirect_tqdm
 
 from picuscan import logging, process, sarif
 from picuscan.analyzer.tool import Tool
@@ -70,6 +71,7 @@ class TransformSarifTaxa(Visitor[Options]):
 class GCC(Tool):
     enabled = False
 
+    @logging_redirect_tqdm()
     async def run(self) -> Log:
         logger.info("Running %s", self.name)
 
@@ -81,6 +83,7 @@ class GCC(Tool):
             total=len(self.opts.compile_db),
             bar_format=fixed_width_desc(),
             position=3,
+            leave=False,
         ):
             args = tr.arguments[1:]
             if not tr.directory.exists():

@@ -12,6 +12,7 @@ from subprocess import PIPE
 
 import attrs
 from tqdm import tqdm
+from tqdm.contrib.logging import logging_redirect_tqdm
 
 from picuscan import logging, process, sarif
 from picuscan.analyzer.options import Options
@@ -31,6 +32,7 @@ PROGRESS_PATTERN = re.compile(rb"(.*) DONE\s*$")
 class Infer(Tool):
     supports_threading = True
 
+    @logging_redirect_tqdm()
     async def run(self) -> Log:
         assert self.opts.compile_db.path
         output_dir = self.tool_dir / "output"
@@ -63,7 +65,7 @@ class Infer(Tool):
         assert proc.stderr
         files = set()
         with tqdm(
-            desc=self.name, total=len(self.opts.compile_db), bar_format=fixed_width_desc(), position=2
+            desc=self.name, total=len(self.opts.compile_db), bar_format=fixed_width_desc(), position=2, leave=False
         ) as progress:
             async for line in proc.stderr:
                 self.sink.write(line)
