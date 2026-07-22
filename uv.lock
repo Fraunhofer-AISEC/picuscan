@@ -13,9 +13,6 @@ resolution-markers = [
     "python_full_version < '3.12' and sys_platform != 'emscripten' and sys_platform != 'win32'",
 ]
 
-[manifest]
-build-constraints = [{ name = "setuptools", specifier = "<81" }]
-
 [[package]]
 name = "ast-serialize"
 version = "0.6.0"
