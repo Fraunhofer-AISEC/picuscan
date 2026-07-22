@@ -49,6 +49,8 @@ class Tool(ABC):
     """Whether this tool is enabled by default."""
     supports_threading: bool = False
     """Whether this tool uses parallel computing"""
+    uses_tqdm: bool = False
+    """Whether this tool uses tqdm process bar"""
 
     invocations: list[Invocation] = []
     """Tool process invocations to be added to the SARIF file"""
@@ -70,7 +72,16 @@ class Tool(ABC):
             if tool is not cls:
                 raise RuntimeError(f"{cls} conflicts with {tool}, as both have the name {name!r}.")
 
-    def __init__(self, opts: Options, *, picuscan_dir: Path, tool_dir: Path, sink: t.IO[bytes], jobs: int = 0):
+    def __init__(
+        self,
+        opts: Options,
+        *,
+        picuscan_dir: Path,
+        tool_dir: Path,
+        sink: t.IO[bytes],
+        jobs: int = 0,
+        bar_position: int = 0,
+    ):
         super().__init__()
         self.opts = opts
         self.picuscan_dir = picuscan_dir
@@ -80,6 +91,8 @@ class Tool(ABC):
         self.jobs = jobs
         self.failed_sources: set[str] = set()
         """list of source files, which could not be analyzed by the tool"""
+        self.bar_position = bar_position
+        """progress bar position"""
 
     def should_run(self) -> bool:
         """Whether the tool should be executed."""

@@ -54,6 +54,7 @@ def _get_failed_sources(out_dir: Path) -> set[str]:
 class CodeChecker(AnalysisTool):
     override_program = "CodeChecker"
     supports_threading = True
+    uses_tqdm = True
 
     def split_result_per_tool(self, results: list[Result], invocations: list[Invocation]) -> list[Run]:
         meta = json.load(open(self.tool_dir / "output" / "metadata.json"))
@@ -183,7 +184,9 @@ class CodeChecker(AnalysisTool):
         )
         assert proc.stdout
 
-        with tqdm(desc=self.name, total=100, bar_format=fixed_width_desc(), position=0, leave=False) as progress:
+        with tqdm(
+            desc=self.name, total=100, bar_format=fixed_width_desc(), position=self.bar_position, leave=False
+        ) as progress:
             last = 0
             async for line in proc.stdout:
                 self.sink.write(line)

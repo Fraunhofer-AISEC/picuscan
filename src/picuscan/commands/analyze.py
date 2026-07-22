@@ -59,6 +59,7 @@ async def analyze(opts: Options) -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
 
     tool_instances: list[Tool] = []
+    bar_position = 0
     for tool in tools:
         tool_dir = run_dir / tool.name
         tool_dir.mkdir(exist_ok=True)
@@ -66,6 +67,9 @@ async def analyze(opts: Options) -> None:
         instance = tool(opts, picuscan_dir=picuscan_dir, tool_dir=tool_dir, sink=sink, jobs=jobs)
         if instance.should_run():
             tool_instances.append(instance)
+            if tool.uses_tqdm:
+                instance.bar_position = bar_position
+                bar_position += 1
         else:
             logger.warning("Tool %s is not available (program %r not found on PATH)", tool.name, instance.program)
 

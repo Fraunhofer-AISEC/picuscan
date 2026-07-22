@@ -31,6 +31,7 @@ PROGRESS_PATTERN = re.compile(rb"(.*) DONE\s*$")
 
 class Infer(Tool):
     supports_threading = True
+    uses_tqdm = True
 
     @logging_redirect_tqdm()
     async def run(self) -> Log:
@@ -66,7 +67,11 @@ class Infer(Tool):
         assert proc.stderr
         files = set()
         with tqdm(
-            desc=self.name, total=len(self.opts.compile_db), bar_format=fixed_width_desc(), position=2, leave=False
+            desc=self.name,
+            total=len(self.opts.compile_db),
+            bar_format=fixed_width_desc(),
+            position=self.bar_position,
+            leave=False,
         ) as progress:
             async for line in proc.stderr:
                 self.sink.write(line)
