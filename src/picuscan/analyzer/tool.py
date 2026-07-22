@@ -10,8 +10,11 @@ from abc import ABC, abstractmethod
 from inspect import isabstract
 from pathlib import Path
 
+import attrs
+
+from picuscan.analyzer.transforms._results import update_results
 from picuscan.config import get_current_config
-from picuscan.sarif.models import Log, Invocation
+from picuscan.sarif.models import Level, Log, Invocation
 
 from .options import Options
 from .tools.data import load_rules
@@ -94,6 +97,15 @@ class Tool(ABC):
     @property
     def transforms(self) -> list[Transform]:
         transforms: list[Transform] = []
+        transforms.append(
+            update_results(
+                [
+                    (lambda r: r.level == Level.ERROR, lambda r: attrs.evolve(r, rank=100)),
+                    (lambda r: r.level == Level.WARNING, lambda r: attrs.evolve(r, rank=80)),
+                    (None, lambda r: attrs.evolve(r, rank=40)),
+                ]
+            )
+        )
         if self.rebase_locations:
             transforms.append(normalize_locations())
         if self.inject_cwe_mappings:
