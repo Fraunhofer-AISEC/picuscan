@@ -312,6 +312,22 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     clang-tidy \
     && rm -rf /var/lib/apt/lists/*
 
+# Use unstable repo for gcc-16 (not yet in trixie)
+RUN echo "deb http://deb.debian.org/debian/ unstable main" >> /etc/apt/sources.list.d/unstable.list
+RUN echo "Package: *" >> /etc/apt/preferences.d/99-pinning \
+ && echo "Pin: release a=unstable" >> /etc/apt/preferences.d/99-pinning \
+ && echo "Pin-Priority: 50" >> /etc/apt/preferences.d/99-pinning
+
+RUN apt-get update && apt-get install -y --no-install-recommends -t unstable \
+    gcc-16 \
+    g++-16 \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-16 1 && \
+    update-alternatives --set gcc /usr/bin/gcc-16 && \
+    update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-16 1 && \
+    update-alternatives --set g++ /usr/bin/g++-16
+
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.13 1 && \
     update-alternatives  --set python /usr/bin/python3.13
 
