@@ -64,7 +64,6 @@ Repository = "https://github.com/Fraunhofer-AISEC/picuscan"
 
 [tool.uv]
 package = true
-build-constraint-dependencies = ["setuptools<81"]
 
 [tool.setuptools.package-data]
 picuscan = ["res/*"]
