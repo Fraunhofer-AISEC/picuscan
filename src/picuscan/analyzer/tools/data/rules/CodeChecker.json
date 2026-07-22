@@ -2112,6 +2112,22 @@
         }
     },
     {
+        "match": "cert-msc24-c",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
+        "match": "cert-msc33-c",
+        "changes": {
+            "level": "note",
+            "kind": "open",
+            "rank": 20.0
+        }
+    },
+    {
         "match": "cert-msc30-c",
         "changes": {
             "level": "warning",

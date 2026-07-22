@@ -55,6 +55,7 @@ mapping = {
         "*unix.PthreadLock": "CWE-667",
         "*core.CastToStruct": "CWE-704",
         "*core.FixedAddr": "CWE-587",
+        "core.VLASize": "CWE-131",
     },
     "clang-tidy": {
         "bugprone-integer-division": "CWE-682",
@@ -108,6 +109,8 @@ mapping = {
         "cert-err33-c": "CWE-252",
         "cert-err34-c": "CWE-704",
         "cert-ctr56-cpp": "CWE-465",
+        "cert-msc24-c": "CWE-1006",
+        "cert-msc33-c": "CWE-1006",
         "google-build-namespaces": "CWE-1006",
         "clang-diagnostic-division-by-zero": "CWE-369",
         "clang-diagnostic-unused-result": "CWE-252",
@@ -240,6 +243,11 @@ mapping = {
         "cppcheck-uninitMemberVarPrivate": "CWE-457",
         "cppcheck-uninitStructMember": "CWE-457",
         "cppcheck-preprocessorErrorDirective": "CWE-670",
+        "functionStatic": "CWE-1006",
+        "identicalConditionAfterEarlyExit": "CWE-570",
+        "nullPointerArithmeticOutOfMemory": "CWE-690",
+        "nullPointerOutOfMemory": "CWE-690",
+        "staticFunction": "CWE-1006",
     },
     "gcc": {
         "-Wstringop-overflow=": "CWE-119",
@@ -257,5 +265,7 @@ mapping = {
         "gcc-use-of-uninitialized-value": "CWE-457",
         "-Werror=shift-count-overflow": "CWE-190",
         "-Wswitch": "CWE-1006",
+        "null-dereference": "CWE-476",
+        "possible-null-argument": "CWE-476",
     },
 }
