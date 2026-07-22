@@ -58,6 +58,8 @@ class CodeChecker(AnalysisTool):
     def split_result_per_tool(self, results: list[Result], invocations: list[Invocation]) -> list[Run]:
         meta = json.load(open(self.tool_dir / "output" / "metadata.json"))
         runs: list[Run] = []
+        sarif_rule_ids = []
+        codechecker_rule_ids = []
         for tool in meta["tools"]:
             tool_name = tool["name"]
             full_version = tool["version"].strip()
@@ -74,8 +76,14 @@ class CodeChecker(AnalysisTool):
             runs.append(run)
             for analyzer_name, analyzer in tool["analyzers"].items():
                 # FIXME: Dirty hack to keep ruleId in sarif and CodeChecker in sync
-                analyzer_checkers = analyzer["checkers"].map(lambda x: x.removeprefix("gcc-").removeprefix("cppcheck-"))
+                analyzer_checkers = list(
+                    map(lambda x: x.removeprefix("gcc-").removeprefix("cppcheck-"), analyzer["checkers"])
+                )
+                codechecker_rule_ids += analyzer_checkers
+                sarif_rule_ids += [x.ruleId for x in results]
                 analyzer_results = list(filter(lambda x: x.ruleId in analyzer_checkers, results))
+                if not analyzer_results:
+                    logger.info(f"No results from analyzer {analyzer_name}")
                 full_version = analyzer["analyzer_statistics"]["version"].strip().replace("\n", ",")
                 res = re.search(r"\d+\.\d+(\.\d+)?", full_version)
                 assert res
@@ -90,6 +98,9 @@ class CodeChecker(AnalysisTool):
                     results=frozenset(analyzer_results),
                 )
                 runs.append(run)
+        unknown_rules = set(sarif_rule_ids).difference(codechecker_rule_ids)
+        if unknown_rules:
+            logger.warning(f"Could not map ruleIds to CodeChecker tool: {unknown_rules}")
         return runs
 
     async def run(self) -> Log:
