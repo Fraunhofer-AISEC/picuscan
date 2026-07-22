@@ -13,7 +13,7 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build-app:
+  build-release:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -43,8 +43,8 @@ jobs:
           registry: ${{ env.REGISTRY }}
           image-name: ${{ github.repository }}
           containerfile: Containerfile
-          run-e2e: "true"
           push: "true"
+          run-e2e: "true"
           base-image: ${{ github.ref_name }}
           github-actor: ${{ github.actor }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
