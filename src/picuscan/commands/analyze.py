@@ -101,9 +101,11 @@ async def analyze(opts: Options) -> None:
                 f"{tool_instance.name} failed to analyze {len(failed_sources)} translation unit(s): {', '.join(sorted(failed_sources))}"
             )
 
+    logger.info("Combining tool results...")
     combined = _combine(opts, logs)
 
     if opts.split == "informational":
+        logger.info("Splitting informational results...")
         transform = split_informational()
         combined = transform(combined, opts)
         informational_log = transform.get_informational_log(combined)
