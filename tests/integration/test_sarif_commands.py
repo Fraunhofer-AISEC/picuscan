@@ -111,11 +111,11 @@ def test_info_no_cwe_section_without_taxa(runner, tmp_path):
 # ---------------------------------------------------------------------------
 
 
-def test_filter_by_cwe_id(runner, tmp_path):
+def test_filter_by_cwe_id(runner, tmp_path, caplog):
     out = tmp_path / "out.sarif"
     result = runner.invoke(main, ["sarif", "filter", "-c", "CWE-457", "-o", str(out), UNINIT_SARIF])
     assert result.exit_code == 0
-    assert "Filter based on CWE: ('CWE-457',)" in result.output
+    assert "Filter based on CWE: ('CWE-457',)" in caplog.text
 
     sarif = json.loads(out.read_text())
     findings = [r for run in sarif["runs"] for r in run["results"]]
@@ -247,22 +247,22 @@ def test_filter_cwe_no_taxa_file(runner, tmp_path):
 # ---------------------------------------------------------------------------
 
 
-def test_filter_prints_selected_findings_count(runner, tmp_path):
+def test_filter_prints_selected_findings_count(runner, tmp_path, caplog):
     out = tmp_path / "out.sarif"
     result = runner.invoke(main, ["sarif", "filter", "-c", "CWE-457", "-o", str(out), UNINIT_SARIF])
     assert result.exit_code == 0
-    assert "Export 4 finding(s)" in result.output
+    assert "Export 4 finding(s)" in caplog.text
 
 
-def test_filter_prints_selected_findings_count_zero(runner, tmp_path):
+def test_filter_prints_selected_findings_count_zero(runner, tmp_path, caplog):
     out = tmp_path / "out.sarif"
     result = runner.invoke(main, ["sarif", "filter", "-c", "CWE-999", "-o", str(out), UNINIT_SARIF])
     assert result.exit_code == 0
-    assert "Export 0 finding(s)" in result.output
+    assert "Export 0 finding(s)" in caplog.text
 
 
-def test_filter_no_cwe_keeps_all(runner, tmp_path):
+def test_filter_no_cwe_keeps_all(runner, tmp_path, caplog):
     out = tmp_path / "out.sarif"
     result = runner.invoke(main, ["sarif", "filter", "-o", str(out), UNINIT_SARIF])
     assert result.exit_code == 0
-    assert "Export 6 finding(s)" in result.output
+    assert "Export 6 finding(s)" in caplog.text
