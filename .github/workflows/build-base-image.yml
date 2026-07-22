@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: CC0-1.0
 
-name: Build base image
+name: Build base and app image
 
 on:
   push:
@@ -17,10 +17,9 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}-base
 
 jobs:
-  build-base:
+  build-container:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -37,9 +36,21 @@ jobs:
         uses: ./.github/actions/container
         with:
           registry: ${{ env.REGISTRY }}
-          image-name: ${{ env.IMAGE_NAME }}
+          image-name: ${{ github.repository }}-base
           containerfile: Containerfile.base
           push: "true"
           run-e2e: "false"
+          github-actor: ${{ github.actor }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build app image
+        uses: ./.github/actions/container
+        with:
+          registry: ${{ env.REGISTRY }}
+          image-name: ${{ github.repository }}
+          containerfile: Containerfile
+          push: "true"
+          run-e2e: "true"
+          base-image: ${{ github.ref_name }}
           github-actor: ${{ github.actor }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
