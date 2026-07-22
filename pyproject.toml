@@ -66,6 +66,9 @@ Repository = "https://github.com/Fraunhofer-AISEC/picuscan"
 package = true
 build-constraint-dependencies = ["setuptools<81"]
 
+[tool.setuptools.package-data]
+picuscan = ["res/*"]
+
 [tool.ruff]
 line-length = 120
 target-version = "py311"
