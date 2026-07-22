@@ -97,5 +97,19 @@
             "kind": "informational",
             "rank": 100.0
         }
+    },
+    {
+        "match": "functionStatic",
+        "changes": {
+            "level": "none",
+            "kind": "informational"
+        }
+    },
+    {
+        "match": "staticFunction",
+        "changes": {
+            "level": "none",
+            "kind": "informational"
+        }
     }
 ]
