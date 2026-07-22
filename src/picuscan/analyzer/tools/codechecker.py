@@ -179,6 +179,7 @@ class CodeChecker(AnalysisTool):
             *args,
             stdout=PIPE,
             stderr=STDOUT,
+            limit=1024 * 1024,
         )
         assert proc.stdout
 
