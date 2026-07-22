@@ -12,7 +12,6 @@ from dataclasses import dataclass
 from itertools import chain
 
 from tqdm import tqdm
-from tqdm.contrib.logging import logging_redirect_tqdm
 
 from picuscan import logging, process, sarif
 from picuscan.analyzer.tool import Tool
@@ -73,7 +72,6 @@ class GCC(Tool):
     enabled = False
     uses_tqdm = True
 
-    @logging_redirect_tqdm()
     async def run(self) -> Log:
         logger.info("Running %s", self.name)
 

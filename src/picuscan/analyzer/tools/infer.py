@@ -12,7 +12,6 @@ from subprocess import PIPE
 
 import attrs
 from tqdm import tqdm
-from tqdm.contrib.logging import logging_redirect_tqdm
 
 from picuscan import logging, process, sarif
 from picuscan.analyzer.options import Options
@@ -33,7 +32,6 @@ class Infer(Tool):
     supports_threading = True
     uses_tqdm = True
 
-    @logging_redirect_tqdm()
     async def run(self) -> Log:
         assert self.opts.compile_db.path
         output_dir = self.tool_dir / "output"

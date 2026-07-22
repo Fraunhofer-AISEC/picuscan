@@ -11,7 +11,6 @@ from pathlib import Path
 from typing import Any
 
 from tqdm import tqdm
-from tqdm.contrib.logging import logging_redirect_tqdm
 
 from picuscan import logging, process, sarif
 from picuscan.analyzer.tool import Tool as AnalysisTool
@@ -146,7 +145,6 @@ class CodeChecker(AnalysisTool):
             version = doc["Base package version"]
         return str(version)
 
-    @logging_redirect_tqdm()
     async def __run(self) -> tuple[Any, list[Invocation]]:
         logger.info("Running %s", self.name)
 
