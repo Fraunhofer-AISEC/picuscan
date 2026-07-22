@@ -110,6 +110,9 @@ class CodeChecker(AnalysisTool):
 
             message = report["message"]
             checker_name = report["checker_name"]
+            # remove tool prefix for consistency
+            checker_name = checker_name.removeprefix("gcc-")
+            checker_name = checker_name.removeprefix("cppcheck-")
             if checker_name in NOTES:
                 level = Level.NOTE
             else:
