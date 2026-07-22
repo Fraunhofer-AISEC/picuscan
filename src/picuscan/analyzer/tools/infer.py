@@ -60,6 +60,7 @@ class Infer(Tool):
             *args,
             stdout=PIPE,
             stderr=PIPE,
+            limit=1024 * 1024,
         )
         assert proc.stdout
         assert proc.stderr
