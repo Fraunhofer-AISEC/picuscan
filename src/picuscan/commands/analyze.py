@@ -100,6 +100,9 @@ async def analyze(opts: Options) -> None:
             logger.error(f"Error when executing task: {task.get_name()}: {e}")
             failed += 1
 
+    # reset cursor in case tqdm clean up was incomplete
+    sys.stdout.write("\r")
+    sys.stdout.flush()
     logger.info(f"Done: Executed {len(tool_instances)} tool(s) ({len(logs)} succeeded, {failed} failed)")
     for tool_instance in tool_instances:
         if failed_sources := tool_instance.failed_sources:
