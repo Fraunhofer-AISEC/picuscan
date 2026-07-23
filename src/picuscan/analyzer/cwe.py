@@ -271,5 +271,6 @@ mapping = {
         "null-dereference": "CWE-476",
         "possible-null-argument": "CWE-476",
         "double-fclose": "CWE-1341",
+        "out-of-bounds": "CWE-119",
     },
 }
