@@ -13,10 +13,7 @@ import attrs
 
 from picuscan.sarif.version import Version
 
-# Don't update this to a later version. Otherwise, SARIF Viewer for VS
-# Code breaks.
-# See https://github.com/microsoft/sarif-vscode-extension/blob/3.1.1/src/extension/loadLogs.ts#L56
-SCHEMA = "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json"
+SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json"
 
 
 @attrs.frozen(kw_only=True)
