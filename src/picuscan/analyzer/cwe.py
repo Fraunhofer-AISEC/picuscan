@@ -251,6 +251,10 @@ mapping = {
         "nullPointerArithmeticOutOfMemory": "CWE-690",
         "nullPointerOutOfMemory": "CWE-690",
         "staticFunction": "CWE-1006",
+        "invalidPrintfArgType_sint": "CWE-686",
+        "selfAssignment": "CWE-563",
+        "uselessAssignmentPtrArg": "CWE-563",
+        "arithOperationsOnVoidPointer": "CWE-468",
     },
     "gcc": {
         "-Wstringop-overflow=": "CWE-119",
