@@ -152,6 +152,7 @@ mapping = {
         "MUTUAL_RECURSION_CYCLE": "CWE-674",
         "INFERBO_ALLOC_MAY_BE_BIG": "CWE-789",
         "INFERBO_ALLOC_MAY_BE_NEGATIVE": "CWE-131",
+        "INFINITE_RECURSION": "CWE-674",
     },
     "rats": {
         "memcpy": "CWE-120",
