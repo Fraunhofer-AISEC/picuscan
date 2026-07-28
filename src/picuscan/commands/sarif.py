@@ -275,11 +275,23 @@ class FilterParams(CommonParams):
     not_scope: list[str]
     not_message: list[str]
     cwe: list[str]
+    not_cwe: list[str]
     exclude_rules: Path | None
     path_in: Path
     scope_file: Path
     out: Path
     merge: bool
+
+
+def _result_matches_cwe(result: dict[str, Any], patterns: list[str], cwe_names: dict[str, str]) -> bool:
+    return any(
+        any(
+            fnmatch.fnmatch(t.get("id", ""), p)
+            or fnmatch.fnmatch(cwe_names.get(t.get("id", ""), "").lower(), p.lower())
+            for p in patterns
+        )
+        for t in result.get("taxa", [])
+    )
 
 
 @cli.command(help="Filter SARIF file", name="filter")
@@ -301,6 +313,12 @@ class FilterParams(CommonParams):
     "-c",
     multiple=True,
     help="Include findings matching specified CWE ID(s) or name glob pattern(s) (multiple) (case insensitive)",
+)
+@click.option(
+    "--not-cwe",
+    "-C",
+    multiple=True,
+    help="Exclude findings matching specified CWE ID(s) or name glob pattern(s) (multiple) (case insensitive)",
 )
 @click.option(
     "--exclude-rules",
@@ -415,18 +433,14 @@ async def _filter(params: FilterParams) -> None:
         logger.info(f"Filter based on CWE: {params.cwe}")
         cwe_names = load_cwe_names()
         for run in sarif["runs"]:
+            run["results"] = list(filter(lambda x: _result_matches_cwe(x, params.cwe, cwe_names), run["results"]))
+
+    if params.not_cwe:
+        logger.info(f"Exclude based on CWE: {params.not_cwe}")
+        cwe_names = load_cwe_names()
+        for run in sarif["runs"]:
             run["results"] = list(
-                filter(
-                    lambda x: any(
-                        any(
-                            fnmatch.fnmatch(t.get("id", ""), p)
-                            or fnmatch.fnmatch(cwe_names.get(t.get("id", ""), "").lower(), p.lower())
-                            for p in params.cwe
-                        )
-                        for t in x.get("taxa", [])
-                    ),
-                    run["results"],
-                )
+                filter(lambda x: not _result_matches_cwe(x, params.not_cwe, cwe_names), run["results"])
             )
 
     if params.exclude_rules:

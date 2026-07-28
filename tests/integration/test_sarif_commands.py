@@ -243,8 +243,130 @@ def test_filter_cwe_no_taxa_file(runner, tmp_path):
 
 
 # ---------------------------------------------------------------------------
-# sarif filter -- selected findings count
+# sarif filter --not-cwe
 # ---------------------------------------------------------------------------
+
+
+def test_filter_exclude_by_cwe_id(runner, tmp_path, caplog):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-C", "CWE-457", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+    assert "Exclude based on CWE: ('CWE-457',)" in caplog.text
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 2
+    for f in findings:
+        assert f.get("taxa", [{}])[0].get("id") != "CWE-457"
+
+
+def test_filter_exclude_by_cwe_id_glob(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-C", "CWE-4*", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 2
+    for f in findings:
+        assert f.get("taxa", [{}])[0].get("id") != "CWE-457"
+
+
+def test_filter_exclude_by_cwe_name_glob(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-C", "*Uninitialized*", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 2
+    for f in findings:
+        assert f.get("taxa", [{}])[0].get("id") != "CWE-457"
+
+
+def test_filter_exclude_by_cwe_name_glob_case_insensitive(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-C", "*uninitialized*", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 2
+    for f in findings:
+        assert f.get("taxa", [{}])[0].get("id") != "CWE-457"
+
+
+def test_filter_exclude_by_multiple_cwe(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-C", "CWE-119", "-C", "CWE-457", "-o", str(out), BUFFER_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    cwe_ids = {f.get("taxa", [{}])[0].get("id") for f in findings}
+    assert "CWE-119" not in cwe_ids
+    assert "CWE-457" not in cwe_ids
+    assert "CWE-126" in cwe_ids
+    assert "CWE-788" in cwe_ids
+
+
+def test_filter_exclude_cwe_no_matches(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-C", "CWE-999", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 6
+
+
+def test_filter_exclude_cwe_keeps_no_taxa(runner, tmp_path):
+    sarif = {
+        "runs": [
+            {
+                "tool": {"driver": {"name": "TestTool"}},
+                "results": [
+                    {
+                        "ruleId": "rule1",
+                        "kind": "open",
+                        "level": "warning",
+                        "message": {"text": "test"},
+                        "locations": [
+                            {
+                                "physicalLocation": {
+                                    "artifactLocation": {"uri": "test.c"},
+                                    "region": {"startLine": 1},
+                                }
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
+    }
+    sarif_path = tmp_path / "no_taxa.sarif"
+    sarif_path.write_text(json.dumps(sarif))
+
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-C", "CWE-457", "-o", str(out), str(sarif_path)])
+    assert result.exit_code == 0
+
+    out_sarif = json.loads(out.read_text())
+    findings = [r for run in out_sarif["runs"] for r in run["results"]]
+    assert len(findings) == 1
+
+
+def test_filter_include_and_exclude_cwe(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-c", "*Buffer*", "-C", "CWE-119", "-o", str(out), BUFFER_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    cwe_ids = {f.get("taxa", [{}])[0].get("id") for f in findings}
+    assert "CWE-119" not in cwe_ids
+    assert "CWE-126" in cwe_ids
+    assert "CWE-788" in cwe_ids
 
 
 def test_filter_prints_selected_findings_count(runner, tmp_path, caplog):
