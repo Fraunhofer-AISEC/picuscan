@@ -56,6 +56,8 @@ mapping = {
         "*core.CastToStruct": "CWE-704",
         "*core.FixedAddr": "CWE-587",
         "core.VLASize": "CWE-131",
+        "*.UninitializedObject": "CWE-665",
+        "*.UncheckedReturn": "CWE-252",
     },
     "clang-tidy": {
         "bugprone-integer-division": "CWE-682",
@@ -191,6 +193,9 @@ mapping = {
         "realloc": "CWE-226",
         "OPENSSL_free": "CWE-212",
         "X509_NAME_oneline": "CWE-120",
+        "getchar": "CWE-120",
+        "unknown": "CWE-120",
+        "getopt_long": "CWE-120",
     },
     "flawfinder": {"FF1048": "CWE-330"},
     "ikos": {
@@ -256,6 +261,10 @@ mapping = {
         "selfAssignment": "CWE-563",
         "uselessAssignmentPtrArg": "CWE-563",
         "arithOperationsOnVoidPointer": "CWE-468",
+        "legacyUninitvar": "CWE-457",
+        "signConversion": "CWE-195",
+        "stlIfStrFind": "CWE-1006",
+        "shadowMember": "CWE-1109",
     },
     "gcc": {
         "-Wstringop-overflow=": "CWE-119",
