@@ -388,3 +388,262 @@ def test_filter_no_cwe_keeps_all(runner, tmp_path, caplog):
     result = runner.invoke(main, ["sarif", "filter", "-o", str(out), UNINIT_SARIF])
     assert result.exit_code == 0
     assert "Export 6 finding(s)" in caplog.text
+
+
+# ---------------------------------------------------------------------------
+# sarif search
+# ---------------------------------------------------------------------------
+
+
+def test_search_shows_table(runner):
+    result = runner.invoke(main, ["sarif", "search", UNINIT_SARIF])
+    assert result.exit_code == 0
+    assert "tool" in result.output
+    assert "ruleID" in result.output
+    assert "level" in result.output
+    assert "rank" in result.output
+    assert "CWE" in result.output
+    assert "location" in result.output
+    assert "message" in result.output
+    assert "clangsa" in result.output
+    assert "core.uninitialized.UndefReturn" in result.output
+    assert "main.c" in result.output
+
+
+def test_search_max_rows(runner):
+    result = runner.invoke(main, ["sarif", "search", "--max-rows", "2", UNINIT_SARIF])
+    assert result.exit_code == 0
+    assert "clangsa" in result.output
+    assert "Flawfinder" in result.output
+    assert "Cppcheck" not in result.output
+    assert "IKOS" not in result.output
+    assert "RATS" not in result.output
+
+
+def test_search_all_rows_by_default(runner):
+    result = runner.invoke(main, ["sarif", "search", UNINIT_SARIF])
+    assert result.exit_code == 0
+    assert "clangsa" in result.output
+    assert "Flawfinder" in result.output
+    assert "GCC" in result.output
+    assert "Cppcheck" in result.output
+    assert "IKOS" in result.output
+    assert "RATS" in result.output
+
+
+def test_search_with_path_filter(runner):
+    result = runner.invoke(main, ["sarif", "search", "-p", "*main.c", UNINIT_SARIF])
+    assert result.exit_code == 0
+    assert "clangsa" in result.output
+    assert "main.c" in result.output
+
+
+def test_search_with_line_filter(runner):
+    result = runner.invoke(main, ["sarif", "search", "-L", "2", UNINIT_SARIF])
+    assert result.exit_code == 0
+    assert "Flawfinder" in result.output
+    assert "RATS" in result.output
+    assert "clangsa" not in result.output
+
+
+def test_search_with_cwe_filter(runner):
+    result = runner.invoke(main, ["sarif", "search", "-c", "CWE-457", UNINIT_SARIF])
+    assert result.exit_code == 0
+    assert "clangsa" in result.output
+    assert "Flawfinder" not in result.output
+
+
+def test_search_combined_path_line(runner):
+    result = runner.invoke(main, ["sarif", "search", "-p", "*main.c", "-L", "2", UNINIT_SARIF])
+    assert result.exit_code == 0
+    assert "Flawfinder" in result.output
+    assert "RATS" in result.output
+    assert "clangsa" not in result.output
+
+
+def test_search_no_findings(runner, tmp_path):
+    sarif = {
+        "runs": [
+            {
+                "tool": {"driver": {"name": "TestTool"}},
+                "results": [],
+            }
+        ]
+    }
+    sarif_path = tmp_path / "empty.sarif"
+    sarif_path.write_text(json.dumps(sarif))
+
+    result = runner.invoke(main, ["sarif", "search", str(sarif_path)])
+    assert result.exit_code == 0
+    assert "tool" not in result.output
+
+
+def test_search_line_invalid_value(runner):
+    result = runner.invoke(main, ["sarif", "search", "-L", "abc", UNINIT_SARIF])
+    assert result.exit_code == 2
+    assert "Invalid value for --line" in result.output
+
+
+def test_search_json_output(runner):
+    result = runner.invoke(main, ["sarif", "search", "--json", UNINIT_SARIF])
+    assert result.exit_code == 0
+    data = json.loads(result.output)
+    assert len(data) == 6
+    for row in data:
+        assert set(row.keys()) == {"tool", "ruleID", "level", "rank", "CWE", "location", "message"}
+    assert any(r["tool"] == "clangsa" for r in data)
+    assert all("main.c" in r["location"] for r in data)
+
+
+def test_search_json_output_with_max_rows(runner):
+    result = runner.invoke(main, ["sarif", "search", "--json", "--max-rows", "2", UNINIT_SARIF])
+    assert result.exit_code == 0
+    data = json.loads(result.output)
+    assert len(data) == 2
+
+
+def test_search_json_output_with_filters(runner):
+    result = runner.invoke(main, ["sarif", "search", "--json", "-L", "2", UNINIT_SARIF])
+    assert result.exit_code == 0
+    data = json.loads(result.output)
+    assert len(data) == 2
+    tools = {r["tool"] for r in data}
+    assert "Flawfinder" in tools
+    assert "RATS" in tools
+    assert "clangsa" not in tools
+
+
+def test_search_json_output_empty(runner, tmp_path):
+    sarif = {
+        "runs": [
+            {
+                "tool": {"driver": {"name": "TestTool"}},
+                "results": [],
+            }
+        ]
+    }
+    sarif_path = tmp_path / "empty.sarif"
+    sarif_path.write_text(json.dumps(sarif))
+
+    result = runner.invoke(main, ["sarif", "search", "--json", str(sarif_path)])
+    assert result.exit_code == 0
+    assert "tool" not in result.output
+
+
+# ---------------------------------------------------------------------------
+# sarif filter --path-filter
+# ---------------------------------------------------------------------------
+
+
+def test_filter_by_path_glob(runner, tmp_path, caplog):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-p", "*main.c", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+    assert "Filter based on path: ('*main.c',)" in caplog.text
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 6
+    for f in findings:
+        uri = f["locations"][0]["physicalLocation"]["artifactLocation"]["uri"]
+        assert uri.endswith("main.c")
+
+
+def test_filter_by_path_no_matches(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-p", "*nonexistent*", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 0
+
+
+def test_filter_by_multiple_paths(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-p", "*main.c", "-p", "*.cpp", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 6
+
+
+# ---------------------------------------------------------------------------
+# sarif filter --line
+# ---------------------------------------------------------------------------
+
+
+def test_filter_by_single_line(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-L", "2", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 2
+    for f in findings:
+        assert f["locations"][0]["physicalLocation"]["region"]["startLine"] == 2
+
+
+def test_filter_by_line_range(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-L", "2-3", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 6
+    for f in findings:
+        line = f["locations"][0]["physicalLocation"]["region"]["startLine"]
+        assert 2 <= line <= 3
+
+
+def test_filter_by_line_range_open_end(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-L", "3-", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 4
+    for f in findings:
+        line = f["locations"][0]["physicalLocation"]["region"]["startLine"]
+        assert line >= 3
+
+
+def test_filter_by_line_range_open_start(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-L", "-2", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 2
+    for f in findings:
+        line = f["locations"][0]["physicalLocation"]["region"]["startLine"]
+        assert line <= 2
+
+
+def test_filter_by_line_no_matches(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-L", "999", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 0
+
+    sarif = json.loads(out.read_text())
+    findings = [r for run in sarif["runs"] for r in run["results"]]
+    assert len(findings) == 0
+
+
+def test_filter_by_line_invalid_value(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-L", "abc", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 2
+    assert "Invalid value for --line" in result.output
+
+
+def test_filter_by_line_invalid_range(runner, tmp_path):
+    out = tmp_path / "out.sarif"
+    result = runner.invoke(main, ["sarif", "filter", "-L", "20-10", "-o", str(out), UNINIT_SARIF])
+    assert result.exit_code == 2
+    assert "Invalid value for --line" in result.output

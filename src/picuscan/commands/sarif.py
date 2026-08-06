@@ -17,6 +17,7 @@ import attrs
 import click
 import numpy as np
 import pandas as pd
+from tabulate import tabulate
 
 from picuscan import logging
 from picuscan.misc.decorators import collect_params, unasync
@@ -61,6 +62,10 @@ def expand_json_column(df: pd.DataFrame, column: str, rename: None | dict[str, s
 
 def load_sarif_as_df(path: Path, ignore_stacks: bool = False) -> pd.DataFrame:
     sarif = json.load(open(path))
+    return _sarif_to_df(sarif, path.name, ignore_stacks)
+
+
+def _sarif_to_df(sarif: dict[str, Any], name: str, ignore_stacks: bool = False) -> pd.DataFrame:
     results = []
     for run in sarif["runs"]:
         tool = run["tool"]["driver"]
@@ -76,7 +81,7 @@ def load_sarif_as_df(path: Path, ignore_stacks: bool = False) -> pd.DataFrame:
     if results:
         df = pd.concat(results).reset_index(drop=True)
     if df.empty:
-        logger.warning(f"SARIF file has no findings: {path}")
+        logger.warning(f"SARIF has no findings: {name}")
         return df
     if "taxa" in df.columns:
         df = df.explode("taxa")
@@ -107,7 +112,7 @@ def load_sarif_as_df(path: Path, ignore_stacks: bool = False) -> pd.DataFrame:
             lambda x: hashlib.sha256(json.dumps(x, sort_keys=True).encode()).hexdigest() if x else x
         )
     df = df.reset_index(drop=True)
-    df.attrs["name"] = path.name
+    df.attrs["name"] = name
     return df
 
 
@@ -279,8 +284,12 @@ class FilterParams(CommonParams):
     exclude_rules: Path | None
     path_in: Path
     scope_file: Path
-    out: Path
     merge: bool
+    path_filter: list[str]
+    line: str | None
+    out: Path | None = None
+    max_rows: int = -1
+    json_output: bool = False
 
 
 def _result_matches_cwe(result: dict[str, Any], patterns: list[str], cwe_names: dict[str, str]) -> bool:
@@ -294,60 +303,124 @@ def _result_matches_cwe(result: dict[str, Any], patterns: list[str], cwe_names: 
     )
 
 
-@cli.command(help="Filter SARIF file", name="filter")
-@add_common_params
-@click.argument("path_in", type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path), required=True)
-@click.option("--tool", "-t", multiple=True, help="Tool(s) which should be included (multiple)")
-@click.option("--level", "-l", multiple=True, help="Level(s) which should be included (multiple)")
-@click.option("--kind", "-k", multiple=True, help="Kind(s) which should be included (multiple)")
-@click.option("--rank", "-r", type=int, help="Minimum rank which should be included")
-@click.option("--scope", "-s", multiple=True, help="Finding must be in specified scope(s) (multiple) (case sensitive)")
-@click.option(
-    "--not-scope", "-n", multiple=True, help="Exclude findings from specified scope(s) (multiple) (case sensitive)"
-)
-@click.option(
-    "--not-message", "-m", multiple=True, help="Exclude finding with specified message(s) (multiple) (case sensitive)"
-)
-@click.option(
-    "--cwe",
-    "-c",
-    multiple=True,
-    help="Include findings matching specified CWE ID(s) or name glob pattern(s) (multiple) (case insensitive)",
-)
-@click.option(
-    "--not-cwe",
-    "-C",
-    multiple=True,
-    help="Exclude findings matching specified CWE ID(s) or name glob pattern(s) (multiple) (case insensitive)",
-)
-@click.option(
-    "--exclude-rules",
-    "-e",
-    type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
-    help="Read rule IDs to exclude from file",
-)
-@click.option(
-    "--out",
-    "-o",
-    type=click.Path(file_okay=True, dir_okay=False, path_type=Path),
-    required=True,
-    help="Path to store filtered SARIF file",
-)
-@click.option(
-    "--scope-file",
-    "-f",
-    type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
-    help="Load in-scope paths from specified file (case sensitive)",
-)
-@click.option(
-    "--merge/--no-merge",
-    "-g",
-    default=False,
-    help="Merge findings at same location but different call stack to single finding",
-)
-@collect_params(FilterParams)
-@unasync
-async def _filter(params: FilterParams) -> None:
+def _parse_line_range(spec: str) -> tuple[int | None, int | None]:
+    """Parse a line range specification like '10', '10-20', '10-', '-20'."""
+    spec = spec.strip()
+    if "-" in spec:
+        parts = spec.split("-", 1)
+        start = int(parts[0]) if parts[0].strip() else None
+        end = int(parts[1]) if parts[1].strip() else None
+    else:
+        start = end = int(spec)
+    if start is not None and start < 1:
+        raise ValueError("line range start must be >= 1")
+    if end is not None and end < 1:
+        raise ValueError("line range end must be >= 1")
+    if start is not None and end is not None and start > end:
+        raise ValueError("line range start must be <= end")
+    return start, end
+
+
+def _result_matches_path_and_line(
+    result: dict[str, Any], path_patterns: list[str], line_range: tuple[int | None, int | None]
+) -> bool:
+    """Check whether a result's primary location matches the given path patterns and line range."""
+    locations = result.get("locations")
+    if not locations:
+        return False
+    phys = locations[0].get("physicalLocation", {})
+    uri = phys.get("artifactLocation", {}).get("uri", "")
+    region = phys.get("region", {})
+    start_line = region.get("startLine")
+
+    if path_patterns:
+        if not any(fnmatch.fnmatch(uri, p) for p in path_patterns):
+            return False
+
+    line_start, line_end = line_range
+    if line_start is not None or line_end is not None:
+        if start_line is None:
+            return False
+        if line_start is not None and start_line < line_start:
+            return False
+        if line_end is not None and start_line > line_end:
+            return False
+
+    return True
+
+
+FILTER_OPTIONS = [
+    click.option("--tool", "-t", multiple=True, help="Tool(s) which should be included (multiple)"),
+    click.option("--level", "-l", multiple=True, help="Level(s) which should be included (multiple)"),
+    click.option("--kind", "-k", multiple=True, help="Kind(s) which should be included (multiple)"),
+    click.option("--rank", "-r", type=int, help="Minimum rank which should be included"),
+    click.option(
+        "--scope", "-s", multiple=True, help="Finding must be in specified scope(s) (multiple) (case sensitive)"
+    ),
+    click.option(
+        "--not-scope", "-n", multiple=True, help="Exclude findings from specified scope(s) (multiple) (case sensitive)"
+    ),
+    click.option(
+        "--not-message",
+        "-m",
+        multiple=True,
+        help="Exclude finding with specified message(s) (multiple) (case sensitive)",
+    ),
+    click.option(
+        "--cwe",
+        "-c",
+        multiple=True,
+        help="Include findings matching specified CWE ID(s) or name glob pattern(s) (multiple) (case insensitive)",
+    ),
+    click.option(
+        "--not-cwe",
+        "-C",
+        multiple=True,
+        help="Exclude findings matching specified CWE ID(s) or name glob pattern(s) (multiple) (case insensitive)",
+    ),
+    click.option(
+        "--exclude-rules",
+        "-e",
+        type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
+        help="Read rule IDs to exclude from file",
+    ),
+    click.option(
+        "--scope-file",
+        "-f",
+        type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path),
+        help="Load in-scope paths from specified file (case sensitive)",
+    ),
+    click.option(
+        "--merge/--no-merge",
+        "-g",
+        default=False,
+        help="Merge findings at same location but different call stack to single finding",
+    ),
+    click.option(
+        "--path-filter",
+        "-p",
+        multiple=True,
+        help="Filter findings by file path (fnmatch glob pattern, matches primary location) (multiple)",
+    ),
+    click.option(
+        "--line",
+        "-L",
+        type=str,
+        default=None,
+        help="Filter findings by line range of primary location (e.g. '10', '10-20', '10-', '-20')",
+    ),
+]
+
+
+def add_filter_options(cmd: Callable[..., R]) -> Callable[..., R]:
+    for param in reversed(FILTER_OPTIONS):
+        cmd = param(cmd)
+    return cmd
+
+
+def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
+    """Apply all filter steps to the SARIF dict in-place based on the given params."""
+
     def filter_scope(sarif_run: dict[str, Any], scope: list[str], invert: bool = False) -> None:
         rm = list()
         for idx, result in enumerate(sarif_run["results"]):
@@ -379,9 +452,6 @@ async def _filter(params: FilterParams) -> None:
 
         for idx in rm[::-1]:
             del sarif_run["results"][idx]
-
-    with open(params.path_in) as f:
-        sarif = json.load(f)
 
     if params.tool:
         logger.info(f"Filter based on tool: {params.tool}")
@@ -460,6 +530,22 @@ async def _filter(params: FilterParams) -> None:
         for run in sarif["runs"]:
             filter_scope(run, files, False)
 
+    if params.path_filter or params.line:
+        line_range: tuple[int | None, int | None] = (None, None)
+        if params.line:
+            try:
+                line_range = _parse_line_range(params.line)
+            except ValueError as e:
+                raise click.BadParameter(str(e), param_hint="--line")
+        logger.info(f"Filter based on path: {params.path_filter}, line: {params.line}")
+        for run in sarif["runs"]:
+            run["results"] = list(
+                filter(
+                    lambda x: _result_matches_path_and_line(x, list(params.path_filter), line_range),
+                    run["results"],
+                )
+            )
+
     if params.merge:
         # merge runs with same tool
         sarif["runs"] = sorted(sarif["runs"], key=lambda x: x["tool"]["driver"]["name"])
@@ -512,11 +598,79 @@ async def _filter(params: FilterParams) -> None:
     # only include runs where we actually have results
     sarif["runs"] = list(filter(lambda x: len(x["results"]) > 0, sarif["runs"]))
 
+
+@cli.command(help="Filter SARIF file", name="filter")
+@add_common_params
+@add_filter_options
+@click.argument("path_in", type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path), required=True)
+@click.option(
+    "--out",
+    "-o",
+    type=click.Path(file_okay=True, dir_okay=False, path_type=Path),
+    required=True,
+    help="Path to store filtered SARIF file",
+)
+@collect_params(FilterParams)
+@unasync
+async def _filter(params: FilterParams) -> None:
+    if params.out is None:
+        raise click.UsageError("--out is required")
+
+    with open(params.path_in) as f:
+        sarif = json.load(f)
+
+    _apply_filters(sarif, params)
+
     selected = sum(len(run["results"]) for run in sarif["runs"])
     logger.info(f"Export {selected} finding(s) to file: {params.out}")
 
     with open(params.out, "wt") as f:
         json.dump(sarif, f, indent=2)
+
+
+@cli.command(help="Search and display findings from SARIF file as table", name="search")
+@add_common_params
+@add_filter_options
+@click.argument("path_in", type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path), required=True)
+@click.option(
+    "--max-rows",
+    type=int,
+    default=-1,
+    help="Maximum number of rows to display (use -1 for all)",
+)
+@click.option(
+    "--json/--no-json",
+    "json_output",
+    default=False,
+    help="Output results as JSON instead of a table",
+)
+@collect_params(FilterParams)
+@unasync
+async def _search(params: FilterParams) -> None:
+    with open(params.path_in) as f:
+        sarif = json.load(f)
+
+    _apply_filters(sarif, params)
+
+    selected = sum(len(run["results"]) for run in sarif["runs"])
+
+    df = _sarif_to_df(sarif, params.path_in.name, params.ignore_stacks)
+    if df.empty:
+        logger.warning("No findings to display")
+        return
+    display_cols = ["tool", "ruleId", "level", "rank", "CWE", "location", "message"]
+    for c in display_cols:
+        if c not in df.columns:
+            df[c] = pd.NA
+    df_display = df[display_cols].fillna("").rename(columns={"ruleId": "ruleID"})
+    if params.max_rows >= 0:
+        df_display = df_display.head(params.max_rows)
+
+    if params.json_output:
+        print(json.dumps(df_display.to_dict("records"), indent=2))
+    else:
+        logger.info(f"Found {selected} finding(s)")
+        print(tabulate(df_display.to_dict("list"), headers="keys", tablefmt="psql"))
 
 
 @attrs.frozen
