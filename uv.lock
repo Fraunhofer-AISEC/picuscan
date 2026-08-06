@@ -631,6 +631,7 @@ dev = [
     { name = "reuse" },
     { name = "ruff" },
     { name = "types-networkx" },
+    { name = "types-tabulate" },
     { name = "types-tqdm" },
     { name = "types-xmltodict" },
     { name = "typing-extensions" },
@@ -659,6 +660,7 @@ dev = [
     { name = "reuse", specifier = ">=6.2.0" },
     { name = "ruff", specifier = ">=0.15.21" },
     { name = "types-networkx", specifier = ">=3.6.1.20260624" },
+    { name = "types-tabulate", specifier = ">=0.9.0.20241207" },
     { name = "types-tqdm", specifier = ">=4.68.0.20260608" },
     { name = "types-xmltodict", specifier = ">=1.0.1.20260518" },
     { name = "typing-extensions", specifier = ">=4.0.1" },
@@ -864,6 +866,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/e0/01/c5a19253fe1ac159159ddf9a3a07cec8bb5e486ec4d9002ad2821da0e5d2/types_requests-2.33.0.20260518.tar.gz", hash = "sha256:df7bd3bfe0ca8402dfb841e7d9be714bb5578203283d66d7dc4ef69343449a5e", size = 24752, upload-time = "2026-05-18T06:07:37.966Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1c/bc/b139710a3b6018f7fb2b9508b35c8af564e61bf2bf4fa619d088f3e16f85/types_requests-2.33.0.20260518-py3-none-any.whl", hash = "sha256:626d697d1adaaff76e2044dc8c5c051d8f21abc157bdfe204a75558076fe0bf0", size = 21391, upload-time = "2026-05-18T06:07:37.044Z" },
+]
+
+[[package]]
+name = "types-tabulate"
+version = "0.10.0.20260508"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/11/af/c100d86897d3fdb010d8f813569fa80355b5cb553f51080e37d4f3c451bb/types_tabulate-0.10.0.20260508.tar.gz", hash = "sha256:8e51f159e8b24976849706ae2ed1dc9adba8ebbd080b17e494ebb66a8cc92c74", size = 8395, upload-time = "2026-05-08T04:47:58.921Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a0/36/443b700f54a585cf8ed4e76d8ad08b12df6914f8782a2788ecd0d8491519/types_tabulate-0.10.0.20260508-py3-none-any.whl", hash = "sha256:b1e1a2d0456fbd655a71690b09a7aaeffdf2978d32049184ea436492aa51d20a", size = 8137, upload-time = "2026-05-08T04:47:57.872Z" },
 ]
 
 [[package]]
