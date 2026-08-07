@@ -288,7 +288,7 @@ class FilterParams(CommonParams):
     path_filter: list[str]
     line: str | None
     out: Path | None = None
-    max_rows: int = -1
+    max_rows: int = 20
     json_output: bool = False
 
 
@@ -635,7 +635,7 @@ async def _filter(params: FilterParams) -> None:
 @click.option(
     "--max-rows",
     type=int,
-    default=-1,
+    default=20,
     help="Maximum number of rows to display (use -1 for all)",
 )
 @click.option(
@@ -669,7 +669,7 @@ async def _search(params: FilterParams) -> None:
     if params.json_output:
         print(json.dumps(df_display.to_dict("records"), indent=2))
     else:
-        logger.info(f"Found {selected} finding(s)")
+        logger.info(f"Found {selected} finding(s) limiting output to {params.max_rows}")
         print(tabulate(df_display.to_dict("list"), headers="keys", tablefmt="psql"))
 
 
