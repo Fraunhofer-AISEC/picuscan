@@ -506,10 +506,11 @@ def test_search_json_output_with_filters(runner):
     result = runner.invoke(main, ["sarif", "search", "--json", "-L", "2", UNINIT_SARIF])
     assert result.exit_code == 0
     data = json.loads(result.output)
-    assert len(data) == 2
+    assert len(data) == 3
     tools = {r["tool"] for r in data}
     assert "Flawfinder" in tools
     assert "RATS" in tools
+    assert "GCC" in tools
     assert "clangsa" not in tools
 
 
@@ -533,6 +534,26 @@ def test_search_json_output_empty(runner, tmp_path):
 # ---------------------------------------------------------------------------
 # sarif filter --path-filter
 # ---------------------------------------------------------------------------
+
+
+def _result_has_line(result: dict, line: int) -> bool:
+    """Check whether a result has any location (code flows, stacks, primary) at the given line."""
+    primary = result.get("locations", [{}])[0]
+    phys = primary.get("physicalLocation", {})
+    if phys.get("region", {}).get("startLine") == line:
+        return True
+    for flow in result.get("codeFlows", []):
+        for tf in flow.get("threadFlows", []):
+            for tl in tf.get("locations", []):
+                p = tl.get("location", {}).get("physicalLocation", {})
+                if p.get("region", {}).get("startLine") == line:
+                    return True
+    for stack in result.get("stacks", []):
+        for frame in stack.get("frames", []):
+            p = frame.get("location", {}).get("physicalLocation", {})
+            if p.get("region", {}).get("startLine") == line:
+                return True
+    return False
 
 
 def test_filter_by_path_glob(runner, tmp_path, caplog):
@@ -581,9 +602,9 @@ def test_filter_by_single_line(runner, tmp_path):
 
     sarif = json.loads(out.read_text())
     findings = [r for run in sarif["runs"] for r in run["results"]]
-    assert len(findings) == 2
+    assert len(findings) == 3
     for f in findings:
-        assert f["locations"][0]["physicalLocation"]["region"]["startLine"] == 2
+        assert _result_has_line(f, 2)
 
 
 def test_filter_by_line_range(runner, tmp_path):
@@ -619,10 +640,9 @@ def test_filter_by_line_range_open_start(runner, tmp_path):
 
     sarif = json.loads(out.read_text())
     findings = [r for run in sarif["runs"] for r in run["results"]]
-    assert len(findings) == 2
+    assert len(findings) == 3
     for f in findings:
-        line = f["locations"][0]["physicalLocation"]["region"]["startLine"]
-        assert line <= 2
+        assert _result_has_line(f, 2)
 
 
 def test_filter_by_line_no_matches(runner, tmp_path):

@@ -321,34 +321,6 @@ def _parse_line_range(spec: str) -> tuple[int | None, int | None]:
     return start, end
 
 
-def _result_matches_path_and_line(
-    result: dict[str, Any], path_patterns: list[str], line_range: tuple[int | None, int | None]
-) -> bool:
-    """Check whether a result's primary location matches the given path patterns and line range."""
-    locations = result.get("locations")
-    if not locations:
-        return False
-    phys = locations[0].get("physicalLocation", {})
-    uri = phys.get("artifactLocation", {}).get("uri", "")
-    region = phys.get("region", {})
-    start_line = region.get("startLine")
-
-    if path_patterns:
-        if not any(fnmatch.fnmatch(uri, p) for p in path_patterns):
-            return False
-
-    line_start, line_end = line_range
-    if line_start is not None or line_end is not None:
-        if start_line is None:
-            return False
-        if line_start is not None and start_line < line_start:
-            return False
-        if line_end is not None and start_line > line_end:
-            return False
-
-    return True
-
-
 FILTER_OPTIONS = [
     click.option("--tool", "-t", multiple=True, help="Tool(s) which should be included (multiple)"),
     click.option("--level", "-l", multiple=True, help="Level(s) which should be included (multiple)"),
@@ -418,40 +390,110 @@ def add_filter_options(cmd: Callable[..., R]) -> Callable[..., R]:
     return cmd
 
 
+def _result_is_in_scope(
+    result: dict[str, Any],
+    scope: list[str],
+    ignore_stacks: bool,
+    line_range: tuple[int | None, int | None] | None = None,
+    fnmatch_paths: bool = False,
+) -> bool:
+    """Check whether a result is in scope, considering code flows, stacks, and primary location.
+
+    If line_range is provided, locations must match both the path AND the line range.
+    If line_range is None, only the path is checked.
+
+    If fnmatch_paths is True, path matching uses fnmatch glob patterns. Otherwise,
+    substring matching is used (current --scope behavior).
+    """
+
+    def uri_matches(uri: str) -> bool:
+        if not scope:
+            return True
+        if fnmatch_paths:
+            return any(fnmatch.fnmatch(uri, p) for p in scope)
+        return any(p in uri for p in scope)
+
+    def location_in_scope(uri: str, start_line: int | None = None) -> bool:
+        if not uri_matches(uri):
+            return False
+        if line_range is not None:
+            if start_line is None:
+                return False
+            ls, le = line_range
+            if ls is not None and start_line < ls:
+                return False
+            if le is not None and start_line > le:
+                return False
+        return True
+
+    locations = result.get("locations")
+    if not locations:
+        return False
+
+    in_scope = False
+
+    if "codeFlows" in result and not ignore_stacks:
+        for flow in result["codeFlows"]:
+            for thread in flow["threadFlows"]:
+                for loc in thread["locations"]:
+                    loc_data = loc.get("location", {})
+                    phys = loc_data.get("physicalLocation", {})
+                    if not phys:
+                        continue
+                    uri = phys.get("artifactLocation", {}).get("uri", "")
+                    start = phys.get("region", {}).get("startLine")
+                    if location_in_scope(uri, start):
+                        in_scope = True
+
+    if "stacks" in result:
+        for stack in result["stacks"]:
+            for frame in stack["frames"]:
+                loc_data = frame.get("location", {})
+                phys = loc_data.get("physicalLocation", {})
+                if not phys:
+                    continue
+                uri = phys.get("artifactLocation", {}).get("uri", "")
+                start = phys.get("region", {}).get("startLine")
+                if location_in_scope(uri, start):
+                    in_scope = True
+
+    phys = locations[0].get("physicalLocation", {})
+    if not phys:
+        return in_scope
+    uri = phys.get("artifactLocation", {}).get("uri", "")
+    start = phys.get("region", {}).get("startLine")
+    if location_in_scope(uri, start):
+        in_scope = True
+
+    return in_scope
+
+
+def filter_scope(
+    sarif_run: dict[str, Any],
+    scope: list[str],
+    invert: bool = False,
+    ignore_stacks: bool = False,
+    line_range: tuple[int | None, int | None] | None = None,
+    fnmatch_paths: bool = False,
+) -> None:
+    """Filter results from a SARIF run in-place based on scope matching.
+
+    Determines in-scope by checking code flows, stacks, and primary location.
+    Results not matching scope criteria (or matching when inverted) are removed.
+    """
+    rm = []
+    for idx, result in enumerate(sarif_run["results"]):
+        if "locations" not in result:
+            continue
+        if _result_is_in_scope(result, scope, ignore_stacks, line_range, fnmatch_paths) is invert:
+            rm.append(idx)
+
+    for idx in rm[::-1]:
+        del sarif_run["results"][idx]
+
+
 def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
     """Apply all filter steps to the SARIF dict in-place based on the given params."""
-
-    def filter_scope(sarif_run: dict[str, Any], scope: list[str], invert: bool = False) -> None:
-        rm = list()
-        for idx, result in enumerate(sarif_run["results"]):
-            if "locations" not in result:
-                continue
-            in_scope = False
-            if "codeFlows" in result and not params.ignore_stacks:
-                for flow in result["codeFlows"]:
-                    for thread in flow["threadFlows"]:
-                        for loc in thread["locations"]:
-                            if "physicalLocation" not in loc["location"]:
-                                continue
-                            uri = loc["location"]["physicalLocation"]["artifactLocation"]["uri"]
-                            if [path for path in scope if path in uri]:
-                                in_scope = True
-            if "stacks" in result:
-                for stack in result["stacks"]:
-                    for frame in stack["frames"]:
-                        uri = frame["location"]["physicalLocation"]["artifactLocation"]["uri"]
-                        if [path for path in scope if path in uri]:
-                            in_scope = True
-            if "physicalLocation" not in result["locations"][0]:
-                continue
-            uri = result["locations"][0]["physicalLocation"]["artifactLocation"]["uri"]
-            if [path for path in scope if path in uri]:
-                in_scope = True
-            if in_scope is invert:
-                rm.append(idx)
-
-        for idx in rm[::-1]:
-            del sarif_run["results"][idx]
 
     if params.tool:
         logger.info(f"Filter based on tool: {params.tool}")
@@ -482,12 +524,12 @@ def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
     if params.scope:
         logger.info(f"Filter based on scope: {params.scope}")
         for run in sarif["runs"]:
-            filter_scope(run, params.scope)
+            filter_scope(run, list(params.scope), ignore_stacks=params.ignore_stacks)
 
     if params.not_scope:
         logger.info(f"Filter based on not in scope: {params.not_scope}")
         for run in sarif["runs"]:
-            filter_scope(run, params.not_scope, True)
+            filter_scope(run, list(params.not_scope), invert=True, ignore_stacks=params.ignore_stacks)
 
     if params.not_message:
         logger.info(f"Exclude based on message: {params.not_message}")
@@ -528,7 +570,7 @@ def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
         files = params.scope_file.read_text().strip().split("\n")
         logger.info(f"Filter based on scope file: {params.scope_file}")
         for run in sarif["runs"]:
-            filter_scope(run, files, False)
+            filter_scope(run, files, ignore_stacks=params.ignore_stacks)
 
     if params.path_filter or params.line:
         line_range: tuple[int | None, int | None] = (None, None)
@@ -539,11 +581,12 @@ def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
                 raise click.BadParameter(str(e), param_hint="--line")
         logger.info(f"Filter based on path: {params.path_filter}, line: {params.line}")
         for run in sarif["runs"]:
-            run["results"] = list(
-                filter(
-                    lambda x: _result_matches_path_and_line(x, list(params.path_filter), line_range),
-                    run["results"],
-                )
+            filter_scope(
+                run,
+                list(params.path_filter),
+                ignore_stacks=params.ignore_stacks,
+                line_range=line_range,
+                fnmatch_paths=True,
             )
 
     if params.merge:
