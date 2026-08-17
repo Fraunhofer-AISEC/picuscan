@@ -85,6 +85,8 @@ def _sarif_to_df(sarif: dict[str, Any], name: str, ignore_stacks: bool = False) 
         return df
     if "taxa" in df.columns:
         df = df.explode("taxa")
+    if "locations" not in df.columns:
+        df["locations"] = None
     df = df.explode("locations")
     df = expand_json_column(
         df, "locations", {"physicalLocation.artifactLocation.uri": "path", "physicalLocation.region.startLine": "line"}
@@ -483,8 +485,6 @@ def filter_scope(
     """
     rm = []
     for idx, result in enumerate(sarif_run["results"]):
-        if "locations" not in result:
-            continue
         if _result_is_in_scope(result, scope, ignore_stacks, line_range, fnmatch_paths) is invert:
             rm.append(idx)
 
