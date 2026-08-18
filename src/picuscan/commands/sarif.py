@@ -705,7 +705,9 @@ async def _search(params: FilterParams) -> None:
     for c in display_cols:
         if c not in df.columns:
             df[c] = pd.NA
-    df_display = df[display_cols].fillna("").rename(columns={"ruleId": "ruleID"})
+    df_display = (
+        df.sort_values(["path", "line"], ascending=True)[display_cols].fillna("").rename(columns={"ruleId": "ruleID"})
+    )
     if params.max_rows >= 0:
         df_display = df_display.head(params.max_rows)
 

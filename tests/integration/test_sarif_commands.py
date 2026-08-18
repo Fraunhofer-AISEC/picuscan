@@ -413,11 +413,12 @@ def test_search_shows_table(runner):
 def test_search_max_rows(runner):
     result = runner.invoke(main, ["sarif", "search", "--max-rows", "2", UNINIT_SARIF])
     assert result.exit_code == 0
-    assert "clangsa" in result.output
     assert "Flawfinder" in result.output
+    assert "RATS" in result.output
+    assert "clangsa" not in result.output
     assert "Cppcheck" not in result.output
     assert "IKOS" not in result.output
-    assert "RATS" not in result.output
+    assert "GCC" not in result.output
 
 
 def test_search_all_rows_by_default(runner):
