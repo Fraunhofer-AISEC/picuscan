@@ -95,7 +95,7 @@ def _sarif_to_df(sarif: dict[str, Any], name: str, ignore_stacks: bool = False) 
     df = expand_json_column(df, "message", {"text": "message"})
     df = expand_json_column(df, "taxa", {"id": "CWE"})
     df = df[~df["path"].isna()]
-    df["line"] = df["line"].astype(int)
+    df["line"] = df["line"].fillna(0).astype(int)
     df["location"] = df["path"] + ":" + df["line"].astype(str)
     df["file-type"] = df["path"].str.split(".").str[-1]
     if "codeFlows" not in df.columns:
