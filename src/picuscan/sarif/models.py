@@ -117,6 +117,7 @@ class Result(Object):
     stacks: tuple[Stack, ...] = ()
     suppressions: tuple[Suppression, ...] = ()
     rank: float = -1
+    guid: Optional[str] = None
 
 
 class Level(enum.Enum):

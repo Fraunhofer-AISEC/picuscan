@@ -22,6 +22,7 @@ from .transforms import (
     Transform,
     fingerprint,
     inject_cwe_mappings,
+    inject_guid,
     mark_open,
     normalize_locations,
     update_results_with_json,
@@ -59,6 +60,7 @@ class Tool(ABC):
     rebase_locations: t.ClassVar[bool] = True
     inject_cwe_mappings: t.ClassVar[bool] = True
     inject_fingerprints: t.ClassVar[bool] = True
+    inject_guid: t.ClassVar[bool] = True
     mark_all_open: t.ClassVar[bool] = True
     down_rate_failed_sources: t.ClassVar[bool] = True
 
@@ -125,6 +127,8 @@ class Tool(ABC):
             transforms.append(inject_cwe_mappings())
         if self.inject_fingerprints:
             transforms.append(fingerprint())
+        if self.inject_guid:
+            transforms.append(inject_guid())
         if self.mark_all_open:
             transforms.append(mark_open())
         if self.opts.sarif_transform:

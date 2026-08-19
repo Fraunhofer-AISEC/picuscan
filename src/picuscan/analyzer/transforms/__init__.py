@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import fnmatch
+import uuid
 from dataclasses import dataclass, field
 from itertools import groupby
 from os.path import normpath
@@ -42,6 +43,7 @@ __all__ = (
     "centuple_rank",
     "filter_excludes",
     "fingerprint",
+    "inject_guid",
     "inject_cwe_mappings",
     "inject_cwe_taxonomy",
     "mark_open",
@@ -233,6 +235,18 @@ class _FingerprintVisitor(Visitor[Options]):
 
 def fingerprint() -> _FingerprintVisitor:
     return _FingerprintVisitor()
+
+
+@dataclass
+class _GuidVisitor(Visitor[Options]):
+    def visit_Result(self, node: Result, opts: Options) -> Result:
+        if node.guid is not None:
+            return node
+        return attr.evolve(node, guid=str(uuid.uuid4()))
+
+
+def inject_guid() -> _GuidVisitor:
+    return _GuidVisitor()
 
 
 @dataclass
