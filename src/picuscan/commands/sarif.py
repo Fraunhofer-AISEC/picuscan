@@ -289,6 +289,7 @@ class FilterParams(CommonParams):
     merge: bool
     path_filter: list[str]
     rule_id: list[str]
+    guid: list[str]
     line: str | None
     out: Path | None = None
     max_rows: int = 20
@@ -389,6 +390,12 @@ FILTER_OPTIONS = [
         "-R",
         multiple=True,
         help="Include findings matching specified rule ID(s) (fnmatch glob pattern) (multiple)",
+    ),
+    click.option(
+        "--guid",
+        "-G",
+        multiple=True,
+        help="Include findings matching specified GUID(s) (fnmatch glob pattern) (multiple)",
     ),
 ]
 
@@ -579,6 +586,16 @@ def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
             run["results"] = list(
                 filter(
                     lambda x: any(fnmatch.fnmatch(x.get("ruleId", ""), p) for p in params.rule_id),
+                    run["results"],
+                )
+            )
+
+    if params.guid:
+        logger.info(f"Filter based on GUID: {params.guid}")
+        for run in sarif["runs"]:
+            run["results"] = list(
+                filter(
+                    lambda x: any(fnmatch.fnmatch(x.get("guid", ""), p) for p in params.guid),
                     run["results"],
                 )
             )
