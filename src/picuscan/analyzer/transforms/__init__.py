@@ -10,6 +10,8 @@ from __future__ import annotations
 
 import hashlib
 import fnmatch
+import json
+import typing as t
 import uuid
 from dataclasses import dataclass, field
 from itertools import groupby
@@ -239,10 +241,45 @@ def fingerprint() -> _FingerprintVisitor:
 
 @dataclass
 class _GuidVisitor(Visitor[Options]):
+    tool_name: str = field(default="", init=False)
+
+    def visit_Run(self, node: Run, opts: Options) -> Run:
+        self.tool_name = node.tool.driver.name
+        return self.generic_visit(node, opts)
+
     def visit_Result(self, node: Result, opts: Options) -> Result:
         if node.guid is not None:
             return node
-        return attr.evolve(node, guid=str(uuid.uuid4()))
+
+        location_parts: dict[str, t.Any] = {}
+        try:
+            loc = node.locations[0]
+            if physical := loc.physicalLocation:
+                if artifact := physical.artifactLocation:
+                    if artifact.uri:
+                        location_parts["uri"] = artifact.uri
+                if region := physical.region:
+                    if region.startLine is not None:
+                        location_parts["startLine"] = region.startLine
+                    if region.startColumn is not None:
+                        location_parts["startColumn"] = region.startColumn
+        except IndexError:
+            pass
+
+        identity = json.dumps(
+            {
+                "tool": self.tool_name,
+                "ruleId": node.ruleId,
+                "message": node.message.text if node.message else None,
+                "fingerprint": node.fingerprints.get("wpResultHash/v1"),
+                "location": location_parts,
+                "codeFlows": [attr.asdict(cf) for cf in node.codeFlows] if node.codeFlows else None,
+                "stacks": [attr.asdict(s) for s in node.stacks] if node.stacks else None,
+            },
+            sort_keys=True,
+        )
+
+        return attr.evolve(node, guid=str(uuid.uuid5(uuid.NAMESPACE_URL, identity)))
 
 
 def inject_guid() -> _GuidVisitor:
