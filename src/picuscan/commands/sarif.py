@@ -22,7 +22,7 @@ from tabulate import tabulate
 from picuscan import logging
 from picuscan.misc.decorators import collect_params, unasync
 from picuscan.sarif.models import Result
-from picuscan.sarif import load
+from picuscan.sarif import structure
 
 logger = logging.get_logger(__name__)
 
@@ -736,34 +736,58 @@ async def _search(params: FilterParams) -> None:
 
 
 @attrs.frozen
-class ReportParams:
-    path_in: Path
-    out: Path
-    name: str
-    cntstart: int
+class ReportParams(FilterParams):
+    pass
 
 
-@cli.command(help="Generate a markdown report from results with kind 'fail'")
+@cli.command(help="Generate a markdown report from results")
+@add_common_params
+@add_filter_options
 @click.argument("path_in", type=click.Path(exists=True, file_okay=True, dir_okay=False, path_type=Path), required=True)
 @click.option(
     "--out",
     "-o",
     type=click.Path(file_okay=True, dir_okay=False, path_type=Path),
-    required=True,
-    help="Path to store results in markdown file",
+    default=None,
+    help="Path to store results in markdown file (if omitted, prints to stdout)",
 )
-@click.option("--name", "-n", help="Basic name for entry ids")
-@click.option("--cntstart", "-c", type=int, help="Number to start counter for entry ids (default 1)")
 @collect_params(ReportParams)
 @unasync
 async def report(params: ReportParams) -> None:
-    def generate_report_entry(result: Result, id: int) -> str:
-        entryname = (params.name if params.name else "Entry") + f"-{id:02d}"
-        entry = "# " + entryname + "\n"
-        entry += "## Rating\n"
-        entry += "Info/Low/Medium/High\n"
+    def _format_location(loc: Any) -> str:
+        parts: list[str] = []
+        pl = loc.physicalLocation
+        if pl:
+            if pl.artifactLocation and pl.artifactLocation.uri:
+                parts.append(pl.artifactLocation.uri)
+            if pl.region and pl.region.startLine:
+                parts.append(f":{pl.region.startLine}")
+        msg = ""
+        if loc.message and loc.message.text:
+            msg = f" — {loc.message.text}"
+        return "".join(parts) + msg
+
+    def generate_report_entry(result: Result, tool_name: str) -> str:
+        guid = result.guid or "unknown"
+        entry = f"# {guid}\n"
+
+        entry += "| Field | Value |\n"
+        entry += "|-------|-------|\n"
+        level_str = result.level.value if result.level else ""
+        rank_str = str(result.rank) if result.rank >= 0 else ""
+        entry += f"| Tool | {tool_name} |\n"
+        entry += f"| Rule ID | {result.ruleId or ''} |\n"
+        entry += f"| Level | {level_str} |\n"
+        entry += f"| Rank | {rank_str} |\n\n"
+
         entry += "## Abstract\n"
-        entry += (result.taxa[0].id if result.taxa and result.taxa[0].id else "TODO") + "\n"
+        cwe_id = result.taxa[0].id if result.taxa and result.taxa[0].id else None
+        if cwe_id:
+            cwe_names = load_cwe_names()
+            cwe_name = cwe_names.get(cwe_id)
+            entry += f"{cwe_id}: {cwe_name}\n" if cwe_name else f"{cwe_id}\n"
+        else:
+            entry += "TODO\n"
         entry += "## Location\n"
         for loc in result.locations:
             entry += (
@@ -780,6 +804,26 @@ async def report(params: ReportParams) -> None:
             ) + "\n"
         entry += "## Description\n"
         entry += (result.message.text if result.message.text else "") + "\n"
+
+        if result.codeFlows:
+            entry += "## Code Flows\n"
+            for cf in result.codeFlows:
+                for tf in cf.threadFlows:
+                    for tfl in tf.locations:
+                        if tfl.location:
+                            entry += f"- {_format_location(tfl.location)}\n"
+            entry += "\n"
+
+        if result.stacks:
+            entry += "## Stacks\n"
+            for stack in result.stacks:
+                if stack.message and stack.message.text:
+                    entry += f"**{stack.message.text}**\n\n"
+                for frame in stack.frames:
+                    if frame.location:
+                        entry += f"- {_format_location(frame.location)}\n"
+            entry += "\n"
+
         _trans: dict[str, str | int | None] = {"_": r"\_"}
         entry = entry.translate(str.maketrans(_trans))
         entry += "## Code Snippet\n```c++\n"
@@ -808,28 +852,31 @@ async def report(params: ReportParams) -> None:
         entry += "## Recommendation\nTODO\n"
         # TODO: create mapping for taxa to short description + pre-assessment of afl and impact
 
+        entry += "\n---"
+
         return entry
 
     with open(params.path_in) as f:
-        sarif = load(f)
+        sarif_json = json.load(f)
 
-    results: list[Result] = []
+    _apply_filters(sarif_json, params)
 
+    sarif = structure(sarif_json)
+
+    results: list[tuple[str, Result]] = []
     if sarif.runs:
         for run in sarif.runs:
+            tool_name = run.tool.driver.name
             if run.results:
                 for r in run.results:
-                    if r.kind in ["fail"]:
-                        results.append(r)
-                    # TODO: error in SARIF editor: self created findings do not have a 'kind', add them as well
-                    elif r.ruleId == "self" or r.ruleId == "Self":
-                        results.append(r)
+                    results.append((tool_name, r))
 
     report = ""
-    cnt = params.cntstart if params.cntstart else 1
-    for r in results:
-        report += generate_report_entry(r, cnt) + "\n\n"
-        cnt = cnt + 1
+    for tool_name, r in results:
+        report += generate_report_entry(r, tool_name) + "\n\n"
 
-    with open(params.out, "wt") as f:
-        f.write(report)
+    if params.out is not None:
+        with open(params.out, "wt") as f:
+            f.write(report)
+    else:
+        print(report, end="")
