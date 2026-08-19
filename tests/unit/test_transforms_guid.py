@@ -5,24 +5,31 @@
 import uuid
 
 from picuscan.analyzer.transforms import inject_guid
-from picuscan.sarif import unstructure
+from picuscan.sarif import dumps, loads, unstructure
 from picuscan.sarif.models import (
+    CodeFlow,
     Log,
     Message,
     Result,
     Run,
+    ThreadFlow,
+    ThreadFlowLocation,
+    Location,
+    PhysicalLocation,
+    ArtifactLocation,
+    Region,
     Tool,
     ToolComponent,
     Version,
 )
 
 
-def _make_log(*results: Result) -> Log:
+def _make_log(*results: Result, tool_name: str = "test") -> Log:
     return Log(
         version=Version.V2_1_0,
         runs=(
             Run(
-                tool=Tool(driver=ToolComponent(name="test")),
+                tool=Tool(driver=ToolComponent(name=tool_name)),
                 results=frozenset(results),
             ),
         ),
@@ -58,7 +65,7 @@ def test_inject_guid_format():
     out = inject_guid()(log, None)
     (transformed,) = out.runs[0].results
     parsed = uuid.UUID(transformed.guid)
-    assert parsed.version == 4
+    assert parsed.version == 5
 
 
 def test_inject_guid_distinct():
@@ -69,6 +76,94 @@ def test_inject_guid_distinct():
     guids = {r.guid for r in out.runs[0].results}
     assert len(guids) == 2
     assert None not in guids
+
+
+def test_inject_guid_deterministic():
+    r1 = _result(ruleId="RULE001")
+    r2 = _result(ruleId="RULE001")
+    out1 = inject_guid()(_make_log(r1), None)
+    out2 = inject_guid()(_make_log(r2), None)
+    g1 = next(iter(out1.runs[0].results)).guid
+    g2 = next(iter(out2.runs[0].results)).guid
+    assert g1 == g2
+
+
+def test_inject_guid_stable_across_runs():
+    r = _result(ruleId="RULE001")
+    log1 = _make_log(r)
+    out1 = inject_guid()(log1, None)
+    g1 = next(iter(out1.runs[0].results)).guid
+
+    serialized = dumps(out1)
+    reloaded = loads(serialized)
+    out2 = inject_guid()(reloaded, None)
+    g2 = next(iter(out2.runs[0].results)).guid
+
+    assert g1 == g2
+
+
+def test_inject_guid_differs_by_tool():
+    r = _result(ruleId="RULE001")
+    out1 = inject_guid()(_make_log(r, tool_name="toolA"), None)
+    out2 = inject_guid()(_make_log(r, tool_name="toolB"), None)
+    g1 = next(iter(out1.runs[0].results)).guid
+    g2 = next(iter(out2.runs[0].results)).guid
+    assert g1 != g2
+
+
+def test_inject_guid_differs_by_message():
+    r1 = _result(message=Message(text="finding A"))
+    r2 = _result(message=Message(text="finding B"))
+    log = _make_log(r1, r2)
+    out = inject_guid()(log, None)
+    guids = {r.guid for r in out.runs[0].results}
+    assert len(guids) == 2
+
+
+def test_inject_guid_differs_by_location():
+    loc_a = Location(
+        physicalLocation=PhysicalLocation(
+            artifactLocation=ArtifactLocation(uri="src/a.c"),
+            region=Region(startLine=10, startColumn=3),
+        )
+    )
+    loc_b = Location(
+        physicalLocation=PhysicalLocation(
+            artifactLocation=ArtifactLocation(uri="src/a.c"),
+            region=Region(startLine=20, startColumn=3),
+        )
+    )
+    r1 = _result(ruleId="RULE001", locations=(loc_a,))
+    r2 = _result(ruleId="RULE001", locations=(loc_b,))
+    log = _make_log(r1, r2)
+    out = inject_guid()(log, None)
+    guids = {r.guid for r in out.runs[0].results}
+    assert len(guids) == 2
+
+
+def test_inject_guid_differs_by_steps():
+    flow = CodeFlow(
+        threadFlows=(
+            ThreadFlow(
+                locations=(
+                    ThreadFlowLocation(
+                        location=Location(
+                            physicalLocation=PhysicalLocation(
+                                artifactLocation=ArtifactLocation(uri="src/a.c"),
+                                region=Region(startLine=5),
+                            )
+                        )
+                    ),
+                )
+            ),
+        )
+    )
+    r1 = _result(ruleId="RULE001", codeFlows=())
+    r2 = _result(ruleId="RULE001", codeFlows=(flow,))
+    log = _make_log(r1, r2)
+    out = inject_guid()(log, None)
+    guids = {r.guid for r in out.runs[0].results}
+    assert len(guids) == 2
 
 
 def test_inject_guid_serialized_when_set():
