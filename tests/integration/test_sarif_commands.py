@@ -491,7 +491,7 @@ def test_search_json_output(runner):
     data = json.loads(result.output)
     assert len(data) == 6
     for row in data:
-        assert set(row.keys()) == {"tool", "ruleID", "level", "rank", "CWE", "location", "message"}
+        assert set(row.keys()) == {"tool", "ruleID", "level", "rank", "CWE", "location", "message", "guid"}
     assert any(r["tool"] == "clangsa" for r in data)
     assert all("main.c" in r["location"] for r in data)
 

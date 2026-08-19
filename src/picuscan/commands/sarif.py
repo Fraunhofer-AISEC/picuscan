@@ -718,7 +718,7 @@ async def _search(params: FilterParams) -> None:
     if df.empty:
         logger.warning("No findings to display")
         return
-    display_cols = ["tool", "ruleId", "level", "rank", "CWE", "location", "message"]
+    display_cols = ["guid", "tool", "ruleId", "level", "rank", "CWE", "location", "message"]
     for c in display_cols:
         if c not in df.columns:
             df[c] = pd.NA
