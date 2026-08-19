@@ -288,6 +288,7 @@ class FilterParams(CommonParams):
     scope_file: Path
     merge: bool
     path_filter: list[str]
+    rule_id: list[str]
     line: str | None
     out: Path | None = None
     max_rows: int = 20
@@ -382,6 +383,12 @@ FILTER_OPTIONS = [
         type=str,
         default=None,
         help="Filter findings by line range of primary location (e.g. '10', '10-20', '10-', '-20')",
+    ),
+    click.option(
+        "--rule-id",
+        "-R",
+        multiple=True,
+        help="Include findings matching specified rule ID(s) (fnmatch glob pattern) (multiple)",
     ),
 ]
 
@@ -562,6 +569,16 @@ def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
             run["results"] = list(
                 filter(
                     lambda x: not any(list(map(lambda rule: fnmatch.fnmatch(x["ruleId"], rule), exclude_rules))),
+                    run["results"],
+                )
+            )
+
+    if params.rule_id:
+        logger.info(f"Filter based on rule ID: {params.rule_id}")
+        for run in sarif["runs"]:
+            run["results"] = list(
+                filter(
+                    lambda x: any(fnmatch.fnmatch(x.get("ruleId", ""), p) for p in params.rule_id),
                     run["results"],
                 )
             )
