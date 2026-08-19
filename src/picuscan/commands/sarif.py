@@ -855,14 +855,17 @@ async def report(params: ReportParams) -> None:
             code_loc = result.locations[0].physicalLocation.artifactLocation.uri
             code_line = result.locations[0].physicalLocation.region.startLine - 1
 
-            with open(code_loc) as f:
-                lines = f.readlines()
-                if code_line > 0:
-                    entry += lines[code_line - 1]
-                if code_line < len(lines):
-                    entry += lines[code_line]
-                if code_line < len(lines) - 1:
-                    entry += lines[code_line + 1]
+            try:
+                with open(code_loc) as f:
+                    lines = f.readlines()
+                    if code_line > 0:
+                        entry += lines[code_line - 1]
+                    if code_line < len(lines):
+                        entry += lines[code_line]
+                    if code_line < len(lines) - 1:
+                        entry += lines[code_line + 1]
+            except OSError:
+                entry += f"Could not read source file: {code_loc}\n"
         else:
             entry += "TODO\n"
         entry += "```\n"
