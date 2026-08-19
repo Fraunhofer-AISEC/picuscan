@@ -754,7 +754,8 @@ async def _search(params: FilterParams) -> None:
 
 @attrs.frozen
 class ReportParams(FilterParams):
-    pass
+    max_findings: int = 20
+    snippet_lines: int = 3
 
 
 @cli.command(help="Generate a markdown report from results")
@@ -767,6 +768,20 @@ class ReportParams(FilterParams):
     type=click.Path(file_okay=True, dir_okay=False, path_type=Path),
     default=None,
     help="Path to store results in markdown file (if omitted, prints to stdout)",
+)
+@click.option(
+    "--max-findings",
+    type=int,
+    default=20,
+    show_default=True,
+    help="Maximum number of findings to include in the report (use -1 for all)",
+)
+@click.option(
+    "--snippet-lines",
+    type=int,
+    default=3,
+    show_default=True,
+    help="Number of code lines to include in the snippet (centered on the finding line)",
 )
 @collect_params(ReportParams)
 @unasync
@@ -854,16 +869,15 @@ async def report(params: ReportParams) -> None:
         ):
             code_loc = result.locations[0].physicalLocation.artifactLocation.uri
             code_line = result.locations[0].physicalLocation.region.startLine - 1
+            half = params.snippet_lines // 2
 
             try:
                 with open(code_loc) as f:
                     lines = f.readlines()
-                    if code_line > 0:
-                        entry += lines[code_line - 1]
-                    if code_line < len(lines):
-                        entry += lines[code_line]
-                    if code_line < len(lines) - 1:
-                        entry += lines[code_line + 1]
+                    start = max(0, code_line - half)
+                    end = min(len(lines), code_line + half + (params.snippet_lines % 2))
+                    for i in range(start, end):
+                        entry += lines[i]
             except OSError:
                 entry += f"Could not read source file: {code_loc}\n"
         else:
@@ -890,6 +904,11 @@ async def report(params: ReportParams) -> None:
             if run.results:
                 for r in run.results:
                     results.append((tool_name, r))
+
+    total = len(results)
+    if params.max_findings >= 0:
+        results = results[: params.max_findings]
+    logger.info(f"Generating report for {len(results)} of {total} finding(s)")
 
     report = ""
     for tool_name, r in results:
