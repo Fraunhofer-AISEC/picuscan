@@ -66,7 +66,10 @@ class IKOS(Tool):
     @asynccontextmanager
     async def __build(self) -> AsyncIterator[tuple[Path, frozenset[str], LLVMConfig]]:
         builder = unity.InMemoryBuilder(
-            self.opts.compile_db, fail_on_error=False, rename_symbols=self.opts.ikos_rename_symbols
+            self.opts.compile_db,
+            fail_on_error=False,
+            rename_symbols=self.opts.ikos_rename_symbols,
+            defines=["-D__IKOS__"],
         )
         with fs.temp_file(suffix=".bc") as file:
             logger.info("Preparing LLVM IR bundle for %s", self.name)

@@ -27,6 +27,7 @@ from .config import LLVMConfig, LLVMVersion
 
 class _BuilderKwds(t.TypedDict, total=False):
     fail_on_error: bool
+    defines: list[str]
 
 
 class AbstractBuilder(ABC):
@@ -37,6 +38,7 @@ class AbstractBuilder(ABC):
         self.compdb = compdb
         self.config = config
         self.fail_on_error = kwds.get("fail_on_error", True)
+        self.defines = kwds.get("defines", [])
 
         self._compile_callbacks = []
         self._compile_done_callbacks = []
@@ -107,7 +109,7 @@ class GenericBuilder(AbstractBuilder):
     async def _compile(self, cmd: Command, output: StrBytesPath) -> StrBytesPath:
         cmd.directory.mkdir(parents=True, exist_ok=True)
         compiler = self._get_compiler(cmd)
-        args = [*cmd.arguments[1:], *_COMPILER_OPTIONS, "-o", output]
+        args = [*cmd.arguments[1:], *self.defines, *_COMPILER_OPTIONS, "-o", output]
         try:
             await process.run(compiler, *args, stdout=process.DEVNULL, stderr=process.PIPE, cwd=cmd.directory)
         except process.CalledProcessError as err:
