@@ -14,6 +14,9 @@ We provide a Docker image with all supported analysis tools pre-installed.
 The entrypoint is set to `picuscan`, but you can override it to launch an interactive shell.
 It is recommended to map the target source code into the container at the same location as on your host system, so that paths are compatible.
 
+Multi-arch images are published for **amd64** and **arm64** (aarch64). Docker
+automatically pulls the matching architecture.
+
 ```bash
 $ docker pull ghcr.io/fraunhofer-aisec/picuscan:main
 $ docker run --rm -it -v $PWD:$PWD:z -w $PWD --entrypoint bash picuscan
