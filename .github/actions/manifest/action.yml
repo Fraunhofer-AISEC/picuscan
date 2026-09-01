@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: AISEC Code Audit Team
+#
+# SPDX-License-Identifier: CC0-1.0
+
+name: Merge multi-arch manifest
+description: Merge per-arch image tags into a single multi-arch manifest list
+
+inputs:
+  registry:
+    description: Container registry domain
+    required: false
+    default: ghcr.io
+  image-name:
+    description: Full image name (without registry)
+    required: true
+  archs:
+    description: Space-separated list of architectures (e.g. "amd64 arm64")
+    required: false
+    default: "amd64 arm64"
+  github-actor:
+    description: Actor used for registry login
+    required: true
+  github-token:
+    description: Token used for registry login
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Log in to the Container registry
+      uses: docker/login-action@v4
+      with:
+        registry: ${{ inputs.registry }}
+        username: ${{ inputs.github-actor }}
+        password: ${{ inputs.github-token }}
+
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v6
+      with:
+        images: ${{ inputs.registry }}/${{ inputs.image-name }}
+
+    - name: Create and push multi-arch manifest
+      shell: bash
+      env:
+        TAGS: ${{ steps.meta.outputs.tags }}
+        ARCHS: ${{ inputs.archs }}
+      run: |
+        for tag in $TAGS; do
+          sources=""
+          for arch in $ARCHS; do
+            sources="$sources ${tag}-${arch}"
+          done
+          echo "Creating manifest for $tag from:$sources"
+          docker buildx imagetools create -t "$tag" $sources
+        done

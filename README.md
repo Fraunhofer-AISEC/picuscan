@@ -20,6 +20,9 @@ $ docker run --rm -it -v $PWD:$PWD:z -w $PWD --entrypoint bash ghcr.io/fraunhofe
 $ picuscan --help
 ```
 
+Multi-arch images are published for **amd64** and **arm64** (aarch64). Docker
+automatically pulls the matching architecture.
+
 See [Installation → Docker](docs/installation.md#docker) for more details.
 
 ### From PyPI

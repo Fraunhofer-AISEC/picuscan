@@ -13,8 +13,18 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  build-release:
-    runs-on: ubuntu-latest
+  build-base:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+            platform: linux/amd64
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
+    runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
       packages: write
@@ -32,10 +42,54 @@ jobs:
           registry: ${{ env.REGISTRY }}
           image-name: ${{ github.repository }}-base
           containerfile: Containerfile.base
+          arch: ${{ matrix.arch }}
+          platform: ${{ matrix.platform }}
           push: "true"
           run-e2e: "false"
           github-actor: ${{ github.actor }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  manifest-base:
+    needs: build-base
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Merge base manifest
+        uses: ./.github/actions/manifest
+        with:
+          registry: ${{ env.REGISTRY }}
+          image-name: ${{ github.repository }}-base
+          github-actor: ${{ github.actor }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-app:
+    needs: manifest-base
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-latest
+            platform: linux/amd64
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+            platform: linux/arm64
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+      artifact-metadata: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
 
       - name: Build app image
         uses: ./.github/actions/container
@@ -43,8 +97,28 @@ jobs:
           registry: ${{ env.REGISTRY }}
           image-name: ${{ github.repository }}
           containerfile: Containerfile
+          arch: ${{ matrix.arch }}
+          platform: ${{ matrix.platform }}
           push: "true"
           run-e2e: "true"
           base-image: ${{ github.ref_name }}
+          github-actor: ${{ github.actor }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  manifest-app:
+    needs: build-app
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Merge app manifest
+        uses: ./.github/actions/manifest
+        with:
+          registry: ${{ env.REGISTRY }}
+          image-name: ${{ github.repository }}
           github-actor: ${{ github.actor }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
