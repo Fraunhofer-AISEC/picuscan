@@ -269,7 +269,7 @@ mapping = {
         "deallocuse": "CWE-416",
         "doubleFree": "CWE-415",
         "bufferAccessOutOfBounds": "CWE-119",
-        "uninitdata": "CWE-457"
+        "uninitdata": "CWE-457",
     },
     "gcc": {
         "*stringop-overflow=": "CWE-119",
@@ -289,6 +289,6 @@ mapping = {
         "*null-dereference": "CWE-476",
         "*double-fclose": "CWE-1341",
         "*out-of-bounds": "CWE-119",
-        "*use-after-free": "CWE-416"
+        "*use-after-free": "CWE-416",
     },
 }
