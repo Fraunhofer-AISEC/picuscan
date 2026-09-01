@@ -385,7 +385,7 @@ COPY --from=rats-builder /opt/rats /opt/rats
 ENV PATH=/opt/rats/bin:$PATH
 
 # Install penrun
-RUN wget https://raw.githubusercontent.com/rumpelsepp/penrun/refs/heads/master/penrun -O /usr/bin/penrun && chmod +x /usr/bin/penrun
+RUN wget https://raw.githubusercontent.com/Fraunhofer-AISEC/gallia/c14bfb6ae3e40d895d3f753ea2d621ba13ab2596/bin/penrun -O /usr/bin/penrun && chmod +x /usr/bin/penrun
 
 # Add picuscan user
 RUN useradd -m -s /bin/bash picuscan
