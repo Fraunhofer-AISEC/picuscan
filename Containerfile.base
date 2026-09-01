@@ -337,6 +337,7 @@ RUN echo "Package: *" >> /etc/apt/preferences.d/99-pinning \
 RUN apt-get update && apt-get install -y --no-install-recommends -t unstable \
     gcc-16 \
     g++-16 \
+    binutils \
     && rm -rf /var/lib/apt/lists/*
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-16 1 && \
