@@ -162,6 +162,7 @@ RUN cd ikos \
 
 FROM debian:13-slim AS infer-builder
 ARG INFER_VERSION
+ARG TARGETARCH
 RUN apt-get update && apt-get install -y --no-install-recommends \
     autoconf \
     automake \
@@ -190,15 +191,20 @@ ENV PATH=/opt/python3.10/bin/:$PATH
 ENV LD_LIBRARY_PATH=/opt/python3.10/lib/:$LD_LIBRARY_PATH
 
 # Build Infer
+# On arm64, use bytecode mode (BUILD_MODE=byte) — the OCaml aarch64 native codegen
+# produces "conditional branch out of range" assembler errors for large functions.
 RUN opam init --reinit --bare --disable-sandboxing --yes --auto-setup && eval $(opam env)
 RUN git clone --depth=1 --branch $INFER_VERSION https://github.com/facebook/infer.git
-WORKDIR $PWD/infer
+WORKDIR /infer
+RUN if [ "$TARGETARCH" = "arm64" ]; then \
+        sed -i 's/"$JOBS" opt /"$JOBS" BUILD_MODE=byte infer /' build-infer.sh; \
+    fi
 RUN ./build-infer.sh --yes clang -- --prefix=/opt/infer --enable-python-analyzers
 RUN make install-with-libs \
     DESTDIR=/tmp \
     PATCHELF=patchelf \
     libdir_relative_to_bindir="../lib" \
-    BUILD_MODE=opt
+    BUILD_MODE=$([ "$TARGETARCH" = "arm64" ] && echo byte || echo opt)
 
 #
 # Build RATS
@@ -228,6 +234,7 @@ RUN git clone --depth=1 https://github.com/andrew-d/rough-auditing-tool-for-secu
 
 FROM debian:13-slim
 
+ARG TARGETARCH
 ARG LLVM_VERSION
 ARG LLVM_VERSION_NEW
 ARG CODECHECKER_VERSION
