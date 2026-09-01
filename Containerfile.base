@@ -344,6 +344,11 @@ RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-16 1 && \
     update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-16 1 && \
     update-alternatives --set g++ /usr/bin/g++-16
 
+# Create non-versioned triplet symlinks (e.g. aarch64-linux-gnu-gcc)
+# needed by pip/setuptools when building wheels from source on arm64
+RUN ln -sf /usr/bin/gcc-16 /usr/bin/$(gcc-16 -dumpmachine)-gcc && \
+    ln -sf /usr/bin/g++-16 /usr/bin/$(g++-16 -dumpmachine)-g++
+
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.13 1 && \
     update-alternatives  --set python /usr/bin/python3.13
 
