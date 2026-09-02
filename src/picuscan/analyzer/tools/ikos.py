@@ -30,6 +30,7 @@ logger = logging.get_logger(__name__)
 
 class IKOS(Tool):
     enabled = False
+    supports_threading = True
 
     async def run(self) -> Log:
         logger.info("Running %s", self.name)
@@ -61,6 +62,8 @@ class IKOS(Tool):
             args += ["-e", ",".join(entry_points)]
         elif entry_points:
             args += ["-e", ",".join(entry_points)]
+        if self.jobs:
+            args += [f"-j{self.jobs}"]
         return await process.run(*args, *self.opts.ikos_args, llvm_ir_file, stdout=PIPE, stderr=self.sink)
 
     @asynccontextmanager
@@ -70,6 +73,7 @@ class IKOS(Tool):
             fail_on_error=False,
             rename_symbols=self.opts.ikos_rename_symbols,
             defines=["-D__IKOS__"],
+            jobs=self.jobs,
         )
         with fs.temp_file(suffix=".bc") as file:
             logger.info("Preparing LLVM IR bundle for %s", self.name)

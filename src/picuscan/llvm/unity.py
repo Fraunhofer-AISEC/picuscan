@@ -4,6 +4,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import os
 import re
 import shutil
@@ -28,6 +29,7 @@ from .config import LLVMConfig, LLVMVersion
 class _BuilderKwds(t.TypedDict, total=False):
     fail_on_error: bool
     defines: list[str]
+    jobs: int
 
 
 class AbstractBuilder(ABC):
@@ -39,6 +41,7 @@ class AbstractBuilder(ABC):
         self.config = config
         self.fail_on_error = kwds.get("fail_on_error", True)
         self.defines = kwds.get("defines", [])
+        self.jobs = kwds.get("jobs", 0)
 
         self._compile_callbacks = []
         self._compile_done_callbacks = []
@@ -83,13 +86,24 @@ class GenericBuilder(AbstractBuilder):
 
     async def __call__(self, output: t.IO[bytes]) -> None:
         with fs.temp_dir() as dir:
-            compile_tasks = [self.compile(cmd, dir / self.__mangle_path(cmd.file)) for cmd in self.compdb]
+            semaphore = asyncio.Semaphore(self.jobs) if self.jobs > 0 else None
+            compile_tasks = [
+                self._compile_limited(cmd, dir / self.__mangle_path(cmd.file), semaphore) for cmd in self.compdb
+            ]
             if self.fail_on_error:
                 modules = await asyncutils.gather(compile_tasks)
             else:
                 modules_and_exceptions = await asyncutils.gather(compile_tasks, return_exceptions=True)
                 modules = [o for o in modules_and_exceptions if not isinstance(o, BaseException)]
             await self.link(modules, output)
+
+    async def _compile_limited(
+        self, cmd: Command, output: StrBytesPath, semaphore: asyncio.Semaphore | None
+    ) -> StrBytesPath:
+        if semaphore is None:
+            return await self.compile(cmd, output)
+        async with semaphore:
+            return await self.compile(cmd, output)
 
     def __mangle_path(self, path: Path) -> str:
         bitcode_file = path.with_suffix(".bc")

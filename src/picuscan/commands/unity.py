@@ -27,6 +27,7 @@ class _Options:
     llvm: str
     fail_on_error: bool
     rename_symbols: bool
+    jobs: int
 
 
 @click.command(help="Combine C/C++ files into a LLVM bitcode bundle.")
@@ -41,6 +42,7 @@ class _Options:
     show_default=True,
     help="Avoid symbol conflicts during linking by automatically renaming the main functions.",
 )
+@click.option("--jobs", "-j", help="Limit number of parallel compile jobs (0 means no limit).", type=int, default=0)
 @unasync
 @collect_params(_Options)
 async def cli(opts: _Options) -> None:
@@ -61,7 +63,9 @@ async def build(opts: _Options) -> None:
 
     if opts.rename_symbols:
         try:
-            in_memory = unity.InMemoryBuilder(opts.compile_db, fail_on_error=opts.fail_on_error, rename_symbols=True)
+            in_memory = unity.InMemoryBuilder(
+                opts.compile_db, fail_on_error=opts.fail_on_error, rename_symbols=True, jobs=opts.jobs
+            )
         except Exception:
             logger.error("Failed to initialize InMemoryBuilder.", exc_info=True)
             sys.exit(1)
@@ -70,7 +74,7 @@ async def build(opts: _Options) -> None:
         )
         builder: unity.InMemoryBuilder | unity.GenericBuilder = in_memory
     else:
-        builder = unity.GenericBuilder(opts.compile_db, llvm_config, fail_on_error=opts.fail_on_error)
+        builder = unity.GenericBuilder(opts.compile_db, llvm_config, fail_on_error=opts.fail_on_error, jobs=opts.jobs)
     builder.register_compile_callback(lambda cmd: logger.info("Compiling %s", cmd.file))
     builder.register_compile_done_callback(_log_compile_done)
 
