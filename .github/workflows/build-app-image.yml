@@ -39,9 +39,6 @@ jobs:
           - arch: arm64
             runner: ubuntu-24.04-arm
             platform: linux/arm64
-    # On PRs, only build amd64 (arm64 base image may not exist yet).
-    # Both arches are built on push to main.
-    if: github.event_name != 'pull_request' || matrix.arch == 'amd64'
     runs-on: ${{ matrix.runner }}
     permissions:
       contents: read
