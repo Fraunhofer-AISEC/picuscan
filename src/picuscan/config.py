@@ -39,7 +39,7 @@ def get_current_config(silent: bool = False) -> Config | None:
 
 
 @asynccontextmanager
-async def acquire_job_semaphore() -> t.AsyncIterator[None]:
+async def acquire_job_semaphore() -> t.AsyncGenerator[None, None]:
     """Use this context manager to limit the number of expensive tasks
     that run concurrently."""
     if config := get_current_config(silent=True):

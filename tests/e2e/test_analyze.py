@@ -7,10 +7,9 @@ import uuid
 from pathlib import Path
 
 import pytest
+from conftest import discover_cases
 
 from picuscan import main
-
-from conftest import discover_cases
 
 CASES = discover_cases()
 UNINIT_DIR = str(Path(__file__).parent / "001-basic-uninit")
@@ -48,7 +47,7 @@ def test_e2e_guid_injected(runner, tmp_path):
     out_file = str(tmp_path / "main.sarif")
     result = runner.invoke(main, ["analyze", "-e", "gcc", "-o", out_file, "--run-dir", str(tmp_path), cc])
     assert result.exit_code == 0
-    with open(out_file) as f:
+    with Path(out_file).open() as f:
         sarif = json.load(f)
     guids: list[str] = []
     for run in sarif["runs"]:
@@ -76,9 +75,9 @@ def test_e2e_guid_stable_across_runs(runner, tmp_path):
     result = runner.invoke(main, ["analyze", "-e", "gcc", "-o", out2, "--run-dir", str(tmp_path / "run2"), cc])
     assert result.exit_code == 0
 
-    with open(out1) as f:
+    with Path(out1).open() as f:
         sarif1 = json.load(f)
-    with open(out2) as f:
+    with Path(out2).open() as f:
         sarif2 = json.load(f)
 
     guids1: set[str] = set()

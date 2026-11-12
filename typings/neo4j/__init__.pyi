@@ -2,12 +2,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import annotations
-
+from collections.abc import Iterator
 from types import TracebackType
-from typing import Any, Iterator
-
-from typing_extensions import Self
+from typing import Any, Self
 
 class GraphDatabase:
     @classmethod

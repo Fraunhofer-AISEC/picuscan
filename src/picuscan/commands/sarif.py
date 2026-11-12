@@ -4,14 +4,15 @@
 
 from __future__ import annotations
 
-from importlib.resources import files
-import json
-import hashlib
 import fnmatch
+import hashlib
+import json
+from collections.abc import Callable, Sequence
 from functools import lru_cache
+from importlib.resources import files
 from itertools import groupby
 from pathlib import Path
-from typing import Callable, Sequence, TypeVar, Any
+from typing import Any
 
 import attrs
 import click
@@ -21,8 +22,8 @@ from tabulate import tabulate
 
 from picuscan import logging
 from picuscan.misc.decorators import collect_params, unasync
-from picuscan.sarif.models import Result
 from picuscan.sarif import structure
+from picuscan.sarif.models import Result
 
 logger = logging.get_logger(__name__)
 
@@ -38,10 +39,8 @@ COMMON_PARAMS = [
     )
 ]
 
-R = TypeVar("R")
 
-
-def add_common_params(cmd: Callable[..., R]) -> Callable[..., R]:
+def add_common_params[R](cmd: Callable[..., R]) -> Callable[..., R]:
     for param in reversed(COMMON_PARAMS):
         cmd = param(cmd)
     return cmd
@@ -61,7 +60,7 @@ def expand_json_column(df: pd.DataFrame, column: str, rename: None | dict[str, s
 
 
 def load_sarif_as_df(path: Path, ignore_stacks: bool = False) -> pd.DataFrame:
-    sarif = json.load(open(path))
+    sarif = json.loads(path.read_text())
     return _sarif_to_df(sarif, path.name, ignore_stacks)
 
 
@@ -179,7 +178,7 @@ async def compare(params: CompareParams) -> None:
             return
         print(df_cmp_rule_count)
 
-    l_df = list(map(lambda x: load_sarif_as_df(x, params.ignore_stacks), params.path))
+    l_df = [load_sarif_as_df(x, params.ignore_stacks) for x in params.path]
     l_df = list(filter(lambda x: not x.empty, l_df))
     if not l_df:
         logger.warning("No data loaded")
@@ -198,7 +197,7 @@ async def compare(params: CompareParams) -> None:
             df_u = _get_unique_findings(df, list(filter(lambda x: x.attrs["name"] != df.attrs["name"], l_df)))
             if df_u.shape[0] > 0:
                 df_u = df_u.sort_values(["path", "line", "message"], ascending=True)
-                df_u.apply(lambda x: print(x["location"], x["message"]), axis=1)  # type: ignore
+                df_u.apply(lambda x: print(x["location"], x["message"]), axis=1)  # type: ignore[call-overload]  # ty: ignore[no-matching-overload]
             else:
                 print("* no unique findings")
 
@@ -400,7 +399,7 @@ FILTER_OPTIONS = [
 ]
 
 
-def add_filter_options(cmd: Callable[..., R]) -> Callable[..., R]:
+def add_filter_options[R](cmd: Callable[..., R]) -> Callable[..., R]:
     for param in reversed(FILTER_OPTIONS):
         cmd = param(cmd)
     return cmd
@@ -550,7 +549,7 @@ def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
         for run in sarif["runs"]:
             run["results"] = list(
                 filter(
-                    lambda x: not any(list(map(lambda msg: msg in x["message"]["text"], params.not_message))),
+                    lambda x: not any(msg in x["message"]["text"] for msg in params.not_message),
                     run["results"],
                 )
             )
@@ -571,11 +570,11 @@ def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
 
     if params.exclude_rules:
         logger.info(f"Filter based on exclude rule IDs: {params.exclude_rules}")
-        exclude_rules = list(map(str.strip, open(params.exclude_rules).readlines()))
+        exclude_rules = [line.strip() for line in params.exclude_rules.read_text().splitlines()]
         for run in sarif["runs"]:
             run["results"] = list(
                 filter(
-                    lambda x: not any(list(map(lambda rule: fnmatch.fnmatch(x["ruleId"], rule), exclude_rules))),
+                    lambda x: not any(fnmatch.fnmatch(x["ruleId"], rule) for rule in exclude_rules),
                     run["results"],
                 )
             )
@@ -612,7 +611,7 @@ def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
             try:
                 line_range = _parse_line_range(params.line)
             except ValueError as e:
-                raise click.BadParameter(str(e), param_hint="--line")
+                raise click.BadParameter(str(e), param_hint="--line") from e
         logger.info(f"Filter based on path: {params.path_filter}, line: {params.line}")
         for run in sarif["runs"]:
             filter_scope(
@@ -641,7 +640,7 @@ def _apply_filters(sarif: dict[str, Any], params: FilterParams) -> None:
                 loc["artifactLocation"]["uri"],
                 loc["region"]["startLine"],
                 loc["region"].get("startColumn", 0),
-                list(map(lambda x: x.get("id", "UNKNOWN-CWE"), res.get("taxa", []))),
+                [x.get("id", "UNKNOWN-CWE") for x in res.get("taxa", [])],
                 res["ruleId"],
                 res["kind"],
                 res["level"],
@@ -693,7 +692,7 @@ async def _filter(params: FilterParams) -> None:
     if params.out is None:
         raise click.UsageError("--out is required")
 
-    with open(params.path_in) as f:
+    with params.path_in.open() as f:
         sarif = json.load(f)
 
     _apply_filters(sarif, params)
@@ -701,7 +700,7 @@ async def _filter(params: FilterParams) -> None:
     selected = sum(len(run["results"]) for run in sarif["runs"])
     logger.info(f"Export {selected} finding(s) to file: {params.out}")
 
-    with open(params.out, "wt") as f:
+    with params.out.open("wt") as f:
         json.dump(sarif, f, indent=2)
 
 
@@ -724,7 +723,7 @@ async def _filter(params: FilterParams) -> None:
 @collect_params(FilterParams)
 @unasync
 async def _search(params: FilterParams) -> None:
-    with open(params.path_in) as f:
+    with params.path_in.open() as f:
         sarif = json.load(f)
 
     _apply_filters(sarif, params)
@@ -838,7 +837,7 @@ async def report(params: ReportParams) -> None:
                 else ""
             ) + "\n"
         entry += "## Description\n"
-        entry += (result.message.text if result.message.text else "") + "\n"
+        entry += (result.message.text or "") + "\n"
 
         if result.codeFlows:
             entry += "## Code Flows\n"
@@ -875,7 +874,7 @@ async def report(params: ReportParams) -> None:
             half = params.snippet_lines // 2
 
             try:
-                with open(code_loc) as f:
+                with Path(code_loc).open() as f:
                     lines = f.readlines()
                     start = max(0, code_line - half)
                     end = min(len(lines), code_line + half + (params.snippet_lines % 2))
@@ -893,7 +892,7 @@ async def report(params: ReportParams) -> None:
 
         return entry
 
-    with open(params.path_in) as f:
+    with params.path_in.open() as f:
         sarif_json = json.load(f)
 
     _apply_filters(sarif_json, params)
@@ -918,7 +917,7 @@ async def report(params: ReportParams) -> None:
         report += generate_report_entry(r, tool_name) + "\n\n"
 
     if params.out is not None:
-        with open(params.out, "wt") as f:
+        with params.out.open("wt") as f:
             f.write(report)
     else:
         print(report, end="")

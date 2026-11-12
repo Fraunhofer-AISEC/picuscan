@@ -144,7 +144,7 @@ def test_modify(foo: Path):
     stat = foo.stat()
     with modify(foo) as m:
         i = -1
-        for s, i in zip(m, range(len(LINES))):
+        for s, i in zip(m, range(len(LINES)), strict=True):
             assert s == f"{LINES[i]}\n"
         assert i == len(LINES) - 1
     assert stat == foo.stat()
@@ -181,11 +181,10 @@ def test_modify_replace_last(foo: Path):
 
 def test_modify_exception(foo: Path):
     stat = foo.stat()
-    with pytest.raises(RuntimeError):
-        with modify(foo) as m:
-            for s in m:
-                m.replace(s.capitalize())
-            raise RuntimeError
+    with pytest.raises(RuntimeError), modify(foo) as m:
+        for s in m:
+            m.replace(s.capitalize())
+        raise RuntimeError
     assert foo.read_text() == "\n".join([*LINES, ""])
     assert stat == foo.stat()
 

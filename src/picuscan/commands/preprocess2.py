@@ -4,26 +4,25 @@
 
 from __future__ import annotations
 
-import os
 import re
 import sys
 import typing as t
+from collections.abc import Collection, Iterable, Iterator, Sequence
 from contextlib import suppress
 from hashlib import md5
 from pathlib import Path
-from typing import IO, Collection, Iterable, Iterator, Sequence
+from typing import IO
 
 import attrs
 import click
 from tqdm import tqdm
 
-from picuscan import compdb
-from picuscan import logging
+from picuscan import compdb, logging
 from picuscan.common.file import find, glob, modify
 from picuscan.common.tqdm_support import fixed_width_desc
 from picuscan.compdb import Command, CompilationDB
 from picuscan.constants import C_CXX_SOURCE_SUFFIXES, C_CXX_SUFFIXES, CXX_SOURCE_SUFFIXES, Language
-from picuscan.misc import paramtypes, git
+from picuscan.misc import git, paramtypes
 from picuscan.misc.decorators import collect_params, unasync
 from picuscan.misc.strutils import join
 
@@ -103,7 +102,7 @@ async def cli(params: _Params) -> None:
     except Exception as exc:
         logger.error(f"Failed to initialize repository in {params.dir}: {exc}")
         sys.exit(1)
-    headers = set(map(lambda s: Path(s.strip()), params.header_list if params.header_list else []))
+    headers = {Path(s.strip()) for s in params.header_list or []}
 
     compile_db = compdb.load(params.compile_db) if params.compile_db else None
     include_dirs = _include_dirs(params.include_list, compile_db)
@@ -179,15 +178,15 @@ def _select_header(paths: Sequence[Path]) -> Path:
 
 
 def _different(paths: Iterable[Path]) -> bool:
-    return len(set(_hash(p) for p in paths)) > 1
+    return len({_hash(p) for p in paths}) > 1
 
 
 def _hash(p: Path) -> bytes:
-    hash = md5()
-    with open(p, "rb") as f:
+    digest = md5()
+    with p.open("rb") as f:
         for s in f:
-            hash.update(s)
-    return hash.digest()
+            digest.update(s)
+    return digest.digest()
 
 
 def _filter_case_insensitive(headers: dict[Path, Path]) -> Iterator[tuple[str, str]]:
@@ -196,16 +195,16 @@ def _filter_case_insensitive(headers: dict[Path, Path]) -> Iterator[tuple[str, s
         h = header.parts[-n:]
         p = path.parts[-n:]
         if h != p:
-            yield str(header), os.sep.join(p)
+            yield str(header), str(Path(*p))
 
 
-_INCLUDE_PATTERN = re.compile(r'^(\s*#include\s*)(<.*>|".*")(.*)', re.S)
+_INCLUDE_PATTERN = re.compile(r'^(\s*#include\s*)(<.*>|".*")(.*)', re.DOTALL)
 
 
 def _transform_files(files: Iterable[Path], mapping: dict[str, str]) -> None:
-    with tqdm(files, bar_format=fixed_width_desc()) as t:
-        for p in t:
-            t.set_description(f"{p.name}")
+    with tqdm(files, bar_format=fixed_width_desc()) as bar:
+        for p in bar:
+            bar.set_description(f"{p.name}")
             with modify(p) as m:
                 for s in m:
                     m.replace(_transform_line(s, mapping))

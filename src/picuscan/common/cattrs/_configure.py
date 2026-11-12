@@ -4,8 +4,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Container, Mapping
 from pathlib import Path
-from typing import Any, Callable, Container, Generic, Mapping, TypeVar
+from typing import Any
 
 import attrs
 from attrs import Attribute
@@ -38,17 +39,14 @@ class _StructureFactory:
         return _StructureHook(cls, structure_fn, defined_fields, additional)
 
 
-_T = TypeVar("_T")
-
-
 @attrs.frozen
-class _StructureHook(Generic[_T]):
-    cls: type[_T]
-    structure_fn: Callable[[Mapping[str, Any], type[_T]], _T]
+class _StructureHook[T]:
+    cls: type[T]
+    structure_fn: Callable[[Mapping[str, Any], type[T]], T]
     field_names: Container[str]
     additional_field: Attribute[Any] | None = None
 
-    def __call__(self, unstructured: Mapping[str, Any], _: type[_T] | None = None, /) -> _T:
+    def __call__(self, unstructured: Mapping[str, Any], _: type[T] | None = None, /) -> T:
         if self.additional_field:
             items = tuple((k, v, k not in self.field_names) for k, v in unstructured.items())
             unstructured = {
@@ -62,7 +60,7 @@ class _StructureHook(Generic[_T]):
 class _UnstructureFactory:
     converter: GenConverter
 
-    def __call__(self, cls: type[_T]) -> Callable[[_T], dict[str, Any]]:
+    def __call__[T](self, cls: type[T]) -> Callable[[T], dict[str, Any]]:
         return _UnstructureHook(
             make_dict_unstructure_fn(
                 cls,
@@ -75,11 +73,11 @@ class _UnstructureFactory:
 
 
 @attrs.frozen
-class _UnstructureHook(Generic[_T]):
-    unstructure_fn: Callable[[_T], dict[str, Any]]
+class _UnstructureHook[T]:
+    unstructure_fn: Callable[[T], dict[str, Any]]
     additional_field: Attribute[Any] | None = None
 
-    def __call__(self, o: _T, /) -> dict[str, Any]:
+    def __call__(self, o: T, /) -> dict[str, Any]:
         unstructured = self.unstructure_fn(o)
         if self.additional_field:
             additional_properties = unstructured.pop(self.additional_field.name)

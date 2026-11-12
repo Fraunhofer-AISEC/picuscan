@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import os
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from subprocess import PIPE
 
@@ -18,9 +18,9 @@ from picuscan.analyzer.options import Options
 from picuscan.analyzer.tool import Tool
 from picuscan.analyzer.transforms import Transform
 from picuscan.common.tqdm_support import fixed_width_desc
-from picuscan.sarif.models import ArtifactLocation, Location, Log, Result, ThreadFlowLocation, Invocation
-from picuscan.sarif.visitor import Visitor
 from picuscan.process import TransformSarifAddInvocations
+from picuscan.sarif.models import ArtifactLocation, Invocation, Location, Log, Result, ThreadFlowLocation
+from picuscan.sarif.visitor import Visitor
 
 logger = logging.get_logger(__name__)
 
@@ -54,7 +54,7 @@ class Infer(Tool):
         ]
         if self.jobs:
             args.append(f"--jobs={self.jobs}")
-        t_start = datetime.now(timezone.utc).isoformat()
+        t_start = datetime.now(UTC).isoformat()
         proc = await process.spawn(
             *args,
             stdout=PIPE,
@@ -85,12 +85,12 @@ class Infer(Tool):
                         self.failed_sources.add(path)
 
         status = await proc.wait()
-        t_end = datetime.now(timezone.utc).isoformat()
+        t_end = datetime.now(UTC).isoformat()
         stderr = await proc.stderr.read()
         self.sink.write(stderr)
 
         report_path = output_dir / "report.sarif"
-        with open(report_path, "rb") as f:
+        with report_path.open("rb") as f:
             doc = sarif.load(f)
 
         self.invocations = [
@@ -116,8 +116,7 @@ class _fix_artifact_location_uris(Visitor[Options]):
     def visit_ArtifactLocation(self, node: ArtifactLocation, opts: Options) -> ArtifactLocation:
         if node.uri is not None:
             uri = node.uri
-            if uri.startswith("file:"):
-                uri = uri[5:]
+            uri = uri.removeprefix("file:")
             if Path(uri).is_absolute():
                 return attrs.evolve(node, uri=os.fspath(uri), uriBaseId=None)
         if node.uriBaseId is None:

@@ -4,13 +4,14 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, Mapping
+from collections.abc import Callable, Mapping
+from typing import Any
 
 import attrs
 from attrs import Attribute
 from cattrs import GenConverter
-from cattrs.gen._consts import AttributeOverride
 from cattrs.gen import make_dict_structure_fn, make_dict_unstructure_fn
+from cattrs.gen._consts import AttributeOverride
 
 
 def configure_converter(c: GenConverter) -> None:

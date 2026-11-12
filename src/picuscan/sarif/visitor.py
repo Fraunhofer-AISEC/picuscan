@@ -4,17 +4,14 @@
 
 from __future__ import annotations
 
-from typing import Any, Generic, TypeVar
+from typing import Any
 
 import attr
 
 from picuscan.sarif.models import Object
 
-_Ctx = TypeVar("_Ctx")
-_T = TypeVar("_T", bound=Object)
 
-
-class Visitor(Generic[_Ctx]):
+class Visitor[Ctx]:
     """
     This class recursively visits all attributes of a SARIF object. It
     is mainly used for transforming a SARIF log.
@@ -34,7 +31,7 @@ class Visitor(Generic[_Ctx]):
     can detect this and avoid unnecessary copy operations.
     """
 
-    def generic_visit(self, obj: _T, ctx: _Ctx) -> _T:
+    def generic_visit[T: Object](self, obj: T, ctx: Ctx) -> T:
         changes: dict[str, Any] = {}
         for field in attr.fields(type(obj)):
             value = getattr(obj, field.name)
@@ -87,7 +84,7 @@ class Visitor(Generic[_Ctx]):
         else:
             return obj
 
-    def __call__(self, obj: _T, ctx: _Ctx) -> _T:
+    def __call__[T: Object](self, obj: T, ctx: Ctx) -> T:
         method = f"visit_{type(obj).__name__}"
         visit = getattr(self, method, self.generic_visit)
         new = visit(obj, ctx)

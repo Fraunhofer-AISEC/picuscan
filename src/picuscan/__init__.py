@@ -29,7 +29,7 @@ class Loader(click.Group):
             # When a user runs 'picuscan some-command', look for the
             # command definition in 'picuscan.commands.some_command'
             module = importlib.import_module(f"{commands.__name__}.{cmd_name}")
-            cmd = getattr(module, "cli")
+            cmd = module.cli
             if isinstance(cmd, click.Command):
                 return cmd
         except (ModuleNotFoundError, AttributeError):

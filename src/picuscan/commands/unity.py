@@ -67,7 +67,7 @@ async def build(opts: _Options) -> None:
                 opts.compile_db, fail_on_error=opts.fail_on_error, rename_symbols=True, jobs=opts.jobs
             )
         except Exception:
-            logger.error("Failed to initialize InMemoryBuilder.", exc_info=True)
+            logger.exception("Failed to initialize InMemoryBuilder.")
             sys.exit(1)
         in_memory.register_renamed_symbol_callback(
             lambda name, renamed: logger.info("Renamed %r from %s to %r", renamed.name, renamed.file, name)
@@ -81,7 +81,7 @@ async def build(opts: _Options) -> None:
     try:
         await builder(opts.output)
     except Exception:
-        logger.error("Build failed.", exc_info=True)
+        logger.exception("Build failed.")
         sys.exit(1)
 
 

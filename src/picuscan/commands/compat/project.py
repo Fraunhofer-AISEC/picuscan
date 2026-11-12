@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Collection
-from typing import IO, Any, Optional
+from typing import IO, Any
 
 import attrs
 from cattrs import GenConverter
@@ -22,10 +22,10 @@ class Finding:
     line: int
     tool: str
     message: str
-    function: Optional[str] = None
-    type: Optional[str] = None
-    severity: Optional[str] = None
-    comment: Optional[str] = None
+    function: str | None = None
+    type: str | None = None
+    severity: str | None = None
+    comment: str | None = None
     is_false_positive: bool = False
     skip: bool = False
     need_review: bool = False
@@ -72,7 +72,7 @@ class _ProjectHandler:
         return frozenset(self.converter.structure(x, Finding) for x in o)
 
     def unstructure(self, project: _Project) -> list[Any]:
-        return list(self.converter.unstructure(x, Finding) for x in project)
+        return [self.converter.unstructure(x, Finding) for x in project]
 
 
 _converter = _make_converter()

@@ -7,7 +7,8 @@
 from __future__ import annotations
 
 import enum
-from typing import Any, Iterable, Iterator, Literal, Mapping, Optional
+from collections.abc import Iterable, Iterator, Mapping
+from typing import Any, Literal
 
 import attrs
 
@@ -19,7 +20,7 @@ SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json"
 @attrs.frozen(kw_only=True)
 class PropertyBag:
     tags: tuple[str, ...] = ()
-    severity: Optional[str] = None
+    severity: str | None = None
 
 
 @attrs.frozen(kw_only=True)
@@ -31,14 +32,14 @@ class Object:
 
 @attrs.frozen(kw_only=True)
 class ArtifactLocation(Object):
-    uri: Optional[str] = None
-    uriBaseId: Optional[str] = None
+    uri: str | None = None
+    uriBaseId: str | None = None
 
 
 @attrs.frozen(kw_only=True)
 class Message(Object):
-    text: Optional[str] = None
-    id: Optional[str] = None
+    text: str | None = None
+    id: str | None = None
 
 
 @attrs.frozen(kw_only=True)
@@ -49,8 +50,8 @@ class MultiformatMessageString(Object):
 @attrs.frozen(kw_only=True)
 class Log(Object):
     version: Literal[Version.V2_1_0]
-    schema: Optional[str] = None
-    runs: Optional[tuple[Run, ...]]
+    schema: str | None = None
+    runs: tuple[Run, ...] | None
 
     def __iter__(self) -> Iterator[Run]:
         yield from self.runs or []
@@ -58,12 +59,12 @@ class Log(Object):
 
 @attrs.frozen(kw_only=True)
 class Run(Object):
-    externalPropertyFileReferences: Optional[ExternalPropertyFileReferences] = None
+    externalPropertyFileReferences: ExternalPropertyFileReferences | None = None
     tool: Tool
-    invocations: Optional[list[Invocation]] = None
+    invocations: list[Invocation] | None = None
     originalUriBaseIds: Mapping[str, ArtifactLocation] = attrs.field(factory=dict)
-    results: Optional[frozenset[Result]] = None
-    columnKind: Optional[ColumnKind] = None
+    results: frozenset[Result] | None = None
+    columnKind: ColumnKind | None = None
 
 
 class ColumnKind(enum.Enum):
@@ -78,8 +79,8 @@ class ExternalPropertyFileReferences(Object):
 
 @attrs.frozen(kw_only=True)
 class ExternalPropertyFileReference(Object):
-    location: Optional[ArtifactLocation] = None
-    guid: Optional[str] = None
+    location: ArtifactLocation | None = None
+    guid: str | None = None
 
 
 @attrs.frozen(kw_only=True)
@@ -90,26 +91,26 @@ class Tool(Object):
 @attrs.frozen(kw_only=True)
 class ToolComponent(Object):
     name: str
-    fullName: Optional[str] = None
-    version: Optional[str] = None
+    fullName: str | None = None
+    version: str | None = None
     rules: tuple[ReportingDescriptor, ...] = ()
 
 
 @attrs.frozen(kw_only=True)
 class Invocation(Object):
     executionSuccessful: bool
-    arguments: Optional[list[str]] = None
-    exitCode: Optional[int] = None
-    startTimeUtc: Optional[str] = None
-    endTimeUtc: Optional[str] = None
+    arguments: list[str] | None = None
+    exitCode: int | None = None
+    startTimeUtc: str | None = None
+    endTimeUtc: str | None = None
 
 
 @attrs.frozen(kw_only=True)
 class Result(Object):
-    ruleId: Optional[str] = None
+    ruleId: str | None = None
     taxa: tuple[ReportingDescriptorReference, ...] = ()
-    kind: Optional[Literal["pass", "open", "informational", "notApplicable", "review", "fail"]] = None
-    level: Optional[Level] = None
+    kind: Literal["pass", "open", "informational", "notApplicable", "review", "fail"] | None = None
+    level: Level | None = None
     message: Message
     locations: tuple[Location, ...] = ()
     fingerprints: Mapping[str, str] = attrs.field(factory=dict, hash=False)
@@ -117,7 +118,7 @@ class Result(Object):
     stacks: tuple[Stack, ...] = ()
     suppressions: tuple[Suppression, ...] = ()
     rank: float = -1
-    guid: Optional[str] = None
+    guid: str | None = None
 
 
 class Level(enum.Enum):
@@ -129,29 +130,29 @@ class Level(enum.Enum):
 
 @attrs.frozen(kw_only=True)
 class Location(Object):
-    physicalLocation: Optional[PhysicalLocation] = None
-    message: Optional[Message] = None
+    physicalLocation: PhysicalLocation | None = None
+    message: Message | None = None
 
 
 @attrs.frozen(kw_only=True)
 class PhysicalLocation(Object):
-    artifactLocation: Optional[ArtifactLocation] = None
-    region: Optional[Region] = None
+    artifactLocation: ArtifactLocation | None = None
+    region: Region | None = None
 
 
 @attrs.frozen(kw_only=True)
 class Region(Object):
-    startLine: Optional[int] = None
-    startColumn: Optional[int] = None
-    endLine: Optional[int] = None
-    endColumn: Optional[int] = None
+    startLine: int | None = None
+    startColumn: int | None = None
+    endLine: int | None = None
+    endColumn: int | None = None
 
 
 @attrs.frozen(kw_only=True)
 class Suppression(Object):
     kind: Literal["inSource", "external"]
-    status: Optional[Literal["accepted", "underReview", "rejected"]] = None
-    justification: Optional[str] = None
+    status: Literal["accepted", "underReview", "rejected"] | None = None
+    justification: str | None = None
 
 
 @attrs.frozen(kw_only=True)
@@ -161,39 +162,39 @@ class CodeFlow(Object):
 
 @attrs.frozen(kw_only=True)
 class ThreadFlow(Object):
-    message: Optional[Message] = None
+    message: Message | None = None
     locations: tuple[ThreadFlowLocation, ...]
 
 
 @attrs.frozen(kw_only=True)
 class ThreadFlowLocation(Object):
-    location: Optional[Location] = None
+    location: Location | None = None
 
 
 @attrs.frozen(kw_only=True)
 class Stack(Object):
-    message: Optional[Message] = None
+    message: Message | None = None
     frames: tuple[StackFrame, ...]
 
 
 @attrs.frozen(kw_only=True)
 class StackFrame(Object):
-    location: Optional[Location] = None
+    location: Location | None = None
 
 
 @attrs.frozen(kw_only=True)
 class ReportingDescriptor(Object):
     id: str
-    name: Optional[str] = None
-    shortDescription: Optional[MultiformatMessageString] = None
-    fullDescription: Optional[MultiformatMessageString] = None
+    name: str | None = None
+    shortDescription: MultiformatMessageString | None = None
+    fullDescription: MultiformatMessageString | None = None
     relationships: tuple[ReportingDescriptorRelationship, ...] = ()
 
 
 @attrs.frozen(kw_only=True)
 class ReportingDescriptorReference(Object):
-    id: Optional[str] = None
-    toolComponent: Optional[ToolComponentReference] = None
+    id: str | None = None
+    toolComponent: ToolComponentReference | None = None
 
 
 @attrs.frozen(kw_only=True)
@@ -204,8 +205,8 @@ class ReportingDescriptorRelationship(Object):
 
 @attrs.frozen(kw_only=True)
 class ToolComponentReference(Object):
-    name: Optional[str] = None
-    guid: Optional[str] = None
+    name: str | None = None
+    guid: str | None = None
 
 
 def message(text: Any, **kw: Any) -> Message:
