@@ -18,7 +18,7 @@ def load(fp: IO[Any]) -> Log:  # noqa: F405
     return structure(obj)
 
 
-def loads(s: AnyStr) -> Log:  # noqa: F405
+def loads[AnyStr: str | bytes](s: AnyStr) -> Log:  # noqa: F405
     obj = json.loads(s)
     return structure(obj)
 

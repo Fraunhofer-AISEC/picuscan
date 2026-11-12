@@ -5,11 +5,11 @@
 from __future__ import annotations
 
 import re
-import typing as t
 import shutil
+import typing as t
+from collections.abc import AsyncGenerator, Generator
 from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
-from collections.abc import AsyncIterator, Iterator
 
 import attrs
 
@@ -60,14 +60,14 @@ class IKOS(Tool):
         elif self.opts.ikos_entrypoints_file:
             entry_points = self.opts.ikos_entrypoints_file.read_text().strip().split("\n")
             args += ["-e", ",".join(entry_points)]
-        elif entry_points:
+        elif entry_points:  # ty: ignore[truthiness-test-of-iterable]
             args += ["-e", ",".join(entry_points)]
         if self.jobs:
             args += [f"-j{self.jobs}"]
         return await process.run(*args, *self.opts.ikos_args, llvm_ir_file, stdout=PIPE, stderr=self.sink)
 
     @asynccontextmanager
-    async def __build(self) -> AsyncIterator[tuple[Path, frozenset[str], LLVMConfig]]:
+    async def __build(self) -> AsyncGenerator[tuple[Path, frozenset[str], LLVMConfig], None]:
         builder = unity.InMemoryBuilder(
             self.opts.compile_db,
             fail_on_error=False,
@@ -133,7 +133,7 @@ class _PrependResultLocationToStacks(Visitor[Options]):
             return self.generic_visit(node, opts)
 
     @contextmanager
-    def _enter_result(self, result: Result) -> Iterator[None]:
+    def _enter_result(self, result: Result) -> Generator[None, None, None]:
         try:
             (location,) = result.locations
         except ValueError:

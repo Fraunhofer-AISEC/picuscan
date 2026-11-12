@@ -27,7 +27,7 @@ def unstructure(db: CompilationDB) -> object:
 
 def load(input: Path | t.IO[t.Any]) -> CompilationDB:
     if isinstance(input, Path):
-        with open(input, "rb") as f:
+        with input.open("rb") as f:
             o = json.load(f)
         path = input
     else:

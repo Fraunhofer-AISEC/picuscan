@@ -6,8 +6,8 @@ default:
     @just --list
 
 [private]
-lint-mypy:
-    mypy --pretty src
+lint-mypy platform="linux":
+    mypy --pretty --platform {{ platform }}
 
 [private]
 lint-ruff-check:
@@ -21,11 +21,14 @@ lint-ruff-format:
 lint-reuse:
     reuse lint
 
+# ty defaults to the lower bound of requires-python; the linters
+# are supposed to check against the running interpreter instead.
+# Only src/ is checked (like mypy); the tests are not fully typed.
 [private]
-lint-ty:
-    ty check
+lint-ty platform="linux":
+    ty check src --python-platform {{ platform }} --python-version "$(python -c 'import sys; print("%d.%d" % sys.version_info[:2])')"
 
-lint: lint-mypy lint-ruff-check lint-ruff-format lint-reuse
+lint: lint-mypy lint-ty lint-ruff-check lint-ruff-format lint-reuse
 
 fmt:
     ruff check --fix-only

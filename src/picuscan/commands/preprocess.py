@@ -7,9 +7,10 @@ from __future__ import annotations
 import re
 import sys
 import typing as t
+from collections.abc import Sequence
 from contextlib import suppress
 from pathlib import Path
-from typing import Literal, Sequence
+from typing import Literal
 
 import attrs
 import click
@@ -95,9 +96,16 @@ class _Params:
     help="""The template that will be used for the Git commit after the processing. If you include {} in the message
     string, it will be replaced with the list of conversions that were performed.""",
 )
-@click.option("--output", "-o", type=click.File("w"), help="Write the list of missing header files to this file.")
 @click.option(
-    "--compile-db", type=p.CompilationDB(), help="Compilation database. Used for the missing header file check."
+    "--output",
+    "-o",
+    type=click.File("w"),
+    help="Write the list of missing header files to this file.",
+)
+@click.option(
+    "--compile-db",
+    type=p.CompilationDB(),
+    help="Compilation database. Used for the missing header file check.",
 )
 @click.option(
     "--include-list",
@@ -142,9 +150,9 @@ async def cli(params: _Params) -> None:
             sys.exit(1)
 
     logger.info("Converting file encoding...")
-    with tqdm(files, bar_format=fixed_width_desc()) as t:
-        for path in t:
-            t.set_description(f"{path.name}")
+    with tqdm(files, bar_format=fixed_width_desc()) as bar:
+        for path in bar:
+            bar.set_description(f"{path.name}")
             _convert(path, set(params.convert), params.encoding)
 
     if repo:
@@ -158,12 +166,13 @@ async def cli(params: _Params) -> None:
 def _convert(path: Path, conversions: set[Conversion], encoding: str | None = None) -> None:
     newline = None if "line" in conversions else ""
     try:
-        with rewrite(path, "w", encoding="utf-8" if "enc" in conversions else encoding, newline=newline) as new:
-            with open(path, mode="r", encoding=encoding, newline=newline) as f:
-                for s in f:
-                    if "inc" in conversions:
-                        s = _convert_if_include(s)
-                    new.write(s)
+        with (
+            rewrite(path, "w", encoding="utf-8" if "enc" in conversions else encoding, newline=newline) as new,
+            path.open(encoding=encoding, newline=newline) as f,
+        ):
+            for s in f:
+                out = _convert_if_include(s) if "inc" in conversions else s
+                new.write(out)
     except ValueError as e:
         logger.error(f"{path}: {e}")
         sys.exit(2)
@@ -172,7 +181,7 @@ def _convert(path: Path, conversions: set[Conversion], encoding: str | None = No
         sys.exit(2)
 
 
-INCLUDE_PATTERN = re.compile(r'^(\s*#include\s*)(<.*>|".*")(.*)', re.S)
+INCLUDE_PATTERN = re.compile(r'^(\s*#include\s*)(<.*>|".*")(.*)', re.DOTALL)
 
 
 def _convert_if_include(s: str) -> str:
@@ -189,11 +198,13 @@ async def _cppcheck(params: _Params, files: Sequence[Path]) -> None:
         return
 
     logger.info("Finding missing header files...")
-    with tqdm(total=100, bar_format=fixed_width_desc()) as t:
+    with tqdm(total=100, bar_format=fixed_width_desc()) as bar:
         if compile_db := params.compile_db:
-            missing = await check_config(f"--project={compile_db.path}", on_event=update_tqdm(t))
+            missing = await check_config(f"--project={compile_db.path}", on_event=update_tqdm(bar))
         elif params.include_list:
-            missing = await check_config(f"--includes-file={params.include_list}", files=files, on_event=update_tqdm(t))
+            missing = await check_config(
+                f"--includes-file={params.include_list}", files=files, on_event=update_tqdm(bar)
+            )
         else:
             raise RuntimeError
 

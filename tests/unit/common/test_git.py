@@ -5,11 +5,11 @@
 from __future__ import annotations
 
 import shutil
-import subprocess
 from pathlib import Path
 
 import pytest
 
+from picuscan import process
 from picuscan.misc.git import Repository, init, is_repository
 from picuscan.misc.git.status import Flag, _Regular, _Untracked
 
@@ -19,7 +19,7 @@ skip = pytest.mark.skipif(not shutil.which("git"), reason="Git is not installed"
 @skip
 @pytest.mark.asyncio
 async def test_is_repository(tmp_path: Path):
-    subprocess.check_call(["git", "init"], cwd=tmp_path)
+    await process.run("git", "init", discard_output=True, cwd=tmp_path)
     assert await is_repository(tmp_path)
 
 
@@ -110,7 +110,7 @@ async def test_add_all(repo: Repository):
     foo.touch()
     bar = repo.cwd / "bar"
     bar.touch()
-    await repo.add([Path(".")])
+    await repo.add([Path()])
 
     st = await repo.status()
     assert len(st) == 2

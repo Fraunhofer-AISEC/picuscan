@@ -5,12 +5,13 @@
 from __future__ import annotations
 
 import enum
+from collections.abc import Container, Iterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Container, Iterator, Literal, Protocol, Union, get_args
+from typing import Literal, Protocol, get_args
 
 
-class Flag(str, enum.Enum):
+class Flag(enum.StrEnum):
     UNMODIFIED = " "
     MODIFIED = "M"
     ADDED = "A"
@@ -86,10 +87,10 @@ class _Ignored(_Mixin):
     path: Path
 
 
-Entry = Union[_Regular, _RenamedCopiedInIndex, _RenamedCopiedInWorkTree, _Untracked, _Ignored]
+Entry = _Regular | _RenamedCopiedInIndex | _RenamedCopiedInWorkTree | _Untracked | _Ignored
 
 
-class Status(tuple[Entry]):
+class Status(tuple[Entry, ...]):
     def is_dirty(self, index: bool = True, work_tree: bool = True, untracked: bool = True) -> bool:
         return any(e.is_dirty(index, work_tree, untracked) for e in self)
 
@@ -98,7 +99,7 @@ def parse(s: str, paths: Container[Path] | None = None) -> Status:
     """Parse the output of `git status`. The output should be in the
     porcelain format version 1 and null-terminated. See the flags
     `--porcelain` and `-z` of `git status`."""
-    return Status(_parse(s, paths))
+    return Status(tuple(_parse(s, paths)))
 
 
 def _parse(s: str, paths: Container[Path] | None) -> Iterator[Entry]:

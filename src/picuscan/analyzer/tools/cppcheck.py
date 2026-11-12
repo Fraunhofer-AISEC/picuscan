@@ -23,7 +23,6 @@ from picuscan.sarif.models import (
     ColumnKind,
     Invocation,
     Level,
-    Location as SarifLocation,
     Log,
     ReportingDescriptorReference,
     Result,
@@ -32,6 +31,9 @@ from picuscan.sarif.models import (
     ThreadFlowLocation,
     Tool,
     ToolComponent,
+)
+from picuscan.sarif.models import (
+    Location as SarifLocation,
 )
 
 logger = logging.get_logger(__name__)
@@ -68,7 +70,7 @@ class Cppcheck(AnalysisTool):
         sarif_results: list[Result] = []
 
         for err in error_list:
-            id = err["@id"]
+            rule_id = err["@id"]
             level = LEVELS.get(err["@severity"], Level.NOTE)
             msg = err["@verbose"]
 
@@ -86,16 +88,16 @@ class Cppcheck(AnalysisTool):
                     locations = [location[0]]
                 if len(location) > 1:
                     # TODO: what is the correct order of the "analysis steps"?
-                    thread_locations = tuple([ThreadFlowLocation(location=self.__location(loc)) for loc in location])
-                    thread_flows = tuple([ThreadFlow(message=None, locations=thread_locations)])
-                    code_flows = tuple([CodeFlow(threadFlows=thread_flows)])
+                    thread_locations = tuple(ThreadFlowLocation(location=self.__location(loc)) for loc in location)
+                    thread_flows = (ThreadFlow(message=None, locations=thread_locations),)
+                    code_flows = (CodeFlow(threadFlows=thread_flows),)
             else:
                 locations = [location]
             sarif_locations = tuple(self.__location(loc) for loc in locations)
 
             sarif_results.append(
                 Result(
-                    ruleId=id,
+                    ruleId=rule_id,
                     taxa=taxa or (),
                     level=level,
                     message=sarif.message(msg),
@@ -145,7 +147,7 @@ class Cppcheck(AnalysisTool):
 
     def __location(self, loc: Location) -> SarifLocation:
         return sarif.location(
-            abspath(loc["@file"]) if not self.opts.base else loc["@file"],
+            abspath(loc["@file"]) if not self.opts.base else loc["@file"],  # noqa: PTH100
             max(int(loc["@line"]), 1),
             loc.get("@column"),
             base="BASE_DIR" if self.opts.base else None,

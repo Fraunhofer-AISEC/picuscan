@@ -5,18 +5,19 @@
 from __future__ import annotations
 
 import enum
+import glob as py_glob
 import json
 import shutil
 import stat
-import glob as py_glob
 import subprocess
+from collections.abc import Collection, Container, Generator, Iterable, Iterator
 from contextlib import contextmanager, suppress
 from dataclasses import dataclass, field
 from fnmatch import fnmatchcase
 from functools import partial
 from itertools import chain, repeat
 from pathlib import Path
-from typing import IO, Any, AnyStr, Collection, Container, Generic, Iterable, Iterator, Literal, Self, overload
+from typing import IO, Any, AnyStr, Generic, Literal, Self, overload
 
 
 class Type(enum.IntEnum):
@@ -49,23 +50,23 @@ def find(
 
 
 def _find_recursive(path: Path, dirs: Iterable[Path], case_sensitive: bool) -> Iterator[Path]:
-    paths: Iterator[Path] = chain.from_iterable(dir.glob("**/*") for dir in dirs)
+    paths: Iterator[Path] = chain.from_iterable(d.glob("**/*") for d in dirs)
     paths = (p for p in paths if _match(p, path, case_sensitive))
     return paths
 
 
 def _find(path: Path, dirs: Iterable[Path], case_sensitive: bool) -> Iterator[Path]:
     if case_sensitive:
-        paths: Iterator[Path] = (dir / path for dir in dirs)
+        paths: Iterator[Path] = (d / path for d in dirs)
     else:
         pattern = "/".join(repeat("*", len(path.parts)))
-        paths = chain.from_iterable(dir.glob(pattern) for dir in dirs)
+        paths = chain.from_iterable(d.glob(pattern) for d in dirs)
         paths = (p for p in paths if _match(p, path, False))
     return paths
 
 
 def _match(p: Path, q: Path, case_sensitive: bool = True) -> bool:
-    for a, b in zip(reversed(p.parts), reversed(q.parts)):
+    for a, b in zip(reversed(p.parts), reversed(q.parts), strict=False):
         if case_sensitive:
             if a != b:
                 return False
@@ -91,13 +92,12 @@ def glob(
     elif dir.is_file():
         files = [dir]
     elif "*" in str(dir):
-        files = [Path(_) for _ in py_glob.glob(str(dir))]
+        # the pattern is a full (possibly absolute) path, so `Path.glob()` cannot be used here
+        files = [Path(_) for _ in py_glob.glob(str(dir))]  # noqa: PTH207
     else:
         raise ValueError(f"Invalid path for glob: {dir}")
     for p in files:
-        if not dir_ok and p.is_dir():
-            continue
-        elif not (file_ok or p.is_dir()):
+        if not dir_ok and p.is_dir() or not (file_ok or p.is_dir()):
             continue
         matcher = partial(fnmatchcase, str(p))
         if any(map(matcher, patterns)) and not any(map(matcher, exclude)):
@@ -107,7 +107,7 @@ def glob(
 def _is(p: Path, types: Type | Container[Type]) -> bool:
     types = [types] if isinstance(types, Type) else types
     st = p.lstat()
-    return stat.S_IFMT(st.st_mode) in types
+    return Type(stat.S_IFMT(st.st_mode)) in types
 
 
 class _NotModified(Exception):
@@ -116,31 +116,30 @@ class _NotModified(Exception):
 
 @overload
 @contextmanager
-def modify(file: Path, text: Literal[True] = ...) -> Iterator[_Modify[str]]: ...
+def modify(file: Path, text: Literal[True] = ...) -> Generator[_Modify[str], None, None]: ...
 
 
 @overload
 @contextmanager
-def modify(file: Path, text: Literal[False]) -> Iterator[_Modify[bytes]]: ...
+def modify(file: Path, text: Literal[False]) -> Generator[_Modify[bytes], None, None]: ...
 
 
 @contextmanager
-def modify(file: Path, text: bool = True) -> Iterator[_Modify[str] | _Modify[bytes]]:
+def modify(file: Path, text: bool = True) -> Generator[_Modify[str] | _Modify[bytes], None, None]:
     """Like `rewrite()`, but this tries to avoid unnecessary write
     operations while providing a nicer API for line-by-line processing."""
-    with suppress(_NotModified):
-        with rewrite(file, "w" if text else "wb") as new:
-            with open(file, "r" if text else "rb") as current:
-                m = _Modify(current)
-                yield m
-            if m.modified:
-                new.writelines(m.pending)
-            else:
-                raise _NotModified
+    with suppress(_NotModified), rewrite(file, "w" if text else "wb") as new:  # ty: ignore[invalid-argument-type]
+        with file.open("r" if text else "rb") as current:
+            m: _Modify[str] | _Modify[bytes] = _Modify(current)
+            yield m
+        if m.modified:
+            new.writelines(m.pending)  # ty: ignore[no-matching-overload]
+        else:
+            raise _NotModified
 
 
 @dataclass
-class _Modify(Generic[AnyStr]):
+class _Modify(Generic[AnyStr]):  # noqa: UP046  # PEP 695 bound TypeVars are not valid for the invariant IO
     file: IO[AnyStr]
     pending: list[AnyStr] = field(default_factory=list)
     modified: bool = False
@@ -163,26 +162,34 @@ class _Modify(Generic[AnyStr]):
 @overload
 @contextmanager
 def rewrite(
-    file: Path, mode: Literal["w", "w+"] = ..., encoding: str | None = ..., newline: str | None = ..., suffix: str = ...
-) -> Iterator[IO[str]]: ...
+    file: Path,
+    mode: Literal["w", "w+"] = ...,
+    encoding: str | None = ...,
+    newline: str | None = ...,
+    suffix: str = ...,
+) -> Generator[IO[str], None, None]: ...
 
 
 @overload
 @contextmanager
-def rewrite(file: Path, mode: Literal["wb", "w+b"], *, suffix: str = ...) -> Iterator[IO[bytes]]: ...
+def rewrite(file: Path, mode: Literal["wb", "w+b"], *, suffix: str = ...) -> Generator[IO[bytes], None, None]: ...
 
 
 @overload
 @contextmanager
 def rewrite(
     file: Path, mode: str, encoding: str | None = ..., newline: str | None = ..., suffix: str = ...
-) -> Iterator[IO[Any]]: ...
+) -> Generator[IO[Any], None, None]: ...
 
 
 @contextmanager
 def rewrite(
-    file: Path, mode: str = "w", encoding: str | None = None, newline: str | None = None, suffix: str = "~"
-) -> Iterator[IO[str] | IO[bytes]]:
+    file: Path,
+    mode: str = "w",
+    encoding: str | None = None,
+    newline: str | None = None,
+    suffix: str = "~",
+) -> Generator[IO[str] | IO[bytes], None, None]:
     """Create a copy of `file` and open it for modification. In case of
     an error, discard the copy. Otherwise, replace the original with the
     (modified) copy."""
@@ -190,7 +197,7 @@ def rewrite(
     assert suffix
     new = file.with_name(f"{file.name}{suffix}")
     try:
-        with open(new, mode, encoding=encoding, newline=newline) as f:
+        with new.open(mode, encoding=encoding, newline=newline) as f:
             yield f
         try:
             shutil.copymode(file, new)
@@ -208,7 +215,7 @@ def tokei(path: Path, exclude: list[str] | None = None) -> tuple[dict[str, Any],
         for src in exclude:
             args.append("-e")
             args.append(src)
-    p = subprocess.run(args, stdout=subprocess.PIPE)
+    p = subprocess.run(args, stdout=subprocess.PIPE, check=False)
     out = p.stdout.decode()
     d = json.loads(out)
     count_c = 0

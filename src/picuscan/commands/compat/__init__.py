@@ -53,14 +53,14 @@ class GccParams(CommonParams):
 def gcc(params: GccParams) -> None:
     findings = get_findings(params)
     for f in findings:
-        id = f"[{f.id:03d}]"
+        tag = f"[{f.id:03d}]"
         if params.select == "verified":
-            msg = f"{f.file}:{f.line}:1: error: {id} {f.comment}"
+            msg = f"{f.file}:{f.line}:1: error: {tag} {f.comment}"
         elif params.select == "new":
-            msg = f"{f.file}:{f.line}:1: warning: {id} {f.message}"
+            msg = f"{f.file}:{f.line}:1: warning: {tag} {f.message}"
         else:
             assert params.select == "need-review"
-            msg = f"{f.file}:{f.line}:1: note: {id} {f.comment}"
+            msg = f"{f.file}:{f.line}:1: note: {tag} {f.comment}"
         print(msg, file=params.output)
 
 
@@ -122,10 +122,10 @@ def from_sarif(log: Log, output: IO[str]) -> None:
             if message is None:
                 continue
 
-            id = counter
+            finding_id = counter
             counter = counter + 1
 
-            finding = Finding(id, file, line, tool, message)
+            finding = Finding(finding_id, file, line, tool, message)
             findings.add(finding)
 
     dump(findings, output)

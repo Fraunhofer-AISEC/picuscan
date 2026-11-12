@@ -5,22 +5,22 @@
 from __future__ import annotations
 
 import asyncio
-from typing import Mapping
 import json
-import attrs
+from collections.abc import Mapping
 from dataclasses import dataclass
 from itertools import chain
 
+import attrs
 from tqdm import tqdm
 
 from picuscan import logging, process, sarif
+from picuscan.analyzer.options import Options
 from picuscan.analyzer.tool import Tool
 from picuscan.analyzer.transforms import Transform, centuple_rank
 from picuscan.common.tqdm_support import fixed_width_desc
-from picuscan.process import TransformSarifAddInvocations, CalledProcessError
+from picuscan.process import CalledProcessError, TransformSarifAddInvocations
 from picuscan.sarif.models import ArtifactLocation, Log, ReportingDescriptorReference, ToolComponent
 from picuscan.sarif.version import Version
-from picuscan.analyzer.options import Options
 from picuscan.sarif.visitor import Visitor
 
 logger = logging.get_logger(__name__)

@@ -2,9 +2,8 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-from __future__ import annotations
-
-from typing import Generic, Iterator, TypeVar
+from collections.abc import Iterator
+from typing import Generic, TypeVar
 
 _T = TypeVar("_T")
 

@@ -6,8 +6,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
-from typing import IO, Literal, Sequence
+from typing import IO, Literal
 
 import attrs
 import click

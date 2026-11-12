@@ -8,12 +8,11 @@ from __future__ import annotations
 
 import os
 from argparse import ArgumentError, ArgumentParser
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from pathlib import Path
-from typing import Sequence
+from typing import Self
 
 import attrs
-from typing_extensions import Self
 
 
 @attrs.frozen(kw_only=True)

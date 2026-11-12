@@ -31,10 +31,7 @@ def is_tuple(x: object) -> t.TypeGuard[tuple[object, ...]]:
     return isinstance(x, tuple)
 
 
-_T = t.TypeVar("_T")
-
-
-def is_tuple_with(x: object, elements: t.Callable[[object], t.TypeGuard[_T]]) -> t.TypeGuard[tuple[_T, ...]]:
+def is_tuple_with[T](x: object, elements: t.Callable[[object], t.TypeGuard[T]]) -> t.TypeGuard[tuple[T, ...]]:
     return is_tuple(x) and all(map(elements, x))
 
 

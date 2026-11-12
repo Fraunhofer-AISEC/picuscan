@@ -11,7 +11,7 @@ import os
 import re
 import typing as t
 from asyncio import StreamReader, StreamWriter
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import xmltodict
@@ -19,13 +19,13 @@ import xmltodict
 from picuscan import process
 from picuscan.misc import asyncutils
 from picuscan.process import DEVNULL, PIPE
+from picuscan.sarif import Invocation
 from picuscan.typing import StrBytesPath
 
 from ._stdlib import all_headers
 from .error import CppcheckError
 from .event import Checked, Checking, Event
 from .output import Output
-from ...sarif import Invocation
 
 _Files = t.Iterable[StrBytesPath]
 _OnEvent = t.Callable[[Event], None]
@@ -45,7 +45,7 @@ async def execute(
     passing them as arguments.
     @stdout: Write the output to this file.
     """
-    t_start = datetime.now(timezone.utc).isoformat()
+    t_start = datetime.now(UTC).isoformat()
     cmd: list[StrBytesPath] = ["cppcheck", "--xml", "--xml-version=2"]
     if files is not None:
         cmd.append("--file-list=-")
@@ -80,7 +80,7 @@ async def execute(
     if code != 0:
         raise CppcheckError("cppcheck exited with a non-zero status code.")
 
-    t_end = datetime.now(timezone.utc).isoformat()
+    t_end = datetime.now(UTC).isoformat()
     invocations = [
         Invocation(
             # execute will raise if exit code != 0

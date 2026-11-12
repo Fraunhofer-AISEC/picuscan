@@ -4,7 +4,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Iterator
+from collections.abc import Iterator
+from typing import Any
 
 import attrs
 import cattrs
@@ -14,7 +15,7 @@ from cattrs.gen._consts import AttributeOverride
 
 @attrs.frozen
 class Metadata:
-    override: AttributeOverride = AttributeOverride()
+    override: AttributeOverride = attrs.field(factory=AttributeOverride)
     additional_properties: bool = False
 
     def resolve_name(self, field: Attribute[Any]) -> str:

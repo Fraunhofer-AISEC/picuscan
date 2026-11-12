@@ -26,7 +26,7 @@ class Language(enum.IntEnum):
 
 
 def _get_languages() -> dict[str, Language]:
-    return {**{s: Language.C for s in C_SUFFIXES}, **{s: Language.CXX for s in CXX_SUFFIXES}}
+    return {**dict.fromkeys(C_SUFFIXES, Language.C), **dict.fromkeys(CXX_SUFFIXES, Language.CXX)}
 
 
 LANGUAGES: t.Mapping[str, Language] = _get_languages()

@@ -8,20 +8,21 @@ instance of `Options`."""
 
 from __future__ import annotations
 
-import hashlib
 import fnmatch
+import hashlib
 import json
 import typing as t
 import uuid
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from itertools import groupby
 from os.path import normpath
 from pathlib import Path
-from typing import Callable, Sequence
 from urllib.parse import urlparse
 
 import attr
 
+from picuscan.analyzer.cwe import mapping as cwe_mapping
 from picuscan.analyzer.options import Options
 from picuscan.sarif.models import (
     ArtifactLocation,
@@ -35,27 +36,26 @@ from picuscan.sarif.models import (
 )
 from picuscan.sarif.visitor import Visitor
 
-from ..cwe import mapping as cwe_mapping
 from ._mark_open import mark_open
 from ._rank import centuple_rank
 from ._results import update_results, update_results_with_json
 from ._split_informational import split_informational
 
 __all__ = (
+    "Transform",
     "centuple_rank",
+    "down_rate_failed_sources",
     "filter_excludes",
     "fingerprint",
-    "inject_guid",
     "inject_cwe_mappings",
     "inject_cwe_taxonomy",
+    "inject_guid",
     "mark_open",
     "normalize_locations",
     "split_informational",
-    "Transform",
     "truncate_stacks",
     "update_results",
     "update_results_with_json",
-    "down_rate_failed_sources",
 )
 
 Transform = Callable[[Log, Options], Log]
@@ -150,7 +150,7 @@ class truncate_stacks(Visitor[Options]):
             return node
         if len(node.stacks) <= self.max:
             return node
-        return attr.evolve(node, stacks=node.stacks[0 : self.max])  # noqa: E203
+        return attr.evolve(node, stacks=node.stacks[0 : self.max])
 
 
 class filter_excludes(Visitor[Options]):
@@ -172,14 +172,10 @@ class filter_excludes(Visitor[Options]):
         if not result.locations:
             return False
         for location in result.locations:
-            uri = (
-                location.physicalLocation
-                and location.physicalLocation.artifactLocation
-                and location.physicalLocation.artifactLocation.uri
-            )
-            if not uri:
+            pl = location.physicalLocation
+            if pl is None or pl.artifactLocation is None or pl.artifactLocation.uri is None:
                 return False
-            path = Path(uri)
+            path = Path(pl.artifactLocation.uri)
             if any(path.match(pat) for pat in exclude):
                 return True
         return False
@@ -301,6 +297,6 @@ class down_rate_failed_sources(Visitor[Options]):
             uri = location.physicalLocation.artifactLocation.uri
             # some tools report the failed source files as relative and some as absolut path
             # artifactLocation should be always absolut path
-            if any(map(lambda x: uri.endswith(x), self.failed_sources)):
+            if any(uri.endswith(x) for x in self.failed_sources):
                 return attr.evolve(node, rank=10)
         return node

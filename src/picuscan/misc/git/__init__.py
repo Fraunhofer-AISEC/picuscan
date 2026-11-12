@@ -7,8 +7,8 @@
 from __future__ import annotations
 
 import typing as t
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import attrs
 
@@ -16,7 +16,7 @@ from picuscan import fs, process
 from picuscan.misc.strutils import join
 from picuscan.typing import StrBytesPath, StrPath
 
-from . import status
+from .status import Status, parse
 
 GIT_DIR = ".git"
 
@@ -44,13 +44,13 @@ class Repository:
                 opts.append("--allow-empty")
             await self._git("commit", *opts, input=join(pathspecs, "\0"))
 
-    async def status(self, paths: Iterable[Path] | None = None) -> status.Status:
+    async def status(self, paths: Iterable[Path] | None = None) -> Status:
         """
         Return the status of the repository.
         @paths: Filter the status to have only these paths.
         """
         completed = await self._git("status", "--porcelain", "-z", stdout=process.PIPE)
-        return status.parse(completed.stdout_text, None if paths is None else set(paths))
+        return parse(completed.stdout_text, None if paths is None else set(paths))
 
     async def is_dirty(
         self, paths: Iterable[Path] | None = None, index: bool = True, work_tree: bool = True, untracked: bool = True

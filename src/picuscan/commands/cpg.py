@@ -5,21 +5,20 @@
 from __future__ import annotations
 
 import sys
+from collections.abc import Callable, Generator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Callable, Iterator, Sequence, TypeVar
 from urllib.parse import urlparse
 
 import attrs
 import click
 
-from picuscan import process, sarif, logging
+from picuscan import logging, process, sarif
 from picuscan.common.cpg import CPG
 from picuscan.common.file import glob
 from picuscan.constants import C_CXX_SUFFIXES
 from picuscan.misc.decorators import collect_params, unasync
 from picuscan.sarif.models import Run, Tool, ToolComponent
-
 
 logger = logging.get_logger(__name__)
 
@@ -35,10 +34,8 @@ COMMON_PARAMS = [
     click.option("--password", default="password", show_default=True, help="The Neo4j database password."),
 ]
 
-R = TypeVar("R")
 
-
-def add_common_params(cmd: Callable[..., R]) -> Callable[..., R]:
+def add_common_params[R](cmd: Callable[..., R]) -> Callable[..., R]:
     for param in reversed(COMMON_PARAMS):
         cmd = param(cmd)
     return cmd
@@ -143,7 +140,7 @@ def missing_ret_checks(params: CommonParams) -> None:
 
 
 @contextmanager
-def connect(params: CommonParams) -> Iterator[CPG]:
+def connect(params: CommonParams) -> Generator[CPG, None, None]:
     try:
         with CPG(params.uri, (params.user, params.password)) as cpg:
             yield cpg

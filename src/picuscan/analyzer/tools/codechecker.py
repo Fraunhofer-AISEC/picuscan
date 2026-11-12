@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +20,7 @@ from picuscan.misc.collections import GlobSet
 from picuscan.process import DEVNULL, PIPE, STDOUT
 from picuscan.sarif.models import (
     CodeFlow,
+    Invocation,
     Level,
     Log,
     PropertyBag,
@@ -29,7 +30,6 @@ from picuscan.sarif.models import (
     ThreadFlowLocation,
     Tool,
     ToolComponent,
-    Invocation,
 )
 
 logger = logging.get_logger(__name__)
@@ -45,7 +45,7 @@ def _get_failed_sources(out_dir: Path) -> set[str]:
     meta = json.loads((out_dir / "metadata.json").read_text())
     failed_sources: set[str] = set()
     for tool in meta["tools"]:
-        for _, opts in tool["analyzers"].items():
+        for opts in tool["analyzers"].values():
             failed_sources.update(opts["analyzer_statistics"]["failed_sources"])
     return failed_sources
 
@@ -56,7 +56,7 @@ class CodeChecker(AnalysisTool):
     uses_tqdm = True
 
     def split_result_per_tool(self, results: list[Result], invocations: list[Invocation]) -> list[Run]:
-        meta = json.load(open(self.tool_dir / "output" / "metadata.json"))
+        meta = json.loads((self.tool_dir / "output" / "metadata.json").read_text())
         runs: list[Run] = []
         sarif_rule_ids = []
         codechecker_rule_ids = []
@@ -76,9 +76,7 @@ class CodeChecker(AnalysisTool):
             runs.append(run)
             for analyzer_name, analyzer in tool["analyzers"].items():
                 # FIXME: Dirty hack to keep ruleId in sarif and CodeChecker in sync
-                analyzer_checkers = list(
-                    map(lambda x: x.removeprefix("gcc-").removeprefix("cppcheck-"), analyzer["checkers"])
-                )
+                analyzer_checkers = [x.removeprefix("gcc-").removeprefix("cppcheck-") for x in analyzer["checkers"]]
                 codechecker_rule_ids += analyzer_checkers
                 sarif_rule_ids += [x.ruleId for x in results]
                 analyzer_results = list(filter(lambda x: x.ruleId in analyzer_checkers, results))
@@ -186,7 +184,7 @@ class CodeChecker(AnalysisTool):
             *self.opts.codechecker_args,
             str(self.opts.compile_db.path),
         ]
-        t_start = datetime.now(timezone.utc).isoformat()
+        t_start = datetime.now(UTC).isoformat()
         proc = await process.spawn(
             *args,
             stdout=PIPE,
@@ -210,7 +208,7 @@ class CodeChecker(AnalysisTool):
                 progress.update(100 - last)
 
         status = await proc.wait()
-        t_end = datetime.now(timezone.utc).isoformat()
+        t_end = datetime.now(UTC).isoformat()
         assert status in {0, 3}
         if status == 3:
             self.failed_sources = _get_failed_sources(out_dir)
@@ -238,11 +236,11 @@ def _code_flow(bug_path_events: Any) -> CodeFlow:
         path = ev["file"]["path"]
         message = ev["message"]
 
-        range = ev["range"]
-        start_line = range["start_line"]
-        start_col = range["start_col"]
-        end_line = range["end_line"]
-        end_col = range["end_col"]
+        rng = ev["range"]
+        start_line = rng["start_line"]
+        start_col = rng["start_col"]
+        end_line = rng["end_line"]
+        end_col = rng["end_col"]
 
         location = sarif.location(path, start_line, start_col, last_line=end_line, last_col=end_col, msg=message)
         locations.append(ThreadFlowLocation(location=location))

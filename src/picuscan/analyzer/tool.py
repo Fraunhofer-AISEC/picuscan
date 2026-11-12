@@ -14,19 +14,19 @@ import attrs
 
 from picuscan.analyzer.transforms._results import update_results
 from picuscan.config import get_current_config
-from picuscan.sarif.models import Level, Log, Invocation
+from picuscan.sarif.models import Invocation, Level, Log
 
 from .options import Options
 from .tools.data import load_rules
 from .transforms import (
     Transform,
+    down_rate_failed_sources,
     fingerprint,
     inject_cwe_mappings,
     inject_guid,
     mark_open,
     normalize_locations,
     update_results_with_json,
-    down_rate_failed_sources,
 )
 
 REGISTRY: dict[str, type[Tool]] = {}

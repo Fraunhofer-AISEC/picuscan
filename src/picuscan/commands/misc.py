@@ -11,9 +11,9 @@ import attrs
 import click
 import pandas as pd
 
+from picuscan.common.file import tokei
 from picuscan.logging import get_logger
 from picuscan.misc.decorators import collect_params, unasync
-from picuscan.common.file import tokei
 
 logger = get_logger(__name__)
 
@@ -84,7 +84,7 @@ async def module_cloc(params: _ModuleClocParams) -> None:
         "C": df["C"].sum(),
     }
     df = df.set_index("Module")
-    df["Sum"] = df.apply(lambda x: sum(x), axis=1)
+    df["Sum"] = df.apply(sum, axis=1)
     df = df[df["Sum"] > 0]
     if params.sort_by_loc:
         df = df.sort_values(["Sum"])

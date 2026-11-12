@@ -18,30 +18,12 @@ on:
     - 'typings/**'
 
 jobs:
-  format:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v7
-
-    - uses: ./.github/actions/setup
-
-    - name: Run reuse lint
-      run: |
-        uv run reuse lint
-
-    - name: Run ruff format
-      run: |
-        uv run ruff format --check
-
   linters:
     strategy:
       matrix:
-        python-version: ['3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.12', '3.13', '3.14', '3.15']
 
     runs-on: ubuntu-latest
-
-    needs: format
 
     steps:
     - uses: actions/checkout@v7
@@ -50,20 +32,46 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Run reuse lint
+      run: |
+        uv run just lint-reuse
+
     - name: Run ruff check
       run: |
-        uv run ruff check
+        uv run just lint-ruff-check
+
+    - name: Run ruff format
+      run: |
+        uv run just lint-ruff-format
+
+  type-checks:
+    strategy:
+      matrix:
+        python-version: ['3.12', '3.13', '3.14', '3.15']
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - uses: ./.github/actions/setup
+      with:
+        python-version: ${{ matrix.python-version }}
 
     - name: Run mypy
       run: |
-        uv run mypy src
+        uv run just lint-mypy
+
+    - name: Run ty
+      run: |
+        uv run just lint-ty
 
   pytest:
-    needs: linters
+    needs: [linters, type-checks]
 
     strategy:
       matrix:
-        python-version: ['3.11', '3.12', '3.13', '3.14']
+        python-version: ['3.12', '3.13', '3.14', '3.15']
 
     runs-on: ubuntu-latest
 

@@ -7,8 +7,9 @@ from __future__ import annotations
 import functools
 import itertools
 import logging
+from collections.abc import Awaitable, Callable, Iterable, Mapping
 from dataclasses import dataclass, field
-from typing import Awaitable, Callable, Iterable, Mapping, ParamSpec, TypeVar
+from typing import ParamSpec, TypeVar
 
 from picuscan.misc.strutils import LazyString
 
@@ -74,7 +75,7 @@ _NO_DEFAULT = object()
 
 def _format_call(func: Callable[..., object], args: Iterable[object], kwds: Mapping[str, object]) -> str:
     stringified_args = map(repr, args)
-    defaults = func.__kwdefaults__ or {}
+    defaults = func.__kwdefaults__ or {}  # ty: ignore[missing-attribute]
     stringified_kwds = (f"{k}={v!r}" for k, v in kwds.items() if defaults.get(k, _NO_DEFAULT) is not v)
     params_str = ", ".join(itertools.chain(stringified_args, stringified_kwds))
-    return f"{func.__name__}({params_str})"
+    return f"{func.__name__}({params_str})"  # ty: ignore[missing-attribute]

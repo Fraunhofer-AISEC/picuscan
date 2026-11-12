@@ -2,31 +2,31 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+from picuscan.sarif import unstructure
 from picuscan.sarif.models import (
+    ArtifactLocation,
+    ColumnKind,
+    ExternalPropertyFileReference,
+    ExternalPropertyFileReferences,
+    Invocation,
+    Level,
+    Location,
+    Log,
+    Message,
+    MultiformatMessageString,
+    PhysicalLocation,
+    PropertyBag,
+    Region,
+    ReportingDescriptor,
+    ReportingDescriptorReference,
+    ReportingDescriptorRelationship,
+    Result,
+    Run,
     Tool,
     ToolComponent,
-    Result,
-    PropertyBag,
-    Level,
-    Message,
-    Location,
-    PhysicalLocation,
-    ArtifactLocation,
-    Region,
-    Log,
-    Version,
-    Run,
-    ExternalPropertyFileReferences,
-    ExternalPropertyFileReference,
-    ReportingDescriptor,
-    MultiformatMessageString,
-    ReportingDescriptorRelationship,
-    ReportingDescriptorReference,
     ToolComponentReference,
-    Invocation,
-    ColumnKind,
+    Version,
 )
-from picuscan.sarif import unstructure
 
 
 def test_tool():

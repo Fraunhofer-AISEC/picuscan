@@ -4,10 +4,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from types import TracebackType
-from typing import Any, Iterator, Self
+from typing import Any, Self
 from urllib.parse import urlparse
 
 from neo4j import GraphDatabase
@@ -71,7 +72,7 @@ class CPG:
 
 def _artifact(record: Any) -> Path | None:
     uri = urlparse(record["n.artifact"])
-    if not uri.scheme == "file":
+    if uri.scheme != "file":
         return None
     return Path(uri.path)
 

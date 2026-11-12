@@ -11,7 +11,7 @@ import picuscan
 
 def test_help():
     with click.Context(picuscan.main) as ctx:
-        help = [s.strip() for s in picuscan.main.get_help(ctx).splitlines()]
+        help_text = [s.strip() for s in picuscan.main.get_help(ctx).splitlines()]
         assert isinstance(picuscan.main, click.Group)
         cmds = picuscan.main.list_commands(ctx)
-        assert all(any(s.startswith(cmd) for s in help) for cmd in cmds)
+        assert all(any(s.startswith(cmd) for s in help_text) for cmd in cmds)

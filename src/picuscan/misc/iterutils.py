@@ -6,15 +6,13 @@ from __future__ import annotations
 
 import typing as t
 
-_T = t.TypeVar("_T")
 
-
-def partition(func: t.Callable[[_T], object], iterable: t.Iterable[_T]) -> tuple[list[_T], list[_T]]:
+def partition[T](func: t.Callable[[T], object], iterable: t.Iterable[T]) -> tuple[list[T], list[T]]:
     """Partition `iterable` into two lists, where the first list contains the
     elements of `iterable` for which the predicate `func` holds and the second
     contains the rest."""
-    a: list[_T] = []
-    b: list[_T] = []
+    a: list[T] = []
+    b: list[T] = []
     for o in iterable:
         if func(o):
             a.append(o)

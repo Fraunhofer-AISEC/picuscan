@@ -18,7 +18,7 @@ SHELL: t.Final[t.Literal[_Shell.SHELL]] = _Shell.SHELL
 
 
 @t.overload
-def join(iterable: t.Iterable[object], sep: t.AnyStr) -> t.AnyStr: ...
+def join[AnyStr: str | bytes](iterable: t.Iterable[object], sep: AnyStr) -> AnyStr: ...
 
 
 @t.overload
@@ -43,7 +43,7 @@ def join(iterable: t.Iterable[object], sep: str | bytes | t.Literal[_Shell.SHELL
 
 def _str(o: object) -> str:
     try:
-        o = os.fspath(o)  # type: ignore
+        o = os.fspath(o)  # type: ignore[call-overload]  # ty: ignore[no-matching-overload]
     except TypeError:
         pass
     if isinstance(o, bytes):
@@ -60,17 +60,19 @@ def _bytes(o: object) -> bytes:
 
 def snake_case(s: str) -> str:
     """Convert `s` to `snake_case`."""
-    buf: list[str] = list()
+    buf: list[str] = []
     last_char = None
     for c in s:
         if c.isupper():
-            c = c.lower()
             if buf and last_char != "_":
                 buf.append("_")
+            out = c.lower()
         elif c == "-":
-            c = "_"
-        buf.append(c)
-        last_char = c
+            out = "_"
+        else:
+            out = c
+        buf.append(out)
+        last_char = out
     return "".join(buf)
 
 
@@ -80,7 +82,7 @@ _P = t.ParamSpec("_P")
 class LazyString:
     """A string-like object. Its string representation is computed on access."""
 
-    __slots__ = ("_initializer", "_cache")
+    __slots__ = ("_cache", "_initializer")
 
     def __init__(self, initializer: t.Callable[_P, str], *args: _P.args, **kwds: _P.kwargs):
         self._initializer = initializer, args, kwds

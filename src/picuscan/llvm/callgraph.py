@@ -6,7 +6,8 @@ from __future__ import annotations
 
 import asyncio
 import re
-from collections.abc import AsyncIterator, Set
+from collections.abc import AsyncGenerator
+from collections.abc import Set as AbstractSet
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,7 +25,7 @@ from .config import LLVMConfig, get_llvm_config
 @dataclass(frozen=True, slots=True)
 class CallGraph:
     graph: nx.DiGraph[str]
-    symbols: Set[str]
+    symbols: AbstractSet[str]
 
     @classmethod
     async def from_llvm_ir(cls, path: StrPath, llvm: LLVMConfig | None = None) -> CallGraph:
@@ -48,7 +49,7 @@ class CallGraph:
 
 
 @asynccontextmanager
-async def _as_bitcode(path: Path, llvm: LLVMConfig) -> AsyncIterator[Path]:
+async def _as_bitcode(path: Path, llvm: LLVMConfig) -> AsyncGenerator[Path, None]:
     if path.suffix == ".ll":
         with NamedTemporaryFile(suffix=".bc") as bitcode:
             await process.run(llvm.assembler, "-o", "-", path, stdout=bitcode, stderr=DEVNULL)
