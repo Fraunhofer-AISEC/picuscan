@@ -4,8 +4,8 @@
 
 from __future__ import annotations
 
-import subprocess
 import re
+import subprocess
 from collections.abc import Iterator
 from typing import IO, TypedDict, cast
 
@@ -72,13 +72,20 @@ class RATS(AnalysisTool):
 
         for v in vulnerabilities:
             level = LEVELS.get(v["severity"], sarif.Level.NOTE)
-            type = v.get("type", "unknown")
+            rule_id = v.get("type", "unknown")
             message = _strip(v["message"])
 
             file = v["file"]
             files = file if isinstance(file, list) else [file]
             for location in _locations(files):
-                results.append(Result(ruleId=type, level=level, message=sarif.message(message), locations=(location,)))
+                results.append(
+                    Result(
+                        ruleId=rule_id,
+                        level=level,
+                        message=sarif.message(message),
+                        locations=(location,),
+                    )
+                )
 
         full_name = _get_version()
         res = re.search(r"\d+\.\d+", full_name)
@@ -117,4 +124,4 @@ def _locations(files: list[File]) -> Iterator[Location]:
 
 
 def _get_version() -> str:
-    return subprocess.run(["rats", "--help"], stdout=subprocess.PIPE).stdout.decode().split("\n")[0]
+    return subprocess.run(["rats", "--help"], stdout=subprocess.PIPE, check=False).stdout.decode().split("\n")[0]

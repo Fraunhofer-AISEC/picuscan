@@ -4,11 +4,11 @@
 
 from __future__ import annotations
 
+import fnmatch
 import typing as t
 
 import attrs
 import cattrs
-import fnmatch
 
 from picuscan.analyzer.options import Options
 from picuscan.sarif.models import Result

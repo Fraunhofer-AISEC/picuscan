@@ -8,8 +8,8 @@ import json
 from importlib import resources
 from typing import Any
 
-from picuscan.typing import JsonValue
 from picuscan.sarif.models import Level
+from picuscan.typing import JsonValue
 
 _files = resources.files(__package__)
 

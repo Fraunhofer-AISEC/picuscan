@@ -7,8 +7,9 @@
 from __future__ import annotations
 
 import typing as t
+from typing import NotRequired
 
-from typing_extensions import NotRequired, TypedDict
+from typing_extensions import TypedDict
 
 
 class Output(TypedDict):

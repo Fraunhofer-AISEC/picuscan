@@ -50,7 +50,7 @@ def lazyfile(file: FileDescriptorOrPath, mode: str = "r", *args: t.Any, **kwds: 
 
 
 class _LazyFile:
-    __slots__ = ("_name", "_mode", "_args", "_kwds", "_file")
+    __slots__ = ("_args", "_file", "_kwds", "_mode", "_name")
 
     def __init__(self, file: FileDescriptorOrPath, mode: str, *args: t.Any, **kwds: t.Any):
         self._name = file
@@ -62,7 +62,8 @@ class _LazyFile:
     @property
     def _open(self) -> t.IO[t.Any]:
         if self._file is None:
-            self._file = open(self._name, self._mode, *self._args, **self._kwds)
+            # `self._name` may be a file descriptor, so `Path.open()` is not an option here.
+            self._file = open(self._name, self._mode, *self._args, **self._kwds)  # noqa: PTH123, SIM115
             del self._name, self._mode, self._args, self._kwds  # No need to keep these in memory
         return self._file
 
@@ -84,7 +85,7 @@ class _LazyFile:
     def __repr__(self) -> str:
         return str(self)
 
-    def __enter__(self) -> _LazyFile:
+    def __enter__(self) -> t.Self:
         return self
 
     def __exit__(self, *args: object, **kwds: object) -> None:

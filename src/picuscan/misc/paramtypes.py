@@ -12,10 +12,10 @@ import enum
 import pathlib as p
 import typing as t
 from json import JSONDecodeError
+from typing import Unpack
 
 import click
 from click import Context, Parameter, ParamType
-from typing_extensions import Unpack
 
 from picuscan import compdb, sarif
 from picuscan.sarif.models import Log
@@ -128,7 +128,7 @@ class CompilationDB(click.File):
     def __init__(self) -> None:
         super().__init__("rb")
 
-    def convert(self, value: t.Any, param: Parameter | None, ctx: Context | None):  # type: ignore
+    def convert(self, value: t.Any, param: Parameter | None, ctx: Context | None) -> t.Any:
         if isinstance(value, compdb.CompilationDB):
             return value
         file = super().convert(value, param, ctx)
@@ -146,7 +146,7 @@ class SarifLog(click.File):
     def __init__(self) -> None:
         super().__init__("rb")
 
-    def convert(self, value: t.Any, param: Parameter | None, ctx: Context | None):  # type: ignore
+    def convert(self, value: t.Any, param: Parameter | None, ctx: Context | None) -> t.Any:
         if isinstance(value, Log):
             return value
         file = super().convert(value, param, ctx)

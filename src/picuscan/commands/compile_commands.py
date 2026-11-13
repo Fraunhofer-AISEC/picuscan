@@ -5,22 +5,22 @@
 from __future__ import annotations
 
 import ast
-from concurrent.futures import ThreadPoolExecutor
-import re
 import gzip
 import json
+import re
 import subprocess
 import sys
+from collections.abc import AsyncIterable, Iterable, Iterator, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from functools import reduce
 from pathlib import Path
-from typing import IO, Any, AsyncIterable, Iterable, Iterator, Sequence
+from typing import IO, Any
 
 import attrs
 import click
 
-from picuscan import process, logging
-from picuscan.common.file import glob
-from picuscan.common.file import tokei
+from picuscan import logging, process
+from picuscan.common.file import glob, tokei
 from picuscan.compdb import Command, CompilationDB, dump
 from picuscan.constants import C_CXX_SOURCE_SUFFIXES, CXX_SUFFIXES
 from picuscan.misc import paramtypes
@@ -93,7 +93,7 @@ async def gen(params: _GenParams) -> None:
         files = glob(params.dir, params.pattern, params.exclude, dir_ok=False)
     files = (p.relative_to(params.dir) for p in files)
     dir = params.dir.absolute()
-    include_dirs = [] if params.includes_file is None else list(s.strip() for s in params.includes_file)
+    include_dirs = [] if params.includes_file is None else [s.strip() for s in params.includes_file]
 
     try:
         if params.config_file is None:
@@ -101,7 +101,7 @@ async def gen(params: _GenParams) -> None:
         else:
             defines = await adict(_defines(params.config_file, include_dirs))
     except Exception:
-        logger.error("Failed to process the configuration file: {}", params.config_file)
+        logger.error("Failed to process the configuration file: %s", params.config_file)
         defines = {}
 
     cmds = [Command(_arguments(params, p, include_dirs, defines), directory=dir, file=p) for p in files]
@@ -269,8 +269,17 @@ def _run_one(params: _RunParams, cmd: Command) -> _RunResult | None:
     logger.info(" ".join(compile_cmd))
 
     stdout = subprocess.PIPE if (params.ast or params.pp) else None
-    p = subprocess.run(compile_cmd, cwd=directory, stdout=stdout, stderr=subprocess.PIPE)
+    p = subprocess.run(compile_cmd, cwd=directory, stdout=stdout, stderr=subprocess.PIPE, check=False)
     return _RunResult(path=path, returncode=p.returncode, stderr=p.stderr, stdout=p.stdout)
+
+
+def _dump_ast(path: str, ast_l: list[Any]) -> None:
+    if path.endswith(".gz"):
+        with gzip.open(path, "wt") as f:
+            json.dump(ast_l, f)
+    else:
+        with Path(path).open("w") as f:
+            json.dump(ast_l, f)
 
 
 @cli.command(help="Run compile commands")
@@ -312,8 +321,8 @@ def _run_one(params: _RunParams, cmd: Command) -> _RunResult | None:
 @collect_params(_RunParams)
 @unasync
 async def run(params: _RunParams) -> None:
-    failed = list()
-    success = list()
+    failed = []
+    success = []
     missing_header = set()
     ast_l = []
 
@@ -340,26 +349,20 @@ async def run(params: _RunParams) -> None:
         else:
             try:
                 err = result.stderr.decode().split("\n")
-                missing = set(filter(lambda x: "file not found" in x, err))
-                missing.update(set(filter(lambda x: "non-portable path" in x, err)))
-                missing = set(map(lambda x: x.split("'")[1], missing))
+                missing = {x for x in err if "file not found" in x}
+                missing.update(x for x in err if "non-portable path" in x)
+                missing = {x.split("'")[1] for x in missing}
                 missing_header.update(missing)
-                missing = set(filter(lambda x: "No such file or directory" in x, err))
-                missing = set(map(lambda x: x.split("fatal error: ")[1].split(":")[0], missing))
+                missing = {x for x in err if "No such file or directory" in x}
+                missing = {x.split("fatal error: ")[1].split(":")[0] for x in missing}
                 missing_header.update(missing)
             except Exception as e:
                 logger.warning(f"Error during parsing compile result: {e}")
-                pass
 
             failed.append(path)
 
     if params.ast:
-        if params.ast.endswith(".gz"):
-            f = gzip.open(params.ast, "wt")
-        else:
-            f = open(params.ast, "wt")
-        json.dump(ast_l, f)
-        f.close()
+        _dump_ast(params.ast, ast_l)
 
     ret = 0
     if failed:
@@ -413,11 +416,9 @@ async def cloc(params: _ClocParams) -> None:
 def _transform_cmd_ir(cmd: list[str]) -> list[str]:
     new_cmd = []
     for arg in cmd:
-        if arg.endswith(".o"):
-            arg = arg[:-1] + "bc"
         if arg.startswith("-O"):
             continue
-        new_cmd.append(arg)
+        new_cmd.append(arg[:-1] + "bc" if arg.endswith(".o") else arg)
 
     new_cmd.insert(1, "-emit-llvm")
     new_cmd.insert(1, "-disable-O0-optnone")

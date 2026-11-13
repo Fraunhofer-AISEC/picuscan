@@ -7,17 +7,17 @@ import uuid
 from picuscan.analyzer.transforms import inject_guid
 from picuscan.sarif import dumps, loads, unstructure
 from picuscan.sarif.models import (
+    ArtifactLocation,
     CodeFlow,
+    Location,
     Log,
     Message,
+    PhysicalLocation,
+    Region,
     Result,
     Run,
     ThreadFlow,
     ThreadFlowLocation,
-    Location,
-    PhysicalLocation,
-    ArtifactLocation,
-    Region,
     Tool,
     ToolComponent,
     Version,
@@ -37,7 +37,7 @@ def _make_log(*results: Result, tool_name: str = "test") -> Log:
 
 
 def _result(**kw) -> Result:
-    defaults = dict(message=Message(text="test finding"))
+    defaults = {"message": Message(text="test finding")}
     defaults.update(kw)
     return Result(**defaults)
 

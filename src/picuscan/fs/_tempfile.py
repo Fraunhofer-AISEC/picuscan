@@ -5,14 +5,13 @@
 from __future__ import annotations
 
 import tempfile
+from collections.abc import Generator, Iterator
 from contextlib import contextmanager
 from pathlib import Path
 from types import TracebackType
-from collections.abc import Iterator
-from typing import IO, Any, AnyStr, Generic, Literal, overload
+from typing import IO, Any, AnyStr, Generic, Literal, Self, overload
 
 import click
-from typing_extensions import Self
 
 from picuscan.config import get_current_config
 from picuscan.typing import StrBytesPath
@@ -58,7 +57,7 @@ def temp_file(mode: str = "w+b", **kwds: Any) -> _TemporaryFile[Any]:
     return _TemporaryFile(tempfile.NamedTemporaryFile(mode, prefix=_prefix(), **kwds))
 
 
-class _TemporaryFileImpl(Generic[AnyStr]):
+class _TemporaryFileImpl(Generic[AnyStr]):  # noqa: UP046  # PEP 695 bound TypeVars are not valid for the invariant IO
     __slots__ = ("_file", "path")
 
     def __init__(self, file: IO[AnyStr]):
@@ -85,7 +84,7 @@ _TemporaryFile = _TemporaryFileImpl
 
 
 @contextmanager
-def temp_dir() -> Iterator[Path]:
+def temp_dir() -> Generator[Path, None, None]:
     try:
         config = get_current_config()
         keep_tmps = config.keep_tmps

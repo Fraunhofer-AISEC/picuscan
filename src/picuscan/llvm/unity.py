@@ -12,9 +12,9 @@ import subprocess
 import typing as t
 from abc import ABC, abstractmethod
 from pathlib import Path
+from typing import Unpack
 
 import attrs
-from typing_extensions import Unpack
 
 from picuscan import fs, process
 from picuscan.compdb import Command, CompilationDB
@@ -85,10 +85,10 @@ class GenericBuilder(AbstractBuilder):
     """This builder supports any version of LLVM."""
 
     async def __call__(self, output: t.IO[bytes]) -> None:
-        with fs.temp_dir() as dir:
+        with fs.temp_dir() as tmp:
             semaphore = asyncio.Semaphore(self.jobs) if self.jobs > 0 else None
             compile_tasks = [
-                self._compile_limited(cmd, dir / self.__mangle_path(cmd.file), semaphore) for cmd in self.compdb
+                self._compile_limited(cmd, tmp / self.__mangle_path(cmd.file), semaphore) for cmd in self.compdb
             ]
             if self.fail_on_error:
                 modules = await asyncutils.gather(compile_tasks)
@@ -139,12 +139,8 @@ class GenericBuilder(AbstractBuilder):
             await process.run(self.config.linker, "-S", *files, stdout=output, stderr=process.PIPE)
         except process.CalledProcessError as err:
             msg = err.stderr_text.strip()
-            if msg.startswith("error: "):
-                msg = msg[7:]
+            msg = msg.removeprefix("error: ")
             raise UnityError(msg) from err
-
-
-_T = t.TypeVar("_T")
 
 
 def _resolve_llvm14_config() -> LLVMConfig:
@@ -237,8 +233,7 @@ class InMemoryBuilder(GenericBuilder):
             await process.run(self.config.linker, *files, stdout=output, stderr=process.PIPE)
         except process.CalledProcessError as err:
             msg = err.stderr_text.strip()
-            if msg.startswith("error: "):
-                msg = msg[7:]
+            msg = msg.removeprefix("error: ")
             raise UnityError(msg) from err
 
     @property

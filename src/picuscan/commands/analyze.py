@@ -7,7 +7,8 @@ from __future__ import annotations
 import asyncio
 import sys
 import time
-from typing import Any, Iterable
+from collections.abc import Iterable
+from typing import Any
 
 import click
 from tqdm.contrib.logging import logging_redirect_tqdm
@@ -17,7 +18,7 @@ from picuscan.analyzer.options import OPTIONS, Options
 from picuscan.analyzer.tool import REGISTRY, Tool
 from picuscan.analyzer.tools import load_tools
 from picuscan.analyzer.transforms import filter_excludes, split_informational
-from picuscan.misc.decorators import unasync, add_options
+from picuscan.misc.decorators import add_options, unasync
 from picuscan.sarif.models import Log
 
 logger = logging.get_logger(__name__)
@@ -37,13 +38,13 @@ async def analyze(opts: Options) -> None:
     logger.info(f"Loaded tools: {' '.join(sorted(cls.name for cls in REGISTRY.values()))}")
 
     if opts.tools:
-        tool_names = set(s.casefold() for s in opts.tools)
+        tool_names = {s.casefold() for s in opts.tools}
     else:
-        tool_names = set(n for n, tool in REGISTRY.items() if tool.enabled)
-    tool_names = (tool_names | set(s.casefold() for s in opts.enable)) - set(s.casefold() for s in opts.disable)
+        tool_names = {n for n, tool in REGISTRY.items() if tool.enabled}
+    tool_names = (tool_names | {s.casefold() for s in opts.enable}) - {s.casefold() for s in opts.disable}
 
     try:
-        tools = list(map(lambda x: REGISTRY[x], tool_names))
+        tools = [REGISTRY[x] for x in tool_names]
     except KeyError as e:
         logger.warning("Error unknown tool %r.", e.args[0])
         sys.exit(1)
@@ -57,7 +58,7 @@ async def analyze(opts: Options) -> None:
     assert opts.compile_db.path
     picuscan_dir = opts.compile_db.path.parent / ".picuscan"
     start_time = time.strftime("%Y_%m_%d-%H_%M_%S")
-    run_dir = opts.run_dir if opts.run_dir else picuscan_dir / "runs" / start_time
+    run_dir = opts.run_dir or picuscan_dir / "runs" / start_time
     run_dir.mkdir(parents=True, exist_ok=True)
 
     tool_instances: list[Tool] = []
@@ -65,7 +66,7 @@ async def analyze(opts: Options) -> None:
     for tool in tools:
         tool_dir = run_dir / tool.name
         tool_dir.mkdir(exist_ok=True)
-        sink = open(tool_dir / "sink", "wb")
+        sink = (tool_dir / "sink").open("wb")
         instance = tool(opts, picuscan_dir=picuscan_dir, tool_dir=tool_dir, sink=sink, jobs=jobs)
         if instance.should_run():
             tool_instances.append(instance)
@@ -128,7 +129,7 @@ async def analyze(opts: Options) -> None:
     else:
         path = opts.output
 
-    with open(path, "w") as f:
+    with path.open("w") as f:
         sarif.dump(combined, f)
         if is_dir:
             link = opts.output / "last_project.sarif"
@@ -136,7 +137,7 @@ async def analyze(opts: Options) -> None:
             link.symlink_to(path.relative_to(link.parent))
 
     if informational_log:
-        with open(path.with_stem(f"{path.stem}_informational"), "w", encoding="utf-8") as f:
+        with path.with_stem(f"{path.stem}_informational").open("w", encoding="utf-8") as f:
             sarif.dump(informational_log, f)
 
     logger.info(f"Generated {sum(_count(run) for run in logs)} finding(s) and exported to {path}")
@@ -147,7 +148,7 @@ async def _run(opts: Options, tool: Tool) -> Log:
         with tool.sink:
             sarif_log = await tool.run()
     except Exception:
-        logger.error(f"Failed to run {tool.name}.", exc_info=True)
+        logger.exception(f"Failed to run {tool.name}.")
         raise
 
     transforms = tool.transforms
@@ -159,7 +160,7 @@ async def _run(opts: Options, tool: Tool) -> Log:
             logger.debug(f"Transforming {tool.name} log with {transform}")
             sarif_log = transform(sarif_log, opts)
     except Exception:
-        logger.error(f"Failed to transform {tool.name} log, recovering.", exc_info=True)
+        logger.exception(f"Failed to transform {tool.name} log, recovering.")
 
     return sarif_log
 

@@ -12,19 +12,19 @@ import typing as t
 from abc import ABC
 from asyncio import subprocess
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from functools import cached_property
+from typing import Unpack
 
 import attrs
-from typing_extensions import Unpack
 
+from picuscan.analyzer.options import Options
 from picuscan.config import acquire_job_semaphore
 from picuscan.logging import Tracer, get_logger
 from picuscan.misc.strutils import SHELL, join
-from picuscan.typing import StrBytesPath
 from picuscan.sarif.models import Invocation, Run
-from picuscan.analyzer.options import Options
 from picuscan.sarif.visitor import Visitor
+from picuscan.typing import StrBytesPath
 
 _FD = int | t.IO[t.Any] | None
 
@@ -73,7 +73,7 @@ async def run(
             raise ValueError("stdin and input arguments cannot be used in combination.")
         kwds["stdin"] = PIPE
         if isinstance(input, str):
-            input = input.encode()
+            input = input.encode()  # noqa: A001
 
     if capture_output or discard_output:
         if capture_output and discard_output:
@@ -86,11 +86,11 @@ async def run(
             kwds.setdefault("stdout", DEVNULL)
             kwds.setdefault("stderr", DEVNULL)
 
-    t_start = datetime.now(timezone.utc).isoformat()
+    t_start = datetime.now(UTC).isoformat()
     proc = await spawn(program, *args, **kwds)
     out, err = await proc.communicate(input)
     assert proc.returncode is not None
-    t_end = datetime.now(timezone.utc).isoformat()
+    t_end = datetime.now(UTC).isoformat()
 
     cmd = program, *args
     completed = CompletedProcess(cmd, proc.returncode, out, err, t_start, t_end)
@@ -138,8 +138,8 @@ class _CompletedProcessBase(ABC):
 class CompletedProcess(_CompletedProcessBase):
     args: t.Sequence[StrBytesPath]
     returncode: int
-    _stdout: bytes | None
-    _stderr: bytes | None
+    _stdout: bytes | None  # ty: ignore[incompatible-attribute-override]
+    _stderr: bytes | None  # ty: ignore[incompatible-attribute-override]
     t_start: str
     t_end: str
 
@@ -174,8 +174,8 @@ class CompletedProcess(_CompletedProcessBase):
 class CalledProcessError(_CompletedProcessBase, Exception):
     cmd: t.Sequence[StrBytesPath]
     returncode: int
-    _stdout: bytes | None
-    _stderr: bytes | None
+    _stdout: bytes | None  # ty: ignore[incompatible-attribute-override]
+    _stderr: bytes | None  # ty: ignore[incompatible-attribute-override]
 
     def __str__(self) -> str:
         return f"{join(self.cmd, SHELL)!r} returned exit status {self.returncode}."
