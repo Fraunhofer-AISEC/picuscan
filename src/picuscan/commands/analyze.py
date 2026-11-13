@@ -141,6 +141,9 @@ async def analyze(opts: Options) -> None:
 
     logger.info(f"Generated {sum(_count(run) for run in logs)} finding(s) and exported to {path}")
 
+    if failed:
+        sys.exit(1)
+
 
 async def _run(opts: Options, tool: Tool) -> Log:
     try:
