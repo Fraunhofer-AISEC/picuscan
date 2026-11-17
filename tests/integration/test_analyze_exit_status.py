@@ -3,12 +3,11 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import json
-import subprocess
 import sys
 
 import pytest
 
-from picuscan import main, sarif
+from picuscan import main, process, sarif
 from picuscan.analyzer.tool import Tool
 from picuscan.commands import analyze
 
@@ -44,7 +43,7 @@ def test_analyze_exit_status(runner, monkeypatch, tmp_path, caplog, tool_names, 
         name = "failing"
 
         async def run(self):
-            subprocess.run([sys.executable, "-c", "raise SystemExit(42)"], check=True)
+            await process.run(sys.executable, "-c", "raise SystemExit(42)", check=True, discard_output=True)
 
     class Partial(Successful):
         name = "partial"
